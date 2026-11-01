@@ -56,9 +56,9 @@
         <div class="field"><label for="ea_tel">연락처<i class="req">*</i></label><input id="ea_tel" type="tel" required placeholder="010-0000-0000"></div>
         <div class="field"><label for="ea_mail">이메일</label><input id="ea_mail" type="email" placeholder="name@example.com"></div>
       </div>
-      <div class="row3">
+      <div class="row3 r-date">
         <div class="field"><label for="ea_course">희망 과정<i class="req">*</i></label><select id="ea_course" required><option value="">선택해 주세요</option><option>캐리커처 원데이</option><option>캘리그라피 원데이</option><option>페이스페인팅 체험</option><option>아이패드 드로잉</option><option>정규 과정(4주 이상)</option></select></div>
-        <div class="field"><label for="ea_date">희망 일자</label><input id="ea_date" type="date"></div>
+        <div class="field"><label for="ea_date">희망 기간</label><div class="daterange"><input id="ea_date" class="dr-input" type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" autocomplete="off" inputmode="none" aria-haspopup="dialog"><input type="hidden" name="date" data-start><input type="hidden" name="date_end" data-end></div><p class="help">정규 과정은 시작일~종료일, 원데이는 하루만 고르세요.</p></div>
         <div class="field"><label for="ea_ppl">예상 인원<i class="req">*</i></label><input id="ea_ppl" type="number" min="1" required placeholder="20"></div>
       </div>
       <div class="field"><label for="ea_place">강의 장소</label><input id="ea_place" placeholder="주소 또는 지역"></div>

@@ -203,6 +203,100 @@
     b.addEventListener('click', function (e) { e.preventDefault(); toast(b.dataset.toast); });
   });
 
+
+  /* ---------- 기간 달력 (YYYY-MM-DD ~ YYYY-MM-DD) ---------- */
+  var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+  var ymd = function (dt) { return dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()); };
+  var parse = function (v) { var p = v.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); };
+  var todayStr = ymd(new Date());
+  $$('.daterange').forEach(function (wrap) {
+    var input = $('.dr-input', wrap), hs = $('[data-start]', wrap), he = $('[data-end]', wrap);
+    var pop = d.createElement('div');
+    pop.className = 'dr-pop'; pop.hidden = true;
+    pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', '기간 선택');
+    wrap.appendChild(pop);
+    var start = '', end = '', hover = '';
+    var view = new Date(); view.setDate(1);
+    var two = function () { return innerWidth > 720; };
+
+    function monthHTML(base) {
+      var y = base.getFullYear(), m = base.getMonth();
+      var first = new Date(y, m, 1).getDay(), last = new Date(y, m + 1, 0).getDate();
+      var h = '<div class="dr-month"><p class="dr-title">' + y + '년 ' + (m + 1) + '월</p><div class="dr-grid">';
+      '일월화수목금토'.split('').forEach(function (w, i) { h += '<span class="dr-w' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + '">' + w + '</span>'; });
+      for (var i = 0; i < first; i++) h += '<span></span>';
+      var to = end || (start && hover && hover > start ? hover : '');
+      for (var dd = 1; dd <= last; dd++) {
+        var v = y + '-' + pad(m + 1) + '-' + pad(dd), dow = (first + dd - 1) % 7;
+        var c = 'dr-d' + (dow === 0 ? ' sun' : dow === 6 ? ' sat' : '');
+        if (v < todayStr) c += ' past';
+        if (v === todayStr) c += ' today';
+        if (v === start) c += ' s';
+        if (v === (end || '')) c += ' e';
+        if (start && to && v > start && v < to) c += ' in';
+        if (start && to && v === start) c += ' has-e';
+        h += '<button type="button" class="' + c + '" data-v="' + v + '"' + (v < todayStr ? ' disabled' : '') + '>' + dd + '</button>';
+      }
+      return h + '</div></div>';
+    }
+    function label() {
+      if (!start) return '시작일을 눌러 주세요';
+      if (!end) return start + ' ~ 종료일을 눌러 주세요';
+      var days = Math.round((parse(end) - parse(start)) / 864e5) + 1;
+      return (start === end ? start : start + ' ~ ' + end) + ' · ' + days + '일';
+    }
+    function render() {
+      var next = new Date(view.getFullYear(), view.getMonth() + 1, 1);
+      pop.innerHTML = '<div class="dr-head"><button type="button" class="dr-nav" data-nav="-1" aria-label="이전 달">‹</button><button type="button" class="dr-nav" data-nav="1" aria-label="다음 달">›</button></div>'
+        + '<div class="dr-months">' + monthHTML(view) + (two() ? monthHTML(next) : '') + '</div>'
+        + '<div class="dr-foot"><span class="dr-sel">' + label() + '</span><button type="button" class="dr-btn ghost" data-act="reset">초기화</button><button type="button" class="dr-btn" data-act="ok"' + (start ? '' : ' disabled') + '>적용</button></div>';
+    }
+    function commit() {
+      var e = end || start;
+      hs.value = start; he.value = start ? e : '';
+      input.value = !start ? '' : (e === start ? start : start + ' ~ ' + e);
+      input.setCustomValidity('');
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    function open() {
+      start = hs.value; end = he.value || '';
+      if (start) { view = parse(start); view.setDate(1); }
+      render(); pop.hidden = false; wrap.classList.add('open');
+    }
+    function close() { pop.hidden = true; wrap.classList.remove('open'); }
+
+    input.addEventListener('click', open);
+    input.addEventListener('focus', open);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Tab') { close(); return; }
+      if (e.key === 'Escape') { close(); return; }
+      if (e.key === 'Backspace' || e.key === 'Delete') { start = end = ''; commit(); render(); }
+      e.preventDefault();
+    });
+    pop.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    pop.addEventListener('mouseover', function (e) {
+      var b = e.target.closest('.dr-d');
+      if (b && start && !end && b.dataset.v !== hover) { hover = b.dataset.v; render(); }
+    });
+    pop.addEventListener('click', function (e) {
+      var b = e.target.closest('button');
+      if (!b) return;
+      if (b.dataset.nav) { view.setMonth(view.getMonth() + (+b.dataset.nav)); render(); return; }
+      if (b.dataset.act === 'reset') { start = end = hover = ''; commit(); render(); return; }
+      if (b.dataset.act === 'ok') { if (start && !end) end = start; commit(); close(); return; }
+      var v = b.dataset.v;
+      if (!v) return;
+      if (!start || end) { start = v; end = ''; hover = ''; }
+      else if (v < start) { end = start; start = v; }
+      else end = v;
+      render();
+      if (start && end) { commit(); setTimeout(close, 180); }
+    });
+    d.addEventListener('mousedown', function (e) { if (!wrap.contains(e.target)) close(); });
+    d.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    addEventListener('resize', function () { if (!pop.hidden) render(); });
+  });
+
   /* ---------- 행사 견적 단계 폼 ---------- */
   var q = $('#quoteForm');
   if (q) {
@@ -229,19 +323,14 @@
         var el = q.querySelector('[name="' + k + '"]'), out = $('#sum_' + k);
         if (el && out) out.textContent = el.value ? el.value + (k === 'people' ? '명' : '') : '-';
       });
-      /* 행사 기간: 시작일 ~ 종료일 (일수 표시) */
+      /* 행사 기간: YYYY-MM-DD ~ YYYY-MM-DD (일수 표시) */
       var ds = q.querySelector('[name="date"]'), de = q.querySelector('[name="date_end"]');
       if (ds && de) {
-        de.min = ds.value || '';
-        if (ds.value && de.value && de.value < ds.value) de.value = ds.value;
-        var fmt = function (v) { var p = v.split('-'); return (+p[1]) + '/' + (+p[2]); };
         var txt = '-';
         if (ds.value) {
-          txt = fmt(ds.value);
-          if (de.value && de.value !== ds.value) {
-            var days = Math.round((new Date(de.value) - new Date(ds.value)) / 864e5) + 1;
-            txt += ' ~ ' + fmt(de.value) + ' (' + days + '일)';
-          } else txt += ' (1일)';
+          var end = de.value || ds.value;
+          var days = Math.round((new Date(end) - new Date(ds.value)) / 864e5) + 1;
+          txt = (end === ds.value ? ds.value : ds.value + ' ~ ' + end) + ' (' + days + '일)';
         }
         $('#sum_date').textContent = txt;
       }
