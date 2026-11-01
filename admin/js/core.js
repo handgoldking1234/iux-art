@@ -115,9 +115,11 @@ var IUX = (function () {
   /* ---------- 상태 라벨 ---------- */
   var JOB_STATE = { open: ['모집 중', 'st-open'], review: ['선정 대기', 'st-review'], confirmed: ['확정', 'st-ok'], done: ['행사 완료', 'st-done'] };
   var ART_STATE = { active: ['활동 중', 'st-ok'], pending: ['승인 대기', 'st-review'], paused: ['활동 중지', 'st-done'] };
-  var PHOTO_STATE = { pending: ['검수 대기', 'st-review'], published: ['홈페이지 게시', 'st-ok'], hidden: ['게시 안 함', 'st-done'], private: ['내부 보관', 'st-bad'] };
-  var photoSrc = function (p) { return p.src.indexOf('data:') === 0 ? p.src : '../' + p.src; };
-  var photosOf = function (jid, aid) { return (db.photos || []).filter(function (p) { return (!jid || p.job === jid) && (!aid || p.a === aid); }); };
+  /* ---------- 현장 후기 ---------- */
+  var POST_STATE = { pending: ['검수 대기', 'st-review'], published: ['후기 게시', 'st-ok'], hidden: ['게시 안 함', 'st-done'], private: ['내부 보관', 'st-bad'] };
+  var src = function (s) { return s.indexOf('data:') === 0 ? s : '../' + s; };
+  var postOf = function (jid, aid) { return (db.posts || []).filter(function (p) { return p.job === jid && p.a === aid; })[0]; };
+  var postsOf = function (jid) { return (db.posts || []).filter(function (p) { return !jid || p.job === jid; }); };
   /* ---------- 작가 평가 ---------- */
   var CRIT = [['work', '작품 완성도'], ['time', '시간 준수'], ['cs', '고객 응대'], ['manner', '현장 매너']];
   var REHIRE = { yes: ['재섭외 추천', 'st-ok'], ok: ['보통', 'st-done'], no: ['재섭외 보류', 'st-bad'] };
@@ -171,7 +173,7 @@ var IUX = (function () {
     skill: skill, artist: artist, job: job, won: won, man: man, esc: esc,
     history: history, selectedJobs: selectedJobs, streak: streak, isRest: isRest, count: count,
     settlements: settlements, send: send, targets: targets, hasTaxInfo: hasTaxInfo, needInfo: needInfo,
-    JOB_STATE: JOB_STATE, ART_STATE: ART_STATE, PAY_STATE: PAY_STATE, PHOTO_STATE: PHOTO_STATE, CRIT: CRIT, REHIRE: REHIRE, reviewOf: reviewOf, reviewsOf: reviewsOf, revAvg: revAvg, rating: rating, needReview: needReview, stars: stars, photoSrc: photoSrc, photosOf: photosOf, badge: badge, skillChips: skillChips, avatar: avatar,
+    JOB_STATE: JOB_STATE, ART_STATE: ART_STATE, PAY_STATE: PAY_STATE, POST_STATE: POST_STATE, src: src, postOf: postOf, postsOf: postsOf, CRIT: CRIT, REHIRE: REHIRE, reviewOf: reviewOf, reviewsOf: reviewsOf, revAvg: revAvg, rating: rating, needReview: needReview, stars: stars, badge: badge, skillChips: skillChips, avatar: avatar,
     toast: toast, modal: modal, icons: icons
   };
 })();

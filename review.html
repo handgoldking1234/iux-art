@@ -41,11 +41,86 @@
     <nav class="crumb" aria-label="현재 위치"><a href="index.html">홈</a><i data-lucide="chevron-right"></i><span>행사 후기</span></nav>
     <span class="eyebrow">Reviews</span>
     <h1>담당자님들이 <em>다시 찾는 이유</em></h1>
-    <p class="lead" style="margin-inline:auto">행사를 마친 담당자님들이 직접 남겨 주신 후기입니다.</p>
+    <p class="lead" style="margin-inline:auto">작가들이 남긴 현장 스케치와 담당자님들의 후기를 모았습니다.</p>
     
   </div>
 </section>
-<section class="sec-sm"><div class="wrap">
+<nav class="rv-jump wrap" aria-label="후기 종류"><a href="#sketch" class="on">현장 스케치 <b id="skN">0</b></a><a href="#client">담당자 후기 <b>9</b></a></nav>
+<section class="sec-sm" id="sketch"><div class="wrap">
+  <div class="sec-head"><div><h2 class="sec-title">현장 스케치</h2><p>행사를 마친 IUX 작가들이 직접 남긴 현장 사진과 분위기입니다.</p></div></div>
+  <div class="toolbar"><div class="tabs" id="skTabs"></div></div>
+  <div class="sk-grid" id="skGrid"></div>
+  <p class="sk-empty" id="skEmpty" hidden>아직 등록된 현장 스케치가 없어요.</p>
+</div></section>
+<div class="lb sk-lb" id="skLb" hidden role="dialog" aria-modal="true" aria-label="현장 스케치">
+  <button class="lb-x" id="skX" aria-label="닫기">×</button>
+  <div class="sk-view">
+    <div class="sk-slide"><img id="skImg" alt=""><button class="lb-nav prev" id="skPrev" aria-label="이전 사진">‹</button><button class="lb-nav next" id="skNext" aria-label="다음 사진">›</button><span class="sk-pg" id="skPg"></span></div>
+    <div class="sk-info"><p class="sk-m" id="skMeta"></p><h3 id="skTitle"></h3><p id="skMood"></p><p class="sk-tags" id="skTags"></p><p class="sk-a" id="skArt"></p><div class="sk-thumbs" id="skThumbs"></div><a class="btn btn-brand btn-sm" id="skQuote" href="quote.html">이 프로그램 견적 문의</a></div>
+  </div>
+</div>
+<script src="admin/js/data.js"></script>
+<script>
+/* 현장 스케치: 작가가 올리고 운영자가 게시한 후기 (시안은 브라우저 저장 데이터, 개발 단계에서 API로 교체) */
+(function () {
+  var d = IUX_SEED;
+  try { var o = JSON.parse(localStorage.getItem('iuxart-admin-v1')); if (o && o.version === d.version) d = o; } catch (e) {}
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var job = function (id) { return d.jobs.filter(function (j) { return j.id === id; })[0]; };
+  var sk = function (k) { return d.skills.filter(function (s) { return s.k === k; })[0] || { n: k }; };
+  var Y = new Date().getFullYear();
+  var yrs = function (aid, k) { var a = d.artists.filter(function (x) { return x.id === aid; })[0]; var s = a && a.skills.filter(function (x) { return x.k === k; })[0]; return s ? (Y - s.since + 1) + '년차' : ''; };
+  var P = (d.posts || []).filter(function (p) { var j = job(p.job); return p.state === 'published' && j && j.photoOk; }).sort(function (a, b) { return job(a.job).start < job(b.job).start ? 1 : -1; });
+  var f = 'all', list = [], cur = 0, shot = 0;
+  var skills = []; P.forEach(function (p) { var k = job(p.job).skill; if (skills.indexOf(k) < 0) skills.push(k); });
+  document.getElementById('skN').textContent = P.length;
+  var tabs = document.getElementById('skTabs');
+  tabs.innerHTML = '<button class="tab on" data-k="all">전체</button>' + skills.map(function (k) { return '<button class="tab" data-k="' + k + '">' + esc(sk(k).n) + '</button>'; }).join('');
+  function meta(j) { return '<span>' + esc(sk(j.skill).n) + '</span>' + esc(j.region) + ' · ' + j.start.slice(0, 7).replace('-', '.'); }
+  function draw() {
+    list = P.filter(function (p) { return f === 'all' || job(p.job).skill === f; });
+    document.getElementById('skGrid').innerHTML = list.map(function (p, i) {
+      var j = job(p.job);
+      return '<article class="sk-card" tabindex="0" role="button" data-i="' + i + '" aria-label="' + esc(p.title) + ' 자세히 보기"><div class="sk-ph"><img src="' + p.photos[0] + '" alt="' + esc(p.title) + '" loading="lazy">' + (p.photos.length > 1 ? '<span class="sk-n">+' + (p.photos.length - 1) + '</span>' : '') + '</div>' +
+        '<div class="sk-b"><p class="sk-m">' + meta(j) + '</p><h4>' + esc(p.title) + '</h4><p class="sk-t">' + esc(p.mood) + '</p><p class="sk-tags">' + p.tags.map(function (t) { return '#' + esc(t); }).join(' ') + '</p><p class="sk-a">IUX 작가 · ' + esc(sk(j.skill).n) + ' ' + yrs(p.a, j.skill) + '</p></div></article>';
+    }).join('');
+    document.getElementById('skEmpty').hidden = list.length > 0;
+  }
+  var lb = document.getElementById('skLb');
+  function showShot(n) {
+    var p = list[cur]; shot = (n + p.photos.length) % p.photos.length;
+    document.getElementById('skImg').src = p.photos[shot];
+    document.getElementById('skPg').textContent = (shot + 1) + ' / ' + p.photos.length;
+    [].forEach.call(document.querySelectorAll('#skThumbs button'), function (b, i) { b.classList.toggle('on', i === shot); });
+    var one = p.photos.length < 2; document.getElementById('skPrev').hidden = one; document.getElementById('skNext').hidden = one;
+  }
+  function open(i) {
+    cur = i; var p = list[i], j = job(p.job);
+    document.getElementById('skMeta').innerHTML = meta(j) + ' · 손님 ' + esc(p.guests);
+    document.getElementById('skTitle').textContent = p.title;
+    document.getElementById('skMood').textContent = p.mood;
+    document.getElementById('skTags').textContent = p.tags.map(function (t) { return '#' + t; }).join(' ');
+    document.getElementById('skArt').textContent = 'IUX 작가 · ' + sk(j.skill).n + ' ' + yrs(p.a, j.skill);
+    document.getElementById('skThumbs').innerHTML = p.photos.map(function (s, n) { return '<button aria-label="' + (n + 1) + '번째 사진"><img src="' + s + '" alt=""></button>'; }).join('');
+    document.getElementById('skQuote').href = 'quote.html#p-' + j.skill;
+    showShot(0); lb.hidden = false; document.body.style.overflow = 'hidden';
+  }
+  function close() { lb.hidden = true; document.body.style.overflow = ''; }
+  tabs.addEventListener('click', function (e) { var b = e.target.closest('[data-k]'); if (!b) return; f = b.dataset.k; [].forEach.call(tabs.children, function (x) { x.classList.toggle('on', x === b); }); draw(); });
+  var grid = document.getElementById('skGrid');
+  grid.addEventListener('click', function (e) { var c = e.target.closest('[data-i]'); if (c) open(+c.dataset.i); });
+  grid.addEventListener('keydown', function (e) { var c = e.target.closest('[data-i]'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); open(+c.dataset.i); } });
+  document.getElementById('skThumbs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) showShot([].indexOf.call(this.children, b)); });
+  document.getElementById('skPrev').onclick = function () { showShot(shot - 1); };
+  document.getElementById('skNext').onclick = function () { showShot(shot + 1); };
+  document.getElementById('skX').onclick = close;
+  lb.addEventListener('click', function (e) { if (e.target === lb) close(); });
+  document.addEventListener('keydown', function (e) { if (lb.hidden) return; if (e.key === 'Escape') close(); if (e.key === 'ArrowLeft') showShot(shot - 1); if (e.key === 'ArrowRight') showShot(shot + 1); });
+  draw();
+})();
+</script>
+<section class="sec-sm soft" id="client"><div class="wrap">
+  <div class="sec-head"><div><h2 class="sec-title">담당자 후기</h2><p>행사를 마친 담당자님들이 직접 남겨 주신 후기입니다.</p></div></div>
   <div class="rsum rv">
     <div class="score"><b>4.9</b><div class="stars" aria-label="별점 5점"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><small>후기 2,418건 평균</small></div>
     <div class="bars">

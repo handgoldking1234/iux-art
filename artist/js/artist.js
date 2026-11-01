@@ -101,9 +101,9 @@
       $('#restNote').hidden = !rest;
       if (rest) $('#restNote').innerHTML = '<i data-lucide="coffee"></i>최근 연속 ' + I.streak(a.id) + '회 참여하셨어요. 다른 작가에게도 기회를 나누기 위해 이번 공고 1회는 자동 선정에서 빠집니다. 신청은 할 수 있어요.';
       $('#pendNote').hidden = a.status !== 'pending';
-      var noPh = I.selectedJobs(a.id).filter(function (j) { return j.status === 'done' && !j.hidden && j.start >= '2026-10-01' && !I.photosOf(j.id, a.id).length; });
+      var noPh = I.selectedJobs(a.id).filter(function (j) { return j.status === 'done' && !j.hidden && j.start >= '2026-10-01' && !I.postOf(j.id, a.id); });
       $('#photoNote').hidden = !noPh.length;
-      if (noPh.length) $('#photoNote').innerHTML = '<i data-lucide="camera"></i><span>최근 행사 <b>' + E(noPh[0].title) + '</b>' + (noPh.length > 1 ? ' 외 ' + (noPh.length - 1) + '건' : '') + '의 현장 사진을 올려 주세요.</span><button class="btn btn-k btn-s" data-photo="' + noPh[0].id + '" style="margin-left:auto">사진 올리기</button>';
+      if (noPh.length) $('#photoNote').innerHTML = '<i data-lucide="camera"></i><span><b>' + E(noPh[0].title) + '</b>' + (noPh.length > 1 ? ' 외 ' + (noPh.length - 1) + '건' : '') + '의 현장 후기를 남겨 주세요. 사진과 분위기 몇 줄이면 돼요.</span><button class="btn btn-k btn-s" data-photo="' + noPh[0].id + '" style="margin-left:auto">현장 후기 올리기</button>';
       var needInfo = !I.hasTaxInfo(a) && I.selectedJobs(a.id).length;
       $('#infoNote').hidden = !needInfo;
       if (needInfo) $('#infoNote').innerHTML = '<i data-lucide="id-card"></i><span>선정을 축하드려요. 정산금을 받으려면 <b>정산 정보</b>를 등록해 주세요. 등록 전까지 지급이 보류됩니다.</span><button class="btn btn-k btn-s" data-goinfo style="margin-left:auto">지금 등록</button>';
@@ -141,58 +141,90 @@
     function photoCell(j, p) {
       if (p.s !== 'selected') return '<small class="muted">-</small>';
       if (j.start > I.today) return '<small class="muted">행사 당일부터</small>';
-      var n = I.photosOf(j.id, me).length;
-      return '<button class="btn btn-' + (n ? 'o' : 'y') + ' btn-s" data-photo="' + j.id + '"><i data-lucide="camera"></i>' + (n ? n + '장 · 더 올리기' : '사진 올리기') + '</button>';
+      var po = I.postOf(j.id, me);
+      return po ? '<span class="pc-st">' + I.badge(I.POST_STATE, po.state) + '<button class="btn btn-o btn-s" data-photo="' + j.id + '">수정</button></span>'
+                : '<button class="btn btn-y btn-s" data-photo="' + j.id + '"><i data-lucide="camera"></i>현장 후기 올리기</button>';
     }
+    /* 현장 후기 작성: 사진 + 분위기 글 → 운영자 검수 → 홈페이지 행사 후기 */
     function photoModal(jid) {
-      var j = I.job(jid), picked = [];
-      var mine = function () { return I.photosOf(jid, me); };
-      var list = function () {
-        return mine().map(function (p) { return '<figure class="up"><img src="' + I.photoSrc(p) + '" alt="">' + I.badge(I.PHOTO_STATE, p.state) + (p.state === 'pending' || p.state === 'private' ? '<button type="button" class="del" data-del="' + p.id + '" aria-label="삭제">×</button>' : '') + '</figure>'; }).join('');
-      };
-      I.modal('<div class="mh"><h3>현장 사진 올리기</h3><button class="x" data-close aria-label="닫기"><i data-lucide="x"></i></button></div>' +
-        '<p class="muted" style="margin-bottom:12px"><b>' + E(j.title) + '</b> · ' + I.period(j) + '</p>' +
+      var j = I.job(jid), a = I.artist(me), po = I.postOf(jid, me), sk = I.skill(j.skill);
+      var MOODS = ['기업행사', '대학축제', '지역축제', '웨딩', '가족', '어린이', '송년회', '파티', '실내', '야외'];
+      var GUESTS = ['50명 이하', '50~100명', '100~200명', '200명 이상'];
+      var HINTS = [['공간', '부스는 '], ['손님 반응', '손님들은 '], ['인기 도안·화풍', '가장 많이 요청받은 건 '], ['기억에 남는 순간', '기억에 남는 순간은 ']];
+      var shots = po ? po.photos.slice() : [], MAX = 10;
+      var yrs = (a.skills.filter(function (s) { return s.k === j.skill; })[0] || {}).since;
+      var defTitle = j.title.replace(/^\S*OO\S*\s*/, '').trim();
+      I.modal('<div class="mh"><div><h3>' + (po ? '현장 후기 수정' : '현장 후기 올리기') + '</h3><p class="muted">' + E(j.title) + ' · ' + I.period(j) + '</p></div><button class="x" data-close aria-label="닫기"><i data-lucide="x"></i></button></div>' +
         (j.photoOk
-          ? '<p class="demo" style="background:var(--ok-bg);color:var(--ok)"><i data-lucide="badge-check"></i>고객이 현장 사진 홍보 활용에 동의한 행사예요. 올린 사진은 운영자 검수 후 홈페이지·SNS에 실릴 수 있어요.</p>'
-          : '<p class="demo" style="background:var(--bad-bg);color:var(--bad)"><i data-lucide="lock"></i>고객이 홍보 활용에 동의하지 않은 행사예요. 사진은 내부 기록용으로만 보관되고 외부에 공개되지 않아요.</p>') +
-        '<div class="ups" id="upMine">' + list() + '</div>' +
-        '<form class="form" id="upF"><label class="drop"><input type="file" id="upFile" accept="image/*" multiple><i data-lucide="image-plus"></i><b>사진 고르기</b><small>여러 장 한 번에 · 장당 10MB 이하</small></label>' +
-        '<div class="ups" id="upNew"></div>' +
-        '<ul class="tips"><li>완성 작품, 부스 전경, 작업하는 모습 위주로 찍어 주세요.</li><li>얼굴이 드러난 손님 사진은 촬영 전에 게시 동의를 받아 주세요. 어린이는 보호자 동의가 필요해요.</li><li>행사장 내부 자료, 다른 손님의 개인정보가 보이는 사진은 피해 주세요.</li></ul>' +
-        '<label class="ck"><input type="checkbox" id="upAgree" required>사진에 나온 분들께 촬영·게시 동의를 받았어요. (필수)</label>' +
-        '<div class="mf"><button type="button" class="btn btn-o" data-close>닫기</button><button class="btn btn-y" type="submit" id="upGo" disabled><i data-lucide="upload"></i>올리기</button></div></form>',
+          ? '<p class="demo" style="background:var(--ok-bg);color:var(--ok)"><i data-lucide="badge-check"></i><span>고객이 홍보 활용에 동의한 행사예요. 운영자 확인 후 홈페이지 <b>행사 후기 › 현장 스케치</b>에 실려요.' + (po && po.state === 'published' ? ' 수정하면 다시 확인을 거쳐요.' : '') + '</span></p>'
+          : '<p class="demo" style="background:var(--bad-bg);color:var(--bad)"><i data-lucide="lock"></i>고객이 홍보 활용에 동의하지 않은 행사예요. 홈페이지에는 실리지 않고 내부 기록으로만 보관돼요.</p>') +
+        '<div class="pw"><form class="form" id="upF" novalidate>' +
+        '<div class="fld"><span class="lb">현장 사진 <i>*</i> <small class="muted" id="upCnt"></small></span><div class="ups up-edit" id="upList"></div>' +
+        '<label class="drop"><input type="file" id="upFile" accept="image/*" multiple><i data-lucide="image-plus"></i><b>사진 추가</b><small>최대 10장 · 첫 번째 사진이 대표 사진이 돼요</small></label></div>' +
+        '<div class="fld"><label for="upT">제목 <i>*</i></label><input class="inp" id="upT" maxlength="40" required placeholder="예) 임직원 가족의 날 캐리커처" value="' + E(po ? po.title : defTitle) + '"><p class="help">업체명은 빼고 적어 주세요. 홈페이지에는 업체명과 정확한 장소가 나오지 않아요.</p></div>' +
+        '<div class="fld"><label for="upM">현장 분위기 <i>*</i> <small class="muted" id="upMc"></small></label>' +
+        '<div class="hints">' + HINTS.map(function (h) { return '<button type="button" class="hint" data-hint="' + h[1] + '">+ ' + h[0] + '</button>'; }).join('') + '</div>' +
+        '<textarea class="inp" id="upM" rows="4" maxlength="300" required placeholder="공간, 손님 반응, 기억에 남는 순간을 2~3문장으로 적어 주세요.">' + (po ? E(po.mood) : '') + '</textarea></div>' +
+        '<div class="f2"><div class="fld"><span class="lb">분위기 태그 <small class="muted">최대 4개</small></span><div class="togs">' + MOODS.map(function (t) { return '<label class="tog"><input type="checkbox" name="upTag" value="' + t + '"' + (po && po.tags.indexOf(t) > -1 ? ' checked' : '') + '><span>#' + t + '</span></label>'; }).join('') + '</div></div>' +
+        '<div class="fld"><label for="upG">참여 손님 (대략)</label><select class="sel" id="upG">' + GUESTS.map(function (g) { return '<option' + (po && po.guests === g ? ' selected' : '') + '>' + g + '</option>'; }).join('') + '</select></div></div>' +
+        (j.photoOk ? '<label class="ck"><input type="checkbox" id="upAgree"' + (po ? ' checked' : '') + '>얼굴이 나온 손님에게 촬영·게시 동의를 받았어요. 어린이는 보호자 동의를 받았어요. (필수)</label>' : '') +
+        '<div class="mf">' + (po && po.state !== 'published' ? '<button type="button" class="btn btn-o" id="upDel">삭제</button>' : '') + '<button type="button" class="btn btn-o" data-close>취소</button><button class="btn btn-y" type="submit"><i data-lucide="send"></i>' + (j.photoOk ? (po ? '수정해서 다시 올리기' : '후기 올리기') : '내부 기록으로 저장') + '</button></div></form>' +
+        '<aside class="pv"><p class="pv-l">홈페이지 미리보기</p><article class="sk-card" id="upPv"></article></aside></div>',
         function (m, close) {
-          m.querySelector('.modal-card').classList.add('wide'); I.icons();
+          m.querySelector('.modal-card').classList.add('wide', 'xl'); I.icons();
           var shrink = function (file) {
             return new Promise(function (res) {
               var r = new FileReader();
-              r.onload = function () { var im = new Image(); im.onload = function () { var k = Math.min(1, 720 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', .72)); }; im.onerror = function () { res(null); }; im.src = r.result; };
+              r.onload = function () { var im = new Image(); im.onload = function () { var k = Math.min(1, 900 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', .72)); }; im.onerror = function () { res(null); }; im.src = r.result; };
               r.readAsDataURL(file);
             });
           };
+          var tags = function () { return $$('input[name=upTag]:checked', m).map(function (x) { return x.value; }); };
+          var preview = function () {
+            var t = $('#upT', m).value.trim() || '제목을 적어 주세요', md = $('#upM', m).value.trim() || '현장 분위기가 여기에 보여요.';
+            $('#upPv', m).innerHTML = '<div class="sk-ph">' + (shots[0] ? '<img src="' + I.src(shots[0]) + '" alt="">' : '<span>대표 사진</span>') + (shots.length > 1 ? '<span class="sk-n">+' + (shots.length - 1) + '</span>' : '') + '</div>' +
+              '<div class="sk-b"><p class="sk-m"><span>' + sk.n + '</span>' + E(j.region) + ' · ' + j.start.slice(0, 7).replace('-', '.') + '</p><h4>' + E(t) + '</h4><p class="sk-t">' + E(md) + '</p>' +
+              '<p class="sk-tags">' + tags().map(function (x) { return '#' + E(x); }).join(' ') + '</p><p class="sk-a">IUX 작가 · ' + sk.n + (yrs ? ' ' + I.years(yrs) + '년차' : '') + '</p></div>';
+            $('#upMc', m).textContent = $('#upM', m).value.length + ' / 300';
+          };
           var draw = function () {
-            $('#upNew', m).innerHTML = picked.map(function (src, i) { return '<figure class="up"><img src="' + src + '" alt=""><button type="button" class="del" data-rm="' + i + '" aria-label="빼기">×</button></figure>'; }).join('');
-            $('#upGo', m).disabled = !picked.length;
-            $('#upGo', m).innerHTML = '<i data-lucide="upload"></i>' + (picked.length ? picked.length + '장 올리기' : '올리기'); I.icons();
+            $('#upList', m).innerHTML = shots.map(function (s, i) { return '<figure class="up" draggable="false"><img src="' + I.src(s) + '" alt="">' + (i === 0 ? '<span class="cover-b">대표</span>' : '<button type="button" class="mk" data-cover="' + i + '">대표로</button>') + '<button type="button" class="del" data-rm="' + i + '" aria-label="사진 빼기">×</button></figure>'; }).join('');
+            $('#upCnt', m).textContent = shots.length + ' / ' + MAX;
+            $('.drop', m).hidden = shots.length >= MAX;
+            preview();
           };
           $('#upFile', m).onchange = function () {
-            var fs = [].slice.call(this.files).filter(function (f) { return /^image\//.test(f.type) && f.size <= 10 * 1024 * 1024; });
-            Promise.all(fs.map(shrink)).then(function (r) { picked = picked.concat(r.filter(Boolean)); draw(); });
+            var fs = [].slice.call(this.files).filter(function (f) { return /^image\//.test(f.type) && f.size <= 10 * 1024 * 1024; }).slice(0, MAX - shots.length);
+            Promise.all(fs.map(shrink)).then(function (r) { shots = shots.concat(r.filter(Boolean)); draw(); });
             this.value = '';
           };
           m.addEventListener('click', function (e) {
-            var rm = e.target.closest('[data-rm]'), dl = e.target.closest('[data-del]');
-            if (rm) { picked.splice(+rm.dataset.rm, 1); draw(); }
-            if (dl) { db().photos = db().photos.filter(function (p) { return p.id !== dl.dataset.del; }); I.save(); $('#upMine', m).innerHTML = list(); render(); I.toast('사진을 지웠어요.'); }
+            var rm = e.target.closest('[data-rm]'), cv = e.target.closest('[data-cover]'), h = e.target.closest('[data-hint]');
+            if (rm) { shots.splice(+rm.dataset.rm, 1); draw(); }
+            if (cv) { var x = shots.splice(+cv.dataset.cover, 1)[0]; shots.unshift(x); draw(); }
+            if (h) { var ta = $('#upM', m); ta.value = (ta.value.trim() ? ta.value.trim() + ' ' : '') + h.dataset.hint; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); preview(); }
           });
+          m.addEventListener('change', function (e) {
+            if (e.target.name === 'upTag' && tags().length > 4) { e.target.checked = false; I.toast('태그는 4개까지 고를 수 있어요.'); }
+            preview();
+          });
+          m.addEventListener('input', preview);
+          var del = $('#upDel', m);
+          if (del) del.onclick = function () { db().posts = db().posts.filter(function (x) { return x !== po; }); I.save(); close(); render(); I.toast('현장 후기를 지웠어요.'); };
           $('#upF', m).onsubmit = function (e) {
             e.preventDefault();
-            if (!$('#upAgree', m).checked) { $('#upAgree', m).reportValidity(); return; }
-            db().photos = db().photos || [];
-            picked.forEach(function (src, i) { db().photos.push({ id: 'p' + Date.now() + i, job: jid, a: me, src: src, at: I.stamp(), subj: true, state: j.photoOk ? 'pending' : 'private' }); });
-            I.save(); var n = picked.length; close(); render();
-            I.toast(n + '장을 올렸어요. ' + (j.photoOk ? '운영자 검수 후 게시 여부가 정해져요.' : '내부 기록용으로 보관됩니다.'));
+            if (!shots.length) { I.toast('사진을 1장 이상 올려 주세요.'); return; }
+            if (!$('#upT', m).value.trim()) { $('#upT', m).focus(); I.toast('제목을 적어 주세요.'); return; }
+            if ($('#upM', m).value.trim().length < 20) { $('#upM', m).focus(); I.toast('현장 분위기를 20자 이상 적어 주세요.'); return; }
+            if (j.photoOk && !$('#upAgree', m).checked) { I.toast('손님 촬영·게시 동의를 확인해 주세요.'); return; }
+            var row = po || { id: 's' + Date.now(), job: jid, a: me };
+            row.at = I.stamp(); row.subj = true; row.title = $('#upT', m).value.trim(); row.mood = $('#upM', m).value.trim();
+            row.tags = tags(); row.guests = $('#upG', m).value; row.photos = shots; row.state = j.photoOk ? 'pending' : 'private';
+            db().posts = db().posts || []; if (!po) db().posts.push(row);
+            I.save(); close(); render();
+            I.toast(j.photoOk ? '현장 후기를 올렸어요. 운영자 확인 후 홈페이지에 게시돼요.' : '내부 기록으로 저장했어요.');
           };
+          draw();
         });
     }
     function payTab() {

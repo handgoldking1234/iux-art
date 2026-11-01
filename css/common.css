@@ -1174,3 +1174,50 @@ img[width][height]{height:auto}
   .gal-page{padding-block:28px 72px}
   .gal-tabs{justify-content:flex-start;margin:18px -16px 20px}
 }
+/* 현장 스케치 카드 (홈페이지 행사 후기 · 작가 미리보기 공용) */
+.sk-card{display:flex;flex-direction:column;background:var(--card,var(--panel));border-radius:14px;overflow:hidden;min-width:0;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.sk-card:hover,.sk-card:focus-visible{transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.1);outline:none}
+.sk-ph{position:relative;aspect-ratio:4/3;background:var(--bg-soft,var(--soft));display:grid;place-items:center;color:var(--ink-3);font-size:13px;overflow:hidden}
+.sk-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sk-n{position:absolute;right:10px;bottom:10px;height:24px;padding:0 9px;border-radius:12px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;font-weight:800;display:inline-flex;align-items:center}
+.sk-b{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px}
+.sk-m{font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sk-m span{height:22px;padding:0 8px;border-radius:11px;background:var(--brand);color:#121212;font-weight:800;display:inline-flex;align-items:center}
+.sk-card h4,.sk-info h3{font-size:16px;font-weight:800;line-height:1.4}
+.sk-t{font-size:14px;color:var(--ink-2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.sk-tags{font-size:13px;font-weight:700;color:var(--brand-text,var(--brand-ink))}
+.sk-a{font-size:12px;color:var(--ink-3);margin-top:2px}
+.rv-jump{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.rv-jump a{height:42px;padding:0 18px;border-radius:21px;border:1px solid var(--line);display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:14px}
+.rv-jump a.on,.rv-jump a:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.rv-jump b{color:var(--brand)}
+#sketch,#client{scroll-margin-top:90px}
+.sk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.sk-empty{text-align:center;color:var(--ink-3);padding:60px 0}
+.sk-lb .sk-view{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:0;width:min(1080px,100%);max-height:calc(100vh - 40px);background:var(--bg);border-radius:16px;overflow:hidden}
+.sk-slide{position:relative;background:#000;display:grid;place-items:center;min-height:320px}
+.sk-slide img{max-width:100%;max-height:calc(100vh - 40px);object-fit:contain;display:block}
+.sk-slide .lb-nav{position:absolute;top:50%;transform:translateY(-50%)}
+.sk-slide .prev{left:12px}.sk-slide .next{right:12px}
+.sk-pg{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);height:24px;padding:0 10px;border-radius:12px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;font-weight:700;display:inline-flex;align-items:center}
+.sk-info{padding:28px 24px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;color:var(--ink)}
+.sk-info h3{font-size:20px}
+.sk-info>p:not([class]){font-size:15px;color:var(--ink-2);line-height:1.75}
+.sk-thumbs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:6px 0 8px}
+.sk-thumbs button{aspect-ratio:1;border-radius:8px;overflow:hidden;padding:0;opacity:.55;outline:2px solid transparent;transition:opacity .15s}
+.sk-thumbs button.on{opacity:1;outline-color:var(--brand)}
+.sk-thumbs img{width:100%;height:100%;object-fit:cover}
+.sk-info .btn{align-self:flex-start;margin-top:auto}
+@media (max-width:1024px){.sk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:720px){
+  .sk-grid{grid-template-columns:1fr;gap:14px}
+  .sk-lb{padding:0;align-items:stretch}
+  .sk-lb .sk-view{grid-template-columns:1fr;grid-template-rows:auto 1fr;max-height:none;height:100%;border-radius:0;overflow-y:auto}
+  .sk-slide{min-height:0;aspect-ratio:4/3}
+  .sk-slide img{max-height:100%}
+  .sk-info{padding:20px 16px 32px;overflow:visible}
+  .sk-lb .lb-x{z-index:2;background:rgba(0,0,0,.55)}
+}
+.sk-slide{height:min(680px,calc(100vh - 40px))}
+.sk-slide img{position:absolute;inset:0;width:100%;height:100%;max-height:none;object-fit:contain}
+@media (max-width:720px){.sk-slide{height:auto;aspect-ratio:4/3}}

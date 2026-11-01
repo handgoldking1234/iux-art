@@ -20,7 +20,7 @@
     var c = {
       jobs: d.jobs.filter(function (j) { return j.status === 'review'; }).length + d.quotes.length,
       artists: d.artists.filter(function (a) { return a.status === 'pending'; }).length,
-      photos: (d.photos || []).filter(function (p) { return p.state === 'pending'; }).length,
+      photos: (d.posts || []).filter(function (p) { return p.state === 'pending'; }).length,
       settle: I.settlements().filter(function (r) { return r.state === 'due' || r.state === 'needinfo'; }).length
     };
     Object.keys(c).forEach(function (k) {
@@ -200,7 +200,7 @@
           '<td>' + (rest ? '<span class="badge st-rest">휴식 대상</span>' : appState(p, j)) + (j.status === 'done' && p.s === 'selected' ? revCell(j, a) : '') + '</td></tr>';
       }).join('');
       box.innerHTML = '<div class="card jd">' +
-        '<div class="head"><div><p>' + I.badge(I.JOB_STATE, j.status) + ' <span class="chip">' + I.skill(j.skill).n + '</span> ' + (j.photoOk ? '<span class="badge st-ok">사진 홍보 동의</span>' : '<span class="badge st-done">사진 홍보 미동의</span>') + (I.photosOf(j.id).length ? ' <a class="chip" href="photos.html#' + j.id + '">현장 사진 ' + I.photosOf(j.id).length + '장</a>' : '') + '</p><h2 style="margin-top:8px">' + E(j.title) + '</h2><p class="muted" style="margin-top:2px">' + E(j.client) + ' · 공고 ' + j.posted + '</p></div>' +
+        '<div class="head"><div><p>' + I.badge(I.JOB_STATE, j.status) + ' <span class="chip">' + I.skill(j.skill).n + '</span> ' + (j.photoOk ? '<span class="badge st-ok">사진 홍보 동의</span>' : '<span class="badge st-done">사진 홍보 미동의</span>') + (I.postsOf(j.id).length ? ' <a class="chip" href="photos.html#' + j.id + '">현장 후기 ' + I.postsOf(j.id).length + '건</a>' : '') + '</p><h2 style="margin-top:8px">' + E(j.title) + '</h2><p class="muted" style="margin-top:2px">' + E(j.client) + ' · 공고 ' + j.posted + '</p></div>' +
         (editable ? '<div class="mode" role="group" aria-label="선정 방식"><button data-mode="fcfs" class="' + (j.mode === 'fcfs' ? 'on' : '') + '">선착순</button><button data-mode="pick" class="' + (j.mode === 'pick' ? 'on' : '') + '">직접 선택</button></div>' : '<span class="chip">' + (j.mode === 'fcfs' ? '선착순' : '직접 선택') + '</span>') + '</div>' +
         '<dl class="dl"><div><dt>행사 기간</dt><dd class="num">' + I.period(j) + ' (' + dd + '일)</dd></div><div><dt>진행 시간</dt><dd>' + j.time + ' · ' + j.hours + '시간</dd></div><div><dt>장소</dt><dd>' + E(j.place) + '</dd></div><div><dt>모집 마감</dt><dd class="num">' + j.deadline + '</dd></div>' +
         '<div><dt>섭외 작가</dt><dd>' + j.need + '명</dd></div><div><dt>작가 1인 지급</dt><dd class="num">' + I.won(per) + '</dd></div><div><dt>업체 견적</dt><dd class="num">' + I.won(j.fee) + '</dd></div><div><dt>예상 마진</dt><dd class="num">' + I.won(j.fee - per * j.need) + '</dd></div></dl>' +
@@ -706,16 +706,21 @@
     });
   })();
 
-  /* ---------- 현장 사진 ---------- */
+  /* ---------- 현장 후기 (작가 등록 → 검수 → 홈페이지 행사 후기) ---------- */
   function photos() {
     var jf = location.hash.slice(1), f = jf ? 'all' : 'pending';
-    var TABS = [['all', '전체'], ['pending', '검수 대기'], ['published', '홈페이지 게시'], ['hidden', '게시 안 함'], ['private', '내부 보관']];
-    function list() { return (db().photos || []).slice().sort(function (a, b) { return a.at < b.at ? 1 : -1; }); }
-    function find(id) { return db().photos.filter(function (p) { return p.id === id; })[0]; }
+    var TABS = [['all', '전체'], ['pending', '검수 대기'], ['published', '후기 게시'], ['hidden', '게시 안 함'], ['private', '내부 보관']];
+    function list() { return (db().posts || []).slice().sort(function (a, b) { return a.at < b.at ? 1 : -1; }); }
+    function find(id) { return db().posts.filter(function (p) { return p.id === id; })[0]; }
+    function acts(p, j) {
+      if (!j || !j.photoOk) return '<p class="lock"><i data-lucide="lock"></i>고객 미동의 · 게시 불가</p>';
+      return '<div class="act">' + (p.state !== 'published' ? '<button class="btn btn-y btn-s" data-pub="' + p.id + '"><i data-lucide="globe"></i>후기 게시</button>' : '') + (p.state !== 'hidden' ? '<button class="btn btn-o btn-s" data-hide="' + p.id + '">' + (p.state === 'published' ? '게시 내리기' : '게시 안 함') + '</button>' : '') + '</div>';
+    }
     function render() {
       var P = list(), cnt = function (s) { return P.filter(function (p) { return p.state === s; }).length; };
-      $('#phKpi').innerHTML = [['image', '전체 사진', P.length, '작가 업로드 누적'], ['hourglass', '검수 대기', cnt('pending'), '게시 여부를 정해 주세요'], ['globe', '홈페이지 게시', cnt('published'), '갤러리 행사 현장'], ['lock', '내부 보관', cnt('private'), '고객 홍보 미동의']].map(function (k, i) {
-        return '<div class="card kpi' + (i === 1 && k[2] ? ' hl' : '') + '"><p class="k"><i data-lucide="' + k[0] + '"></i>' + k[1] + '</p><p class="v">' + k[2] + '<small>장</small></p><p class="s">' + k[3] + '</p></div>';
+      var shots = P.reduce(function (s, p) { return s + p.photos.length; }, 0);
+      $('#phKpi').innerHTML = [['file-image', '전체 후기', P.length, '사진 ' + shots + '장'], ['hourglass', '검수 대기', cnt('pending'), '게시 여부를 정해 주세요'], ['globe', '후기 게시', cnt('published'), '홈페이지 행사 후기'], ['lock', '내부 보관', cnt('private'), '고객 홍보 미동의']].map(function (k, i) {
+        return '<div class="card kpi' + (i === 1 && k[2] ? ' hl' : '') + '"><p class="k"><i data-lucide="' + k[0] + '"></i>' + k[1] + '</p><p class="v">' + k[2] + '<small>건</small></p><p class="s">' + k[3] + '</p></div>';
       }).join('');
       $('#phTabs').innerHTML = TABS.map(function (t) { var n = t[0] === 'all' ? P.length : cnt(t[0]); return '<button class="tab' + (f === t[0] ? ' on' : '') + '" data-f="' + t[0] + '">' + t[1] + ' <span class="n">' + n + '</span></button>'; }).join('');
       var jobsW = db().jobs.filter(function (j) { return P.some(function (p) { return p.job === j.id; }); });
@@ -723,24 +728,33 @@
       var V = P.filter(function (p) { return (f === 'all' || p.state === f) && (!jf || p.job === jf); });
       $('#phGrid').innerHTML = V.length ? V.map(function (p) {
         var j = I.job(p.job), a = I.artist(p.a), ok = j && j.photoOk;
-        var act = !ok ? '<p class="lock"><i data-lucide="lock"></i>고객 미동의 · 게시 불가</p>'
-          : '<div class="act">' + (p.state !== 'published' ? '<button class="btn btn-y btn-s" data-pub="' + p.id + '"><i data-lucide="globe"></i>게시</button>' : '') + (p.state !== 'hidden' ? '<button class="btn btn-o btn-s" data-hide="' + p.id + '">' + (p.state === 'published' ? '게시 내리기' : '게시 안 함') + '</button>' : '') + '</div>';
-        return '<article class="phc"><button class="im" data-view="' + p.id + '" aria-label="크게 보기"><img src="' + I.photoSrc(p) + '" alt="' + E(j ? j.title : '') + ' 현장 사진" loading="lazy"><span class="tag">' + I.badge(I.PHOTO_STATE, p.state) + '</span></button>' +
-          '<div class="b"><b>' + E(j ? j.title : '-') + '</b><small>' + (a ? E(a.name) : '-') + ' · ' + p.at.slice(5) + '</small>' +
-          '<p class="cs">' + (ok ? '<span class="ok"><i data-lucide="check"></i>고객 홍보 동의</span>' : '<span class="no"><i data-lucide="x"></i>고객 홍보 미동의</span>') + (p.subj ? '<span class="ok"><i data-lucide="check"></i>당사자 동의</span>' : '') + '</p>' + act + '</div></article>';
-      }).join('') : '<div class="card empty-s" style="grid-column:1/-1"><i data-lucide="image"></i>해당하는 사진이 없어요.</div>';
+        return '<article class="phc"><button class="im" data-view="' + p.id + '" aria-label="후기 자세히 보기"><img src="' + I.src(p.photos[0]) + '" alt="" loading="lazy"><span class="tag">' + I.badge(I.POST_STATE, p.state) + '</span>' + (p.photos.length > 1 ? '<span class="cnt-b"><i data-lucide="images"></i>' + p.photos.length + '</span>' : '') + '</button>' +
+          '<div class="b"><b>' + E(p.title) + '</b><small>' + (a ? E(a.name) : '-') + ' · ' + (j ? E(j.title) : '-') + ' · ' + p.at.slice(5, 10) + '</small><p class="ex">' + E(p.mood) + '</p>' +
+          '<p class="cs">' + (ok ? '<span class="ok"><i data-lucide="check"></i>고객 홍보 동의</span>' : '<span class="no"><i data-lucide="x"></i>고객 홍보 미동의</span>') + (p.subj ? '<span class="ok"><i data-lucide="check"></i>손님 동의</span>' : '') + '</p>' + acts(p, j) + '</div></article>';
+      }).join('') : '<div class="card empty-s" style="grid-column:1/-1"><i data-lucide="image"></i>해당하는 현장 후기가 없어요.</div>';
       sideCounts(); I.icons();
+    }
+    function setState(id, st) {
+      var p = find(id), was = p.state; p.state = st; I.save(); render();
+      I.toast(st === 'published' ? '홈페이지 행사 후기에 게시했어요.' : was === 'published' ? '게시를 내렸어요.' : '게시하지 않기로 했어요.');
+    }
+    function view(id) {
+      var p = find(id), j = I.job(p.job), a = I.artist(p.a);
+      I.modal('<div class="mh"><div><h3>' + E(p.title) + '</h3><p class="muted">' + E(a.name) + ' 작가 · ' + E(j.title) + ' · ' + I.period(j) + ' · ' + E(j.place) + '</p></div><button class="x" data-close aria-label="닫기"><i data-lucide="x"></i></button></div>' +
+        '<div class="pv-shots">' + p.photos.map(function (s) { return '<img src="' + I.src(s) + '" alt="">'; }).join('') + '</div>' +
+        '<p style="margin-top:14px;line-height:1.7">' + E(p.mood) + '</p>' +
+        '<p class="muted" style="margin-top:8px">' + p.tags.map(function (t) { return '#' + E(t); }).join(' ') + ' · 손님 ' + E(p.guests) + ' · 등록 ' + p.at + '</p>' +
+        '<p class="note">홈페이지에는 업체명·정확한 장소·작가 실명 없이 <b>' + I.skill(j.skill).n + ' · ' + E(j.region) + ' · ' + j.start.slice(0, 7).replace('-', '.') + '</b>로 표시됩니다.</p>' +
+        '<div class="mf">' + (j.photoOk ? (p.state !== 'hidden' ? '<button class="btn btn-o" data-st="hidden">' + (p.state === 'published' ? '게시 내리기' : '게시 안 함') + '</button>' : '') + (p.state !== 'published' ? '<button class="btn btn-y" data-st="published"><i data-lucide="globe"></i>후기 게시</button>' : '') : '<p class="lock"><i data-lucide="lock"></i>고객 미동의 · 내부 보관</p>') + '</div>',
+        function (m, close) { m.querySelector('.modal-card').classList.add('wide'); I.icons(); $$('[data-st]', m).forEach(function (b) { b.onclick = function () { close(); setState(id, b.dataset.st); }; }); });
     }
     $('#phTabs').addEventListener('click', function (e) { var b = e.target.closest('[data-f]'); if (b) { f = b.dataset.f; render(); } });
     $('#phJob').onchange = function () { jf = this.value; history.replaceState(null, '', jf ? '#' + jf : location.pathname); render(); };
     $('#phGrid').addEventListener('click', function (e) {
       var pb = e.target.closest('[data-pub]'), hd = e.target.closest('[data-hide]'), vw = e.target.closest('[data-view]');
-      if (pb) { find(pb.dataset.pub).state = 'published'; I.save(); render(); I.toast('홈페이지에 게시했어요.'); }
-      if (hd) { var p = find(hd.dataset.hide), was = p.state; p.state = 'hidden'; I.save(); render(); I.toast(was === 'published' ? '게시를 내렸어요.' : '게시하지 않기로 했어요.'); }
-      if (vw) {
-        var q = find(vw.dataset.view), j = I.job(q.job), a = I.artist(q.a);
-        I.modal('<div class="mh"><h3>' + E(j.title) + '</h3><button class="x" data-close aria-label="닫기"><i data-lucide="x"></i></button></div><img class="ph-big" src="' + I.photoSrc(q) + '" alt=""><p class="muted" style="margin-top:10px">' + E(a.name) + ' 작가 · ' + q.at + ' · ' + E(j.client) + ' · ' + (j.photoOk ? '고객 홍보 동의' : '고객 홍보 미동의(내부 보관)') + '</p>', function (m) { m.querySelector('.modal-card').classList.add('wide'); I.icons(); });
-      }
+      if (pb) setState(pb.dataset.pub, 'published');
+      if (hd) setState(hd.dataset.hide, 'hidden');
+      if (vw) view(vw.dataset.view);
     });
     render();
   }

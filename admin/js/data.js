@@ -1,6 +1,6 @@
 /* IUX ART 관리자 — 시안용 샘플 데이터 (개발 단계에서 DB로 교체) */
 var IUX_SEED = {
-  version: 4,
+  version: 5,
 
   skills: [
     { k: 'caricature',   n: '캐리커처',          rate: 60000 },
@@ -98,17 +98,34 @@ var IUX_SEED = {
     'j3:a2': '2026-09-25', 'j4:a7': '2026-10-10', 'j5:a9': '2026-10-10', 'j6:a1': '2026-10-20'
   },
 
-  /* 작가가 올린 현장 사진
-     state: pending 검수 대기 / published 홈페이지 게시 / hidden 게시 안 함 / private 내부 보관(고객 미동의) */
-  photos: [
-    { id: 'p1', job: 'j1', a: 'a1', src: 'images/live-drawing-01.jpg', at: '2026-09-06 17:10', subj: true, state: 'published' },
-    { id: 'p2', job: 'j1', a: 'a4', src: 'images/site-family-01.jpg', at: '2026-09-06 17:32', subj: true, state: 'published' },
-    { id: 'p3', job: 'j2', a: 'a3', src: 'images/fp-live-bee.jpg', at: '2026-09-13 18:05', subj: true, state: 'published' },
-    { id: 'p4', job: 'j2', a: 'a6', src: 'images/fp-rainbow.jpg', at: '2026-09-13 18:40', subj: true, state: 'hidden' },
-    { id: 'p5', job: 'j6', a: 'a1', src: 'images/site-single-01.jpg', at: '2026-10-11 17:20', subj: true, state: 'private' },
-    { id: 'p6', job: 'j7', a: 'a7', src: 'images/live-drawing-02.jpg', at: '2026-10-18 18:30', subj: true, state: 'pending' },
-    { id: 'p7', job: 'j7', a: 'a1', src: 'images/site-friends-01.jpg', at: '2026-10-18 18:42', subj: true, state: 'pending' },
-    { id: 'p8', job: 'j8', a: 'a3', src: 'images/site-kid-01.jpg', at: '2026-10-24 12:20', subj: true, state: 'pending' }
+  /* 작가가 올린 현장 후기 (행사 1건 · 작가 1명당 1개)
+     state: pending 검수 대기 / published 후기 게시 / hidden 게시 안 함 / private 내부 보관(고객 홍보 미동의)
+     공개 화면에는 업체명·정확한 장소·작가 실명 없이 프로그램·지역·작가 연차만 노출 */
+  posts: [
+    { id: 's1', job: 'j1', a: 'a1', at: '2026-09-06 18:10', state: 'published', subj: true,
+      title: '추석 맞이 임직원 가족 캐리커처', guests: '100~200명', tags: ['기업행사', '가족', '실내'],
+      mood: '로비에 부스 두 개를 펴자마자 줄이 길게 섰어요. 아이 손을 잡고 온 가족이 많아서 4인 가족 그림을 제일 많이 그렸고, 완성된 그림을 받고 사진 찍는 모습이 끝날 때까지 이어졌습니다.',
+      photos: ['images/live-drawing-01.jpg', 'images/site-family-01.jpg', 'images/work-family-02.jpg'] },
+    { id: 's2', job: 'j2', a: 'a3', at: '2026-09-13 18:40', state: 'published', subj: true,
+      title: '가을 축제 부스 페이스페인팅', guests: '200명 이상', tags: ['대학축제', '야외', '학생'],
+      mood: '축제 메인 거리 한가운데 부스라 오후 내내 대기 줄이 끊이지 않았어요. 학생들은 학과 상징이나 별·하트 도안을 많이 골랐고, 친구끼리 같은 도안으로 맞추는 경우가 많았어요.',
+      photos: ['images/fp-live-bee.jpg', 'images/fp-rainbow.jpg', 'images/fp-cat.jpg', 'images/fp-stars.jpg'] },
+    { id: 's3', job: 'j4', a: 'a7', at: '2026-09-28 18:20', state: 'published', subj: true,
+      title: '이틀간의 구민 문화 축제 캐리커처', guests: '200명 이상', tags: ['지역축제', '야외', '가족'],
+      mood: '공원 잔디 광장에서 이틀 동안 진행했어요. 둘째 날은 첫날 그림을 받은 분이 가족을 데리고 다시 오시기도 했고, 어르신 부부 그림을 그려 드릴 때 반응이 특히 좋았습니다.',
+      photos: ['images/live-drawing-02.jpg', 'images/site-friends-01.jpg'] },
+    { id: 's4', job: 'j6', a: 'a1', at: '2026-10-11 17:20', state: 'private', subj: true,
+      title: 'VIP 고객 감사 행사', guests: '50명 이하', tags: ['VIP', '실내'],
+      mood: '라운지에서 차분한 분위기로 진행했어요. 한 분씩 대화를 나누며 천천히 그렸습니다.',
+      photos: ['images/site-single-01.jpg'] },
+    { id: 's5', job: 'j7', a: 'a7', at: '2026-10-18 18:30', state: 'pending', subj: true,
+      title: '창립 10주년 파티 라이브 드로잉', guests: '100~200명', tags: ['기업행사', '파티', '실내'],
+      mood: '루프탑 파티장에서 진행했어요. 팀 단위로 와서 단체 캐리커처를 요청하는 분이 많았고, 완성작을 사무실에 걸겠다며 좋아해 주셨어요.',
+      photos: ['images/work-single-02.jpg', 'images/work-couple-03.jpg'] },
+    { id: 's6', job: 'j8', a: 'a3', at: '2026-10-24 12:20', state: 'pending', subj: true,
+      title: '어린이집 가을 운동회 페이스페인팅', guests: '50~100명', tags: ['어린이', '야외', '운동회'],
+      mood: '운동장 그늘막 아래에서 진행했어요. 경기 중간 쉬는 시간에 아이들이 몰려와서 짧고 귀여운 도안 위주로 빠르게 그렸고, 부모님들 사진 촬영이 이어졌어요.',
+      photos: ['images/fp-octopus.jpg', 'images/site-kid-01.jpg', 'images/fp-jellyfish.jpg'] }
   ],
 
   /* 행사별 작가 평가 (운영자 내부용, 작가에게 공개하지 않음)

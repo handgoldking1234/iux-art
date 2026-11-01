@@ -348,6 +348,10 @@
       if (want) $$('input[name="prog"]', q).forEach(function (c) { if (c.value === want) c.checked = true; });
       setTimeout(function () { toast('희망 작가 ' + code + '를 요청 사항에 넣었어요.'); }, 400);
     }
+    /* 행사 후기 현장 스케치에서 '이 프로그램 견적 문의' → #p-caricature */
+    var pm = location.hash.match(/^#p-([a-z]+)$/);
+    var PN = { caricature: '캐리커처', facepainting: '페이스페인팅', calligraphy: '캘리그라피', tarot: '타로카드', balloon: '요술풍선 삐에로', henna: '헤나', hyukpil: '혁필화', handcare: '손마사지 & 네일아트', beads: '비즈공예' };
+    if (pm && PN[pm[1]]) $$('input[name="prog"]', q).forEach(function (c) { if (c.value === PN[pm[1]]) c.checked = true; });
     q.addEventListener('input', sum);
     q.addEventListener('change', sum);
     sum(); show(0, false);
