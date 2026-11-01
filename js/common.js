@@ -338,6 +338,16 @@
       /* 작가 1명이 1시간에 약 15명 · 기본 3시간 기준 */
       $('#sumArtist').textContent = ppl ? '하루 약 ' + (ppl * 45).toLocaleString('ko-KR') + '명 (3시간 기준)' : '-';
     };
+    /* 작품 갤러리에서 '이 작가로 견적 문의' → #a-c07 */
+    var am = location.hash.match(/^#a-([a-z])-?(\d+)$/i);
+    if (am) {
+      var code = am[1].toUpperCase() + '-' + am[2];
+      var msg = q.querySelector('[name="msg"]');
+      if (msg && msg.value.indexOf(code) < 0) msg.value = '희망 작가: IUX 작가 ' + code + (msg.value ? '\n' + msg.value : '');
+      var want = { C: '캐리커처', F: '페이스페인팅', K: '캘리그라피' }[code[0]];
+      if (want) $$('input[name="prog"]', q).forEach(function (c) { if (c.value === want) c.checked = true; });
+      setTimeout(function () { toast('희망 작가 ' + code + '를 요청 사항에 넣었어요.'); }, 400);
+    }
     q.addEventListener('input', sum);
     q.addEventListener('change', sum);
     sum(); show(0, false);
