@@ -16,6 +16,22 @@
 | 기타 | `review.html`, `donation.html`, `quote.html`, `faq.html`, `login.html` |
 | 공통 | `css/common.css`, `js/common.js`, `images/` |
 
+## 관리자·작가 (시안)
+
+| 구분 | 경로 | 내용 |
+| --- | --- | --- |
+| 관리자 | `admin/index.html` | 대시보드 · 처리할 일 · 월별 매출/지급 |
+| | `admin/jobs.html` | 견적 문의 → 공고 등록, 신청 작가 선착순/직접 선정, 확정 시 알림톡·메일 |
+| | `admin/artists.html` | 작가 승인·중지, 기술 연차(자동), 나이(자동), 참여·연속 횟수, 휴식 대상 |
+| | `admin/notify.html` | 알림 템플릿 미리보기, 전송 기록, 직접 보내기 |
+| | `admin/settlement.html` | 작가료·교통비·3.3% 원천징수 계산, 지급 완료 처리 |
+| | `admin/stats.html` | 프로그램·지역별 행사, 작가 참여 순위, 월별 마진 |
+| | `admin/settings.html` | 연속 참여 휴식 규칙, 선정 방식, 채널, 단가·세율 |
+| 작가 | `artist/register.html` | 작가 등록 (기술·시작 연도·지역·생년월일·포트폴리오·정산 정보) |
+| | `artist/index.html` | 모집 공고 참석 신청, 내 일정, 정산 내역, 프로필 |
+
+예시 데이터는 `admin/js/data.js`에 있고, 화면에서 바꾼 내용은 브라우저 localStorage에만 저장됩니다. 개발 단계에서 DB·인증·카카오 알림톡·메일·이체 API로 교체합니다.
+
 ## 외부 리소스
 
 - 글꼴: Google Fonts (Figtree, Noto Sans KR, Nanum Pen Script)

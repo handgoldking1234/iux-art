@@ -1,0 +1,106 @@
+/* IUX ART 관리자 — 시안용 샘플 데이터 (개발 단계에서 DB로 교체) */
+var IUX_SEED = {
+  version: 1,
+
+  skills: [
+    { k: 'caricature',   n: '캐리커처',          rate: 60000 },
+    { k: 'facepainting', n: '페이스페인팅',      rate: 50000 },
+    { k: 'calligraphy',  n: '캘리그라피',        rate: 50000 },
+    { k: 'tarot',        n: '타로카드',          rate: 50000 },
+    { k: 'balloon',      n: '요술풍선 삐에로',   rate: 45000 },
+    { k: 'henna',        n: '헤나',              rate: 50000 },
+    { k: 'hyukpil',      n: '혁필화',            rate: 60000 },
+    { k: 'handcare',     n: '손마사지 & 네일아트', rate: 45000 },
+    { k: 'beads',        n: '비즈공예',          rate: 40000 }
+  ],
+
+  regions: ['서울', '경기 북부', '경기 남부', '인천', '강원', '충청·대전', '전라·광주', '경상·대구', '부산·울산', '제주'],
+
+  settings: {
+    restCount: 3,          // 연속 확정 N회 이상이면
+    restWindow: 30,        // 최근 N일 안의 연속만 계산
+    defaultMode: 'fcfs',   // fcfs 선착순 / pick 직접 선택
+    taxRate: 3.3,          // 프리랜서 원천징수율(%)
+    channels: { kakao: true, email: true },
+    autoNotice: true,      // 공고 등록 시 기술·지역이 맞는 작가에게 자동 알림
+    transportOutside: 30000 // 수도권 밖 교통비(1인·1일)
+  },
+
+  artists: [
+    { id: 'a1',  name: '강하늘', birth: '1990-04-12', phone: '010-2214-7781', email: 'haneul@example.com', regions: ['서울', '경기 남부'], skills: [{ k: 'caricature', since: 2015 }, { k: 'calligraphy', since: 2020 }], status: 'active', rating: 4.9, tax: 'freelancer', bank: '국민', account: '****-**-1234', kakao: true, mail: true, joined: '2024-03-02', bio: '기업 행사와 웨딩 위주로 활동합니다. 컬러 캐리커처 3분 완성.', portfolio: ['work-couple-01', 'work-family-02', 'work-parents'] },
+    { id: 'a2',  name: '윤솔',   birth: '1993-09-03', phone: '010-3381-0042', email: 'sol@example.com',    regions: ['서울', '인천'], skills: [{ k: 'calligraphy', since: 2017 }, { k: 'hyukpil', since: 2021 }], status: 'active', rating: 4.8, tax: 'freelancer', bank: '신한', account: '****-**-5521', kakao: true, mail: true, joined: '2024-04-18', bio: '웨딩 답례 엽서와 붓글씨 퍼포먼스 전문.', portfolio: ['work-family-01'] },
+    { id: 'a3',  name: '박모아', birth: '1996-01-25', phone: '010-5521-9902', email: 'moa@example.com',    regions: ['경기 북부', '서울'], skills: [{ k: 'facepainting', since: 2019 }, { k: 'henna', since: 2022 }], status: 'active', rating: 5.0, tax: 'freelancer', bank: '카카오뱅크', account: '****-**-7810', kakao: true, mail: false, joined: '2024-05-07', bio: '어린이 행사 경력 6년, 아이들 눈높이 진행.', portfolio: ['fp-rainbow', 'fp-cherry', 'fp-jellyfish'] },
+    { id: 'a4',  name: '최다온', birth: '1988-11-30', phone: '010-7712-3345', email: 'daon@example.com',   regions: ['경기 남부', '충청·대전'], skills: [{ k: 'caricature', since: 2016 }], status: 'active', rating: 4.7, tax: 'business', bank: '우리', account: '****-**-0091', kakao: true, mail: true, joined: '2024-03-15', bio: '대학 축제 다수, 흑백 스피드 캐리커처.', portfolio: ['work-single-02', 'work-sisters'] },
+    { id: 'a5',  name: '이새벽', birth: '1994-06-14', phone: '010-9120-4471', email: 'saebyeok@example.com', regions: ['서울'], skills: [{ k: 'calligraphy', since: 2018 }], status: 'active', rating: 4.6, tax: 'freelancer', bank: '하나', account: '****-**-3307', kakao: true, mail: true, joined: '2024-06-01', bio: '영문 캘리그라피 가능.', portfolio: ['work-single-01'] },
+    { id: 'a6',  name: '정유리', birth: '1998-03-08', phone: '010-4402-1188', email: 'yuri@example.com',   regions: ['서울', '경기 북부'], skills: [{ k: 'facepainting', since: 2021 }, { k: 'handcare', since: 2023 }], status: 'active', rating: 4.8, tax: 'freelancer', bank: '토스뱅크', account: '****-**-6624', kakao: true, mail: true, joined: '2024-07-11', bio: '글리터·헤나 도안 다수 보유.', portfolio: ['fp-stars', 'fp-cat'] },
+    { id: 'a7',  name: '한결',   birth: '1985-12-02', phone: '010-6630-2290', email: 'gyeol@example.com',  regions: ['인천', '서울'], skills: [{ k: 'caricature', since: 2012 }, { k: 'hyukpil', since: 2019 }], status: 'active', rating: 4.9, tax: 'business', bank: '농협', account: '****-**-4410', kakao: true, mail: true, joined: '2024-02-20', bio: '박람회·대형 행사 경력 14년.', portfolio: ['live-drawing-01', 'work-princess'] },
+    { id: 'a8',  name: '오가람', birth: '1979-08-21', phone: '010-2017-5503', email: 'garam@example.com',  regions: ['경상·대구', '부산·울산'], skills: [{ k: 'hyukpil', since: 2009 }, { k: 'calligraphy', since: 2011 }], status: 'active', rating: 4.9, tax: 'freelancer', bank: '대구', account: '****-**-8812', kakao: true, mail: true, joined: '2024-08-03', bio: '전통 혁필화 18년, 외국인 행사 다수.', portfolio: [] },
+    { id: 'a9',  name: '서보라', birth: '1997-05-19', phone: '010-8823-1167', email: 'bora@example.com',   regions: ['경기 남부'], skills: [{ k: 'facepainting', since: 2020 }, { k: 'balloon', since: 2022 }], status: 'active', rating: 4.7, tax: 'freelancer', bank: '국민', account: '****-**-2203', kakao: true, mail: true, joined: '2024-09-09', bio: '풍선 아트·버블쇼 가능.', portfolio: ['fp-octopus', 'fp-icecream'] },
+    { id: 'a10', name: '문채원', birth: '1992-02-11', phone: '010-3349-7720', email: 'chaewon@example.com', regions: ['서울', '경기 남부'], skills: [{ k: 'caricature', since: 2017 }, { k: 'tarot', since: 2021 }], status: 'active', rating: 4.8, tax: 'freelancer', bank: '신한', account: '****-**-9015', kakao: true, mail: true, joined: '2024-03-28', bio: '수채 캐리커처, 송년회 타로 부스 운영.', portfolio: ['work-couple-02', 'work-family-03'] },
+    { id: 'a11', name: '배나리', birth: '1999-10-05', phone: '010-5590-3381', email: 'nari@example.com',   regions: ['서울', '인천'], skills: [{ k: 'beads', since: 2022 }, { k: 'handcare', since: 2023 }], status: 'active', rating: 4.6, tax: 'freelancer', bank: '카카오뱅크', account: '****-**-1477', kakao: true, mail: false, joined: '2025-01-14', bio: '어린이 비즈공예 체험 강사.', portfolio: [] },
+    { id: 'a12', name: '임도윤', birth: '1991-07-27', phone: '010-7781-6654', email: 'doyun@example.com',  regions: ['경기 북부', '강원'], skills: [{ k: 'caricature', since: 2018 }, { k: 'balloon', since: 2020 }], status: 'active', rating: 4.5, tax: 'freelancer', bank: '우리', account: '****-**-3390', kakao: true, mail: true, joined: '2024-10-22', bio: '어린이 행사 흑백 캐리커처, 풍선 아트.', portfolio: ['site-kid-01'] },
+    { id: 'a13', name: '조하린', birth: '2000-12-14', phone: '010-2245-8890', email: 'harin@example.com',  regions: ['전라·광주'], skills: [{ k: 'tarot', since: 2022 }], status: 'paused', rating: 4.4, tax: 'freelancer', bank: '광주', account: '****-**-6120', kakao: true, mail: true, joined: '2025-03-03', bio: '휴학 중 일시 활동 중지.', portfolio: [] },
+    { id: 'a14', name: '송지우', birth: '1995-03-30', phone: '010-6612-4409', email: 'jiwoo@example.com',  regions: ['서울', '경기 북부'], skills: [{ k: 'facepainting', since: 2023 }, { k: 'henna', since: 2023 }], status: 'pending', rating: 0, tax: 'freelancer', bank: '국민', account: '****-**-5512', kakao: true, mail: true, joined: '2026-10-29', bio: '페이스페인팅 자격증 취득 후 첫 등록입니다.', portfolio: ['fp-live-bee', 'fp-dragonfly'] }
+  ],
+
+  /* 공고 상태: open 모집 중 / review 선정 대기(마감) / confirmed 확정 / done 행사 완료 */
+  jobs: [
+    { id: 'j1',  title: 'OO전자 추석 가족 행사', client: 'OO전자 인사팀', skill: 'caricature', start: '2026-09-06', end: '2026-09-06', time: '13:00~16:00', hours: 3, place: '경기 수원 OO전자 사옥', region: '경기 남부', need: 2, mode: 'fcfs', status: 'done', posted: '2026-08-25 10:00', deadline: '2026-08-29 18:00', fee: 1300000,
+      apps: [{ a: 'a1', at: '2026-08-25 10:04', s: 'selected' }, { a: 'a4', at: '2026-08-25 10:09', s: 'selected' }, { a: 'a10', at: '2026-08-25 11:30', s: 'rejected' }] },
+    { id: 'j2',  title: 'OO대학교 가을 축제 1일차', client: 'OO대학교 총학생회', skill: 'facepainting', start: '2026-09-13', end: '2026-09-13', time: '12:00~17:00', hours: 5, place: '서울 성북구 OO대학교', region: '서울', need: 2, mode: 'pick', status: 'done', posted: '2026-09-01 09:30', deadline: '2026-09-05 18:00', fee: 1650000,
+      apps: [{ a: 'a3', at: '2026-09-01 09:41', s: 'selected' }, { a: 'a6', at: '2026-09-01 10:02', s: 'selected' }, { a: 'a9', at: '2026-09-01 12:20', s: 'rejected' }] },
+    { id: 'j3',  title: '웨딩홀 하객 답례 캘리그라피', client: 'OO웨딩홀', skill: 'calligraphy', start: '2026-09-20', end: '2026-09-20', time: '11:00~14:00', hours: 3, place: '서울 강남구 OO웨딩홀', region: '서울', need: 1, mode: 'pick', status: 'done', posted: '2026-09-08 14:00', deadline: '2026-09-12 18:00', fee: 600000,
+      apps: [{ a: 'a2', at: '2026-09-08 14:10', s: 'selected' }, { a: 'a5', at: '2026-09-08 15:22', s: 'rejected' }] },
+    { id: 'j4',  title: '구청 가을 문화 축제', client: 'OO구청 문화체육과', skill: 'caricature', start: '2026-09-27', end: '2026-09-28', time: '11:00~17:00', hours: 6, place: '인천 연수구 OO공원', region: '인천', need: 2, mode: 'fcfs', status: 'done', posted: '2026-09-14 10:00', deadline: '2026-09-19 18:00', fee: 4800000,
+      apps: [{ a: 'a7', at: '2026-09-14 10:01', s: 'selected' }, { a: 'a10', at: '2026-09-14 10:06', s: 'selected' }, { a: 'a12', at: '2026-09-14 10:40', s: 'rejected' }] },
+    { id: 'j5',  title: '쇼핑몰 주말 가족 이벤트', client: 'OO몰 마케팅팀', skill: 'balloon', start: '2026-10-04', end: '2026-10-04', time: '13:00~17:00', hours: 4, place: '경기 하남 OO몰', region: '경기 남부', need: 1, mode: 'fcfs', status: 'done', posted: '2026-09-22 11:00', deadline: '2026-09-26 18:00', fee: 750000,
+      apps: [{ a: 'a9', at: '2026-09-22 11:03', s: 'selected' }, { a: 'a12', at: '2026-09-22 11:15', s: 'rejected' }] },
+    { id: 'j6',  title: 'OO은행 VIP 고객 감사 행사', client: 'OO은행 강남지점', skill: 'caricature', start: '2026-10-11', end: '2026-10-11', time: '14:00~17:00', hours: 3, place: '서울 강남구 OO은행', region: '서울', need: 1, mode: 'pick', status: 'done', posted: '2026-09-29 10:00', deadline: '2026-10-02 18:00', fee: 650000,
+      apps: [{ a: 'a1', at: '2026-09-29 10:20', s: 'selected' }, { a: 'a10', at: '2026-09-29 11:02', s: 'rejected' }] },
+    { id: 'j7',  title: 'IT기업 창립 10주년 행사', client: 'OO테크 피플팀', skill: 'caricature', start: '2026-10-18', end: '2026-10-18', time: '15:00~18:00', hours: 3, place: '서울 성동구 OO타워', region: '서울', need: 2, mode: 'fcfs', status: 'done', posted: '2026-10-05 09:00', deadline: '2026-10-09 18:00', fee: 1300000,
+      apps: [{ a: 'a1', at: '2026-10-05 09:02', s: 'selected' }, { a: 'a7', at: '2026-10-05 09:05', s: 'selected' }, { a: 'a4', at: '2026-10-05 09:31', s: 'rejected' }] },
+    { id: 'j8',  title: '어린이집 가을 운동회', client: 'OO어린이집', skill: 'facepainting', start: '2026-10-24', end: '2026-10-24', time: '10:00~12:00', hours: 2, place: '경기 고양 OO초등학교 운동장', region: '경기 북부', need: 1, mode: 'fcfs', status: 'done', posted: '2026-10-12 10:00', deadline: '2026-10-16 18:00', fee: 350000,
+      apps: [{ a: 'a3', at: '2026-10-12 10:02', s: 'selected' }, { a: 'a6', at: '2026-10-12 10:11', s: 'rejected' }] },
+    { id: 'j9',  title: '호텔 웨딩 애프터파티', client: 'OO호텔 연회팀', skill: 'caricature', start: '2026-10-25', end: '2026-10-25', time: '18:00~21:00', hours: 3, place: '서울 중구 OO호텔', region: '서울', need: 1, mode: 'pick', status: 'done', posted: '2026-10-13 15:00', deadline: '2026-10-17 18:00', fee: 700000,
+      apps: [{ a: 'a1', at: '2026-10-13 15:05', s: 'selected' }, { a: 'a10', at: '2026-10-13 16:40', s: 'rejected' }] },
+    { id: 'j10', title: '증권사 송년회 2부', client: 'OO증권 총무팀', skill: 'tarot', start: '2026-11-07', end: '2026-11-07', time: '19:00~22:00', hours: 3, place: '서울 영등포구 OO컨벤션', region: '서울', need: 1, mode: 'pick', status: 'confirmed', posted: '2026-10-20 10:00', deadline: '2026-10-24 18:00', fee: 600000,
+      apps: [{ a: 'a10', at: '2026-10-20 10:12', s: 'selected' }] },
+    { id: 'j11', title: '외국인 유학생 한국문화 체험', client: 'OO대학교 국제처', skill: 'hyukpil', start: '2026-11-14', end: '2026-11-14', time: '13:00~16:00', hours: 3, place: '서울 동대문구 OO대학교', region: '서울', need: 1, mode: 'pick', status: 'confirmed', posted: '2026-10-22 11:00', deadline: '2026-10-27 18:00', fee: 650000,
+      apps: [{ a: 'a7', at: '2026-10-22 11:20', s: 'selected' }, { a: 'a2', at: '2026-10-22 12:02', s: 'rejected' }] },
+    { id: 'j12', title: '제약회사 임직원 가족의 날', client: 'OO제약 인사팀', skill: 'caricature', start: '2026-11-08', end: '2026-11-08', time: '11:00~15:00', hours: 4, place: '경기 성남 OO제약 본사', region: '경기 남부', need: 2, mode: 'fcfs', status: 'review', posted: '2026-10-26 09:00', deadline: '2026-10-31 18:00', fee: 1750000,
+      apps: [{ a: 'a1', at: '2026-10-26 09:01', s: 'applied' }, { a: 'a4', at: '2026-10-26 09:07', s: 'applied' }, { a: 'a10', at: '2026-10-26 09:26', s: 'applied' }, { a: 'a12', at: '2026-10-26 13:40', s: 'applied' }] },
+    { id: 'j13', title: '아파트 단지 연말 축제', client: 'OO아파트 입주자대표회의', skill: 'facepainting', start: '2026-11-21', end: '2026-11-22', time: '13:00~17:00', hours: 4, place: '경기 파주 OO아파트 중앙광장', region: '경기 북부', need: 2, mode: 'fcfs', status: 'open', posted: '2026-10-30 10:00', deadline: '2026-11-10 18:00', fee: 2900000,
+      apps: [{ a: 'a6', at: '2026-10-30 10:03', s: 'applied' }, { a: 'a3', at: '2026-10-30 10:15', s: 'applied' }] },
+    { id: 'j14', title: '백화점 크리스마스 고객 이벤트', client: 'OO백화점 판촉팀', skill: 'balloon', start: '2026-12-19', end: '2026-12-20', time: '12:00~18:00', hours: 6, place: '서울 송파구 OO백화점', region: '서울', need: 2, mode: 'pick', status: 'open', posted: '2026-10-31 14:00', deadline: '2026-11-20 18:00', fee: 3500000,
+      apps: [{ a: 'a9', at: '2026-10-31 14:22', s: 'applied' }] },
+    { id: 'j15', title: '협회 신년회 손마사지 부스', client: 'OO협회 사무국', skill: 'handcare', start: '2027-01-09', end: '2027-01-09', time: '17:00~20:00', hours: 3, place: '서울 중구 OO호텔', region: '서울', need: 2, mode: 'fcfs', status: 'open', posted: '2026-11-01 09:00', deadline: '2026-12-15 18:00', fee: 900000,
+      apps: [] }
+  ],
+
+  /* 알림 전송 기록 (그룹 단위) */
+  logs: [
+    { at: '2026-11-01 09:00', ch: 'kakao', type: '공고 알림', jid: 'j15', to: ['a6', 'a11'], note: '손마사지 & 네일아트 · 서울' },
+    { at: '2026-10-31 14:00', ch: 'kakao', type: '공고 알림', jid: 'j14', to: ['a9', 'a12'], note: '요술풍선 삐에로 · 서울' },
+    { at: '2026-10-30 10:00', ch: 'kakao', type: '공고 알림', jid: 'j13', to: ['a3', 'a6', 'a9', 'a14'], note: '페이스페인팅 · 경기 북부' },
+    { at: '2026-10-30 10:00', ch: 'email', type: '공고 알림', jid: 'j13', to: ['a6', 'a9', 'a14'], note: '페이스페인팅 · 경기 북부' },
+    { at: '2026-10-27 18:10', ch: 'kakao', type: '선정 안내', jid: 'j11', to: ['a7'], note: '외국인 유학생 한국문화 체험' },
+    { at: '2026-10-27 18:10', ch: 'kakao', type: '미선정 안내', jid: 'j11', to: ['a2'], note: '외국인 유학생 한국문화 체험' },
+    { at: '2026-10-26 09:00', ch: 'kakao', type: '공고 알림', jid: 'j12', to: ['a1', 'a4', 'a7', 'a10', 'a12'], note: '캐리커처 · 경기 남부' },
+    { at: '2026-10-24 18:20', ch: 'kakao', type: '선정 안내', jid: 'j10', to: ['a10'], note: '증권사 송년회 2부' },
+    { at: '2026-10-24 18:20', ch: 'email', type: '선정 안내', jid: 'j10', to: ['a10'], note: '증권사 송년회 2부' },
+    { at: '2026-10-24 10:00', ch: 'kakao', type: '행사 리마인드', jid: 'j9', to: ['a1'], note: '내일 18:00 OO호텔' },
+    { at: '2026-10-10 15:00', ch: 'kakao', type: '정산 완료', jid: 'j6', to: ['a1'], note: '9월~10월 초 정산' }
+  ],
+
+  /* 지급 완료 처리된 정산 (키: 공고ID:작가ID) */
+  paid: {
+    'j1:a1': '2026-09-15', 'j1:a4': '2026-09-15', 'j2:a3': '2026-09-25', 'j2:a6': '2026-09-25',
+    'j3:a2': '2026-09-25', 'j4:a7': '2026-10-10', 'j4:a10': '2026-10-10', 'j5:a9': '2026-10-10', 'j6:a1': '2026-10-20'
+  },
+
+  /* 홈페이지 견적 문의 (공고로 전환 전) */
+  quotes: [
+    { id: 'q1', at: '2026-10-31 21:14', client: 'OO화학 총무팀', skill: 'caricature', start: '2026-12-12', end: '2026-12-12', time: '18:00~21:00', place: '서울 강서구 OO컨벤션', region: '서울', need: 3, memo: '송년회 2부, 예상 손님 150명' },
+    { id: 'q2', at: '2026-11-01 08:40', client: 'OO유치원', skill: 'balloon', start: '2026-12-23', end: '2026-12-23', time: '10:00~12:00', place: '경기 일산 OO유치원', region: '경기 북부', need: 1, memo: '크리스마스 파티, 원아 60명' }
+  ]
+};
