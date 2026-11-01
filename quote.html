@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>행사 견적 문의 | IUX ART</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="캐리커처·캘리그라피·페이스페인팅 출장 이벤트 견적 문의">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;700;800;900&family=Noto+Sans+KR:wght@400;500;700;800&family=Nanum+Pen+Script&display=swap">
+<link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+<header class="hd" id="hd">
+  <div class="wrap hd-in">
+    <a href="index.html" class="logo" aria-label="IUX ART 홈"><span class="logo-mark"><i><b></b><b></b><b></b></i></span>IUX ART</a>
+    <ul class="nav" id="nav">
+      <li><a href="about.html">회사소개 <i data-lucide="chevron-down"></i></a>
+        <ul class="sub"><li><a href="about.html">IUX ART 소개</a></li><li><a href="artists.html">작가 갤러리</a></li><li><a href="news.html">새소식</a></li></ul></li>
+      <li><a href="event-caricature.html">출장 이벤트 <i data-lucide="chevron-down"></i></a>
+        <ul class="sub"><li><a href="event-caricature.html">캐리커처</a></li><li><a href="event-caricature.html#digital">디지털 캐리커처</a></li><li><a href="event-calligraphy.html">캘리그라피</a></li><li><a href="event-facepainting.html">페이스페인팅</a></li></ul></li>
+      <li><a href="custom.html">주문제작 <i data-lucide="chevron-down"></i></a>
+        <ul class="sub"><li><a href="custom.html#family">가족·커플 기념 선물</a></li><li><a href="custom.html#kids">어린이집·유치원 단체</a></li><li><a href="custom.html#biz">기업·병원 기념품</a></li><li><a href="custom.html#logo">캐릭터 로고</a></li><li><a href="custom.html#pet">반려동물</a></li></ul></li>
+      <li><a href="edu.html">교육센터 <i data-lucide="chevron-down"></i></a>
+        <ul class="sub"><li><a href="edu.html">교육과정</a></li><li><a href="edu-apply.html">출장 강의 신청</a></li><li><a href="edu-qna.html">교육 문의</a></li></ul></li>
+      <li><a href="review.html">행사 후기</a></li>
+      <li><a href="donation.html">재능기부</a></li>
+    </ul>
+    <div class="hd-act">
+      <a href="login.html" class="login">로그인</a>
+      <a href="quote.html" class="btn btn-dark btn-sm">행사 견적 받기</a>
+      <button class="menu-btn" id="menuBtn" aria-label="메뉴 열기" aria-expanded="false"><i data-lucide="menu"></i></button>
+    </div>
+  </div>
+</header>
+<main>
+<section class="subhero center ">
+  <div class="wrap rv">
+    <nav class="crumb" aria-label="현재 위치"><a href="index.html">홈</a><i data-lucide="chevron-right"></i><span>행사 문의</span></nav>
+    <span class="eyebrow">Get a quote</span>
+    <h1>행사 견적 문의</h1>
+    <p class="lead" style="margin-inline:auto">3단계만 입력하시면 24시간 안에 프로그램 구성과 견적을 보내드립니다.</p>
+    
+  </div>
+</section>
+<section class="sec-sm"><div class="wrap with-aside">
+  <div>
+    <form id="quoteForm" class="rv" data-demo data-success="#quoteDone" novalidate>
+      <div class="stepper" aria-hidden="true"><span class="on"><i>1</i>프로그램</span><span><i>2</i>행사 정보</span><span><i>3</i>연락처</span></div>
+
+      <div class="qpane">
+        <h2>어떤 프로그램이 필요하세요?</h2><p class="sub-t">여러 개를 함께 선택할 수 있어요.</p>
+        <div class="pick"><label><input type="checkbox" name="prog" value="캐리커처"><span class="pc"><span class="ck"><i data-lucide="check"></i></span><i data-lucide="smile"></i><b>캐리커처</b><small>3분 완성 현장 캐리커처</small></span></label><label><input type="checkbox" name="prog" value="디지털 캐리커처"><span class="pc"><span class="ck"><i data-lucide="check"></i></span><i data-lucide="monitor-play"></i><b>디지털 캐리커처</b><small>대형 스크린 실시간 중계</small></span></label><label><input type="checkbox" name="prog" value="캘리그라피"><span class="pc"><span class="ck"><i data-lucide="check"></i></span><i data-lucide="pen-line"></i><b>캘리그라피</b><small>엽서·부채·에코백 손글씨</small></span></label><label><input type="checkbox" name="prog" value="페이스페인팅"><span class="pc"><span class="ck"><i data-lucide="check"></i></span><i data-lucide="sparkles"></i><b>페이스페인팅</b><small>어린이·축제 인기 프로그램</small></span></label><label><input type="checkbox" name="prog" value="현장 굿즈 제작"><span class="pc"><span class="ck"><i data-lucide="check"></i></span><i data-lucide="key-round"></i><b>현장 굿즈 제작</b><small>키링·액자 당일 제작</small></span></label><label><input type="checkbox" name="prog" value="아직 모르겠어요"><span class="pc"><span class="ck"><i data-lucide="check"></i></span><i data-lucide="message-circle-question"></i><b>아직 모르겠어요</b><small>상담 후 추천받을게요</small></span></label></div>
+        <div class="form-actions" style="margin-top:32px"><button type="button" class="btn btn-brand" data-next>다음 <i data-lucide="arrow-right"></i></button></div>
+      </div>
+
+      <div class="qpane form" hidden>
+        <div><h2>행사 정보를 알려주세요</h2><p class="sub-t" style="margin:0">정확하지 않아도 괜찮아요. 대략적인 내용으로 견적을 드립니다.</p></div>
+        <div class="row2">
+          <div class="field"><label for="q_type">행사 유형<i class="req">*</i></label><select id="q_type" name="evtype" required><option value="">선택해 주세요</option><option>기업 행사</option><option>대학 축제·학교 행사</option><option>웨딩·돌잔치</option><option>어린이 행사</option><option>지역 축제·관공서</option><option>매장 오픈·팝업</option><option>기타</option></select></div>
+          <div class="field"><label for="q_people">예상 참여 인원<i class="req">*</i></label><input id="q_people" name="people" type="number" min="1" required placeholder="100"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="q_date">행사 날짜<i class="req">*</i></label><input id="q_date" name="date" type="date" required></div>
+          <div class="field"><label for="q_time">진행 시간</label><input id="q_time" name="time" placeholder="예) 14:00 ~ 17:00"></div>
+        </div>
+        <div class="field"><label for="q_place">행사 장소<i class="req">*</i></label><input id="q_place" name="place" required placeholder="예) 서울 강남구 OO호텔 그랜드볼룸"><p class="help">실내·실외 여부도 함께 적어 주시면 준비에 도움이 돼요.</p></div>
+        <div class="form-actions"><button type="button" class="btn btn-ghost" data-prev>이전</button><button type="button" class="btn btn-brand" data-next>다음 <i data-lucide="arrow-right"></i></button></div>
+      </div>
+
+      <div class="qpane form" hidden>
+        <div><h2>견적을 받으실 연락처</h2><p class="sub-t" style="margin:0">담당 매니저가 직접 연락드립니다.</p></div>
+        <div class="row2">
+          <div class="field"><label for="q_org">회사·기관명</label><input id="q_org" name="org"></div>
+          <div class="field"><label for="q_name">담당자명<i class="req">*</i></label><input id="q_name" name="name" required></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="q_tel">연락처<i class="req">*</i></label><input id="q_tel" name="tel" type="tel" required placeholder="010-0000-0000"></div>
+          <div class="field"><label for="q_mail">이메일</label><input id="q_mail" name="mail" type="email" placeholder="견적서를 받을 메일"></div>
+        </div>
+        <div class="field"><label for="q_msg">추가 요청 사항</label><textarea id="q_msg" name="msg" placeholder="로고 인쇄, 원하는 작가, 예산 범위 등"></textarea></div>
+        <div class="agree"><p>수집 항목: 담당자명, 연락처, 이메일, 회사명 · 이용 목적: 행사 견적 상담 · 보관 기간: 상담 종료 후 1년</p>
+          <label class="check"><input type="checkbox" id="q_agree" required>개인정보 수집·이용에 동의합니다. (필수)</label></div>
+        <div class="form-actions"><button type="button" class="btn btn-ghost" data-prev>이전</button><button type="submit" class="btn btn-brand">견적 요청하기</button></div>
+      </div>
+    </form>
+    <div class="success" id="quoteDone" hidden><span class="ic"><i data-lucide="party-popper"></i></span><h2>견적 요청이 접수되었습니다</h2><p>담당 매니저가 일정을 확인한 뒤 24시간 안에 연락드릴게요. 급하시면 전화로 문의해 주세요.</p><div class="btns" style="justify-content:center"><a href="index.html" class="btn btn-ghost">홈으로</a><a href="review.html" class="btn btn-brand">행사 후기 보기</a></div></div>
+  </div>
+  <aside class="aside">
+    <h3>문의 요약</h3>
+    <dl><dt>프로그램</dt><dd id="sumProg">선택 전</dd><dt>행사 유형</dt><dd id="sum_evtype">-</dd><dt>날짜</dt><dd id="sum_date">-</dd><dt>시간</dt><dd id="sum_time">-</dd><dt>장소</dt><dd id="sum_place">-</dd><dt>인원</dt><dd id="sum_people">-</dd><dt>예상 작가</dt><dd id="sumArtist">-</dd></dl>
+    <div class="call">전화로 바로 상담<b>010-9033-1491</b>연중무휴 08:00 ~ 22:00</div>
+  </aside>
+</div></section>
+</main>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-top">
+      <a href="index.html" class="logo" aria-label="IUX ART 홈"><span class="logo-mark"><i><b></b><b></b><b></b></i></span>IUX ART</a>
+      <div><h4>회사소개</h4><ul><li><a href="about.html">IUX ART 소개</a></li><li><a href="artists.html">작가 갤러리</a></li><li><a href="news.html">새소식</a></li></ul></div>
+      <div><h4>출장 이벤트</h4><ul><li><a href="event-caricature.html">캐리커처</a></li><li><a href="event-caricature.html#digital">디지털 캐리커처</a></li><li><a href="event-calligraphy.html">캘리그라피</a></li><li><a href="event-facepainting.html">페이스페인팅</a></li></ul></div>
+      <div><h4>주문제작</h4><ul><li><a href="custom.html#family">기념 선물</a></li><li><a href="custom.html#kids">단체 선물</a></li><li><a href="custom.html#logo">캐릭터 로고</a></li><li><a href="custom.html#pet">반려동물</a></li></ul></div>
+      <div><h4>교육센터</h4><ul><li><a href="edu.html">교육과정</a></li><li><a href="edu-apply.html">출장 강의 신청</a></li><li><a href="edu-qna.html">교육 문의</a></li></ul></div>
+      <div><h4>고객지원</h4><ul><li><a href="quote.html">행사 문의</a></li><li><a href="faq.html">자주 묻는 질문</a></li><li><a href="review.html">행사 후기</a></li><li><a href="donation.html">재능기부</a></li></ul></div>
+    </div>
+    <div class="ft-bot">
+      <address>
+        <b>고객센터 010-9033-1491</b> (연중무휴 08:00~22:00)<br>
+        이메일 hello@iuxart.co.kr · 세금계산서 발행 가능<br>
+        상호 IUX ART(아이유엑스 아트) · 대표 홍길동 · 사업자등록번호 000-00-00000 · 서울특별시 OO구 OO로 00<br>
+        © 2026 IUX ART. All rights reserved.
+      </address>
+      <div class="sns"><a href="#" aria-label="인스타그램"><i data-lucide="instagram"></i></a><a href="#" aria-label="유튜브"><i data-lucide="youtube"></i></a><a href="#" aria-label="블로그"><i data-lucide="book-open"></i></a><a href="#" aria-label="카카오톡 채널"><i data-lucide="message-square"></i></a></div>
+    </div>
+  </div>
+</footer>
+
+<a href="quote.html" class="fab" aria-label="행사 상담 문의"><i data-lucide="message-circle"></i></a>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="js/common.js"></script>
+</body>
+</html>

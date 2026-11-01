@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>작가 갤러리 | IUX ART</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="IUX ART 소속 캐리커처·캘리그라피·페이스페인팅 작가">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;700;800;900&family=Noto+Sans+KR:wght@400;500;700;800&family=Nanum+Pen+Script&display=swap">
+<link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+<header class="hd" id="hd">
+  <div class="wrap hd-in">
+    <a href="index.html" class="logo" aria-label="IUX ART 홈"><span class="logo-mark"><i><b></b><b></b><b></b></i></span>IUX ART</a>
+    <ul class="nav" id="nav">
+      <li class="on"><a href="about.html">회사소개 <i data-lucide="chevron-down"></i></a>
+        <ul class="sub"><li><a href="about.html">IUX ART 소개</a></li><li><a href="artists.html">작가 갤러리</a></li><li><a href="news.html">새소식</a></li></ul></li>
+      <li><a href="event-caricature.html">출장 이벤트 <i data-lucide="chevron-down"></i></a>
+        <ul class="sub"><li><a href="event-caricature.html">캐리커처</a></li><li><a href="event-caricature.html#digital">디지털 캐리커처</a></li><li><a href="event-calligraphy.html">캘리그라피</a></li><li><a href="event-facepainting.html">페이스페인팅</a></li></ul></li>
+      <li><a href="custom.html">주문제작 <i data-lucide="chevron-down"></i></a>
+        <ul class="sub"><li><a href="custom.html#family">가족·커플 기념 선물</a></li><li><a href="custom.html#kids">어린이집·유치원 단체</a></li><li><a href="custom.html#biz">기업·병원 기념품</a></li><li><a href="custom.html#logo">캐릭터 로고</a></li><li><a href="custom.html#pet">반려동물</a></li></ul></li>
+      <li><a href="edu.html">교육센터 <i data-lucide="chevron-down"></i></a>
+        <ul class="sub"><li><a href="edu.html">교육과정</a></li><li><a href="edu-apply.html">출장 강의 신청</a></li><li><a href="edu-qna.html">교육 문의</a></li></ul></li>
+      <li><a href="review.html">행사 후기</a></li>
+      <li><a href="donation.html">재능기부</a></li>
+    </ul>
+    <div class="hd-act">
+      <a href="login.html" class="login">로그인</a>
+      <a href="quote.html" class="btn btn-dark btn-sm">행사 견적 받기</a>
+      <button class="menu-btn" id="menuBtn" aria-label="메뉴 열기" aria-expanded="false"><i data-lucide="menu"></i></button>
+    </div>
+  </div>
+</header>
+<main>
+<section class="subhero center ">
+  <div class="wrap rv">
+    <nav class="crumb" aria-label="현재 위치"><a href="index.html">홈</a><i data-lucide="chevron-right"></i><a href="about.html">회사소개</a><i data-lucide="chevron-right"></i><span>작가 갤러리</span></nav>
+    <span class="eyebrow">Artists</span>
+    <h1>행사를 빛내는<br><em>186명의 작가</em></h1>
+    <p class="lead" style="margin-inline:auto">모든 작가는 현장 실기 테스트와 서비스 교육을 거쳐 활동합니다. 마음에 드는 작가를 지정해 예약할 수도 있어요.</p>
+    
+  </div>
+</section>
+<section class="sec-sm"><div class="wrap">
+  <div class="toolbar"><div class="tabs" data-filter="#artistGrid"><button class="tab on" data-f="all">전체</button><button class="tab" data-f="caricature">캐리커처</button><button class="tab" data-f="calligraphy">캘리그라피</button><button class="tab" data-f="face">페이스페인팅</button></div><span class="count">작가 <b data-count-of="#artistGrid">12</b>명</span></div>
+  <div class="agrid" id="artistGrid"><a href="quote.html" class="acard" data-cat="caricature"><div class="av g1">하늘</div><span class="play"><i data-lucide="arrow-up-right"></i></span><h3>강하늘</h3><p class="role">캐리커처 · 디지털 · 경력 12년</p><div class="tags"><span>기업 행사</span><span>디지털 중계</span></div></a>
+<a href="quote.html" class="acard" data-cat="calligraphy"><div class="av g3">솔</div><span class="play"><i data-lucide="arrow-up-right"></i></span><h3>윤솔</h3><p class="role">캘리그라피 · 경력 9년</p><div class="tags"><span>웨딩</span><span>붓글씨 퍼포먼스</span></div></a>
+<a href="quote.html" class="acard" data-cat="face"><div class="av g5">모아</div><span class="play"><i data-lucide="arrow-up-right"></i></span><h3>박모아</h3><p class="role">페이스페인팅 · 경력 7년</p><div class="tags"><span>어린이날</span><span>할로윈</span></div></a>
+<a href="quote.html" class="acard" data-cat="caricature"><div class="av g2">다온</div><span class="play"><i data-lucide="arrow-up-right"></i></span><h3>최다온</h3><p class="role">캐리커처 · 경력 10년</p><div class="tags"><span>대학 축제</span><span>컬러</span></div></a>
+<a href="quote.html" class="acard" data-cat="calligraphy"><div class="av g4">새벽</div><span class="play"><i data-lucide="arrow-up-right"></i></span><h3>이새벽</h3><p class="role">캘리그라피 · 영문 · 경력 8년</p><div class="tags"><span>VIP 행사</span><span>영문 캘리</span></div></a>
+<a href="quote.html" class="acard" data-cat="face"><div class="av g1">유리</div><span class="play"><i data-lucide="arrow-up-right"></i></span><h3>정유리</h3><p class="role">페이스페인팅 · 헤나 · 경력 6년</p><div class="tags"><span>축제</span><span>헤나 타투</span></div></a>
+<a href="quote.html" class="acard" data-cat="caricature"><div class="av g3">결</div><span class="play"><i data-lucide="arrow-up-right"></i></span><h3>한결</h3><p class="role">캐리커처 · 디지털 · 경력 11년</p><div class="tags"><span>박람회</span><span>디지털 중계</span></div></a>
+<a href="quote.html" class="acard" data-cat="calligraphy"><div class="av g2">가람</div><span class="play"><i data-lucide="arrow-up-right"></i></span><h3>오가람</h3><p class="role">캘리그라피 · 서예 · 경력 15년</p><div class="tags"><span>전통 축제</span><span>한자</span></div></a>
+<a href="quote.html" class="acard" data-cat="face"><div class="av g4">보라</div><span class="play"><i data-lucide="arrow-up-right"></i></span><h3>서보라</h3><p class="role">페이스페인팅 · 경력 5년</p><div class="tags"><span>쇼핑몰</span><span>글리터</span></div></a>
+<a href="quote.html" class="acard" data-cat="caricature"><div class="av g5">채원</div><span class="play"><i data-lucide="arrow-up-right"></i></span><h3>문채원</h3><p class="role">캐리커처 · 수채화 · 경력 8년</p><div class="tags"><span>웨딩</span><span>수채 캐리커처</span></div></a>
+<a href="quote.html" class="acard" data-cat="calligraphy"><div class="av g1">나리</div><span class="play"><i data-lucide="arrow-up-right"></i></span><h3>배나리</h3><p class="role">디지털 캘리그라피 · 경력 6년</p><div class="tags"><span>브랜드 팝업</span><span>디지털</span></div></a>
+<a href="quote.html" class="acard" data-cat="caricature"><div class="av g2">도윤</div><span class="play"><i data-lucide="arrow-up-right"></i></span><h3>임도윤</h3><p class="role">캐리커처 · 경력 9년</p><div class="tags"><span>어린이 행사</span><span>흑백 스피드</span></div></a>
+</div>
+  <p class="note" style="text-align:center;margin-top:32px">작가 이름과 경력은 시안용 예시입니다.</p>
+</div></section>
+<section class="wrap" style="margin-top:40px">
+  <div class="cta rv">
+    <div class="confetti" aria-hidden="true"></div>
+    <span class="eyebrow">Next event</span>
+    <h2 style="margin-top:10px">원하는 작가로 예약하고 싶다면</h2>
+    <p>견적 문의 시 작가 이름을 남겨 주시면 일정을 먼저 확인해 드립니다.</p>
+    <a href="quote.html" class="btn btn-brand">작가 지정 문의 <i data-lucide="arrow-right"></i></a>
+  </div>
+</section>
+</main>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-top">
+      <a href="index.html" class="logo" aria-label="IUX ART 홈"><span class="logo-mark"><i><b></b><b></b><b></b></i></span>IUX ART</a>
+      <div><h4>회사소개</h4><ul><li><a href="about.html">IUX ART 소개</a></li><li><a href="artists.html">작가 갤러리</a></li><li><a href="news.html">새소식</a></li></ul></div>
+      <div><h4>출장 이벤트</h4><ul><li><a href="event-caricature.html">캐리커처</a></li><li><a href="event-caricature.html#digital">디지털 캐리커처</a></li><li><a href="event-calligraphy.html">캘리그라피</a></li><li><a href="event-facepainting.html">페이스페인팅</a></li></ul></div>
+      <div><h4>주문제작</h4><ul><li><a href="custom.html#family">기념 선물</a></li><li><a href="custom.html#kids">단체 선물</a></li><li><a href="custom.html#logo">캐릭터 로고</a></li><li><a href="custom.html#pet">반려동물</a></li></ul></div>
+      <div><h4>교육센터</h4><ul><li><a href="edu.html">교육과정</a></li><li><a href="edu-apply.html">출장 강의 신청</a></li><li><a href="edu-qna.html">교육 문의</a></li></ul></div>
+      <div><h4>고객지원</h4><ul><li><a href="quote.html">행사 문의</a></li><li><a href="faq.html">자주 묻는 질문</a></li><li><a href="review.html">행사 후기</a></li><li><a href="donation.html">재능기부</a></li></ul></div>
+    </div>
+    <div class="ft-bot">
+      <address>
+        <b>고객센터 010-9033-1491</b> (연중무휴 08:00~22:00)<br>
+        이메일 hello@iuxart.co.kr · 세금계산서 발행 가능<br>
+        상호 IUX ART(아이유엑스 아트) · 대표 홍길동 · 사업자등록번호 000-00-00000 · 서울특별시 OO구 OO로 00<br>
+        © 2026 IUX ART. All rights reserved.
+      </address>
+      <div class="sns"><a href="#" aria-label="인스타그램"><i data-lucide="instagram"></i></a><a href="#" aria-label="유튜브"><i data-lucide="youtube"></i></a><a href="#" aria-label="블로그"><i data-lucide="book-open"></i></a><a href="#" aria-label="카카오톡 채널"><i data-lucide="message-square"></i></a></div>
+    </div>
+  </div>
+</footer>
+
+<a href="quote.html" class="fab" aria-label="행사 상담 문의"><i data-lucide="message-circle"></i></a>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="js/common.js"></script>
+</body>
+</html>
