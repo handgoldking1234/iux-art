@@ -32,6 +32,28 @@
     </div>
   </aside>
   <main class="main">
+    <header class="hdr">
+      <p class="hdr-date" id="hdrDate"></p>
+      <div class="hdr-r">
+        <a class="hdr-ic" href="index.html" aria-label="처리할 일"><i data-lucide="bell"></i><span class="dot" id="hdrDot" hidden></span></a>
+        <div class="um" id="um">
+          <button type="button" class="um-btn" id="umBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="umMenu">
+            <span class="av">운영</span><span class="um-t"><b>홍길동</b><small>운영 관리자</small></span><i data-lucide="chevron-down" class="um-cv"></i>
+          </button>
+          <div class="um-menu" id="umMenu" role="menu" hidden>
+            <div class="um-head"><span class="av lg">운영</span><div><b>홍길동</b><small>admin@iuxart.co.kr</small><span class="badge st-ok" style="margin-top:6px">최고 관리자</span></div></div>
+            <a role="menuitem" href="#" data-um="profile"><i data-lucide="user-round"></i>내 정보</a>
+            <a role="menuitem" href="#" data-um="password"><i data-lucide="key-round"></i>비밀번호 변경</a>
+            <a role="menuitem" href="#" data-um="alarm"><i data-lucide="bell-ring"></i>알림 받기 설정</a>
+            <a role="menuitem" href="settings.html"><i data-lucide="settings"></i>운영 설정</a>
+            <hr>
+            <a role="menuitem" href="../index.html" target="_blank" rel="noopener"><i data-lucide="globe"></i>홈페이지 열기<i data-lucide="external-link" class="ext"></i></a>
+            <p class="um-meta">최근 로그인 <span id="umLast"></span> · IP 211.***.**.24</p>
+            <a role="menuitem" href="#" data-um="logout" class="out"><i data-lucide="log-out"></i>로그아웃</a>
+          </div>
+        </div>
+      </div>
+    </header>
     <div class="top"><div><h1>통계</h1><p>프로그램·지역별 행사, 작가 참여 순위, 월별 매출과 마진을 봅니다.</p></div><div class="act"></div></div>
 
     <div class="grid g4" id="stKpi"></div>
