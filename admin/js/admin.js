@@ -11,7 +11,7 @@
     var c = {
       jobs: d.jobs.filter(function (j) { return j.status === 'review'; }).length + d.quotes.length,
       artists: d.artists.filter(function (a) { return a.status === 'pending'; }).length,
-      settle: I.settlements().filter(function (r) { return r.state === 'due'; }).length
+      settle: I.settlements().filter(function (r) { return r.state === 'due' || r.state === 'needinfo'; }).length
     };
     Object.keys(c).forEach(function (k) {
       var el = $('[data-cnt="' + k + '"]');
@@ -64,6 +64,7 @@
     review.forEach(function (j) { todo.push(['y', 'user-check', '작가 선정 필요', j.title + ' · 신청 ' + j.apps.length + '명 / 모집 ' + j.need + '명', 'jobs.html#' + j.id]); });
     pend.forEach(function (a) { todo.push(['b', 'user-plus', '작가 등록 승인', a.name + ' · ' + a.skills.map(function (s) { return I.skill(s.k).n; }).join(', '), 'artists.html#' + a.id]); });
     if (due.length) todo.push(['g', 'wallet', '정산 지급', due.length + '건 · ' + I.won(dueSum), 'settlement.html']);
+    I.needInfo().forEach(function (a) { todo.push(['r', 'id-card', '정산 정보 미등록', a.name + ' · ' + (a.tax === 'business' ? '사업자등록번호' : '주민등록번호') + ' 등록 전이라 지급 보류', 'artists.html#' + a.id]); });
     rest.forEach(function (a) { todo.push(['r', 'coffee', '휴식 대상 작가', a.name + ' · 연속 ' + I.streak(a.id) + '회 확정, 다음 공고 1회 제외', 'artists.html#' + a.id]); });
     $('#todo').innerHTML = todo.length ? todo.map(function (t) {
       return '<a class="li" href="' + t[4] + '"><span class="ic ' + t[0] + '"><i data-lucide="' + t[1] + '"></i></span><span class="t"><b>' + t[2] + '</b><small>' + E(t[3]) + '</small></span><i data-lucide="chevron-right" class="muted"></i></a>';
@@ -208,7 +209,7 @@
         '<label class="ck"><input type="checkbox" id="cK" checked>카카오 알림톡</label><label class="ck"><input type="checkbox" id="cE" checked>메일</label>' +
         '<label class="ck"><input type="checkbox" id="cR" ' + (others.length ? 'checked' : 'disabled') + '>미선정 작가에게도 결과 안내</label>' +
         '<label class="ck"><input type="checkbox" id="cD" checked>행사 전날 리마인드 예약</label></div>' +
-        '<p class="note">확정하면 공고가 <b>확정</b> 상태로 바뀌고, 선정 작가의 정산이 <b>행사 후 정산</b>으로 자동 생성됩니다.</p></div></div>' +
+        '<p class="note">확정하면 공고가 <b>확정</b> 상태로 바뀌고, 선정 작가의 정산이 <b>행사 후 정산</b>으로 자동 생성됩니다.' + (picked.some(function (id) { return !I.hasTaxInfo(I.artist(id)); }) ? '<br>정산 정보를 아직 등록하지 않은 작가(' + picked.filter(function (id) { return !I.hasTaxInfo(I.artist(id)); }).map(function (id) { return I.artist(id).name; }).join(', ') + ')에게는 <b>정산 정보 요청</b>도 함께 보냅니다.' : '') + '</p></div></div>' +
         '<div class="mf"><button class="btn btn-o" data-close>취소</button><button class="btn btn-y" id="doConfirm"><i data-lucide="send"></i>확정하고 보내기</button></div>',
         function (m, close) {
           m.querySelector('.modal-card').classList.add('wide'); I.icons();
@@ -221,6 +222,8 @@
             j.status = 'confirmed';
             var sent = I.send('선정 안내', j.id, picked, ch, j.title).reduce(function (s, r) { return s + r.to.length; }, 0);
             if ($('#cR', m).checked && others.length) sent += I.send('미선정 안내', j.id, others, ch, j.title).reduce(function (s, r) { return s + r.to.length; }, 0);
+            var noInfo = picked.filter(function (id) { return !I.hasTaxInfo(I.artist(id)); });
+            if (noInfo.length) sent += I.send('정산 정보 요청', j.id, noInfo, ch, '첫 정산 전 정산 정보 등록 안내').reduce(function (s, r) { return s + r.to.length; }, 0);
             if ($('#cD', m).checked) db().logs.unshift({ at: I.stamp(), ch: 'kakao', type: '리마인드 예약', jid: j.id, to: picked, note: '행사 전날 10:00 발송 예정' });
             I.save(); close(); sideCounts(); renderTabs(); renderList(); renderDetail();
             I.toast('확정했어요. 알림 ' + sent + '건을 보냈습니다. (시안: 실제 발송은 개발 단계에서 연결)');
@@ -352,6 +355,8 @@
         '<p class="sec-t"><i data-lucide="image"></i>포트폴리오</p><div class="port">' + (a.portfolio.length ? a.portfolio.map(function (p) { return '<img src="../images/' + p + '.jpg" alt="' + E(a.name) + ' 포트폴리오">'; }).join('') : '<p class="empty">등록된 포트폴리오가 없어요.</p>') + '</div>' +
         '<p class="sec-t"><i data-lucide="quote"></i>소개</p><p>' + E(a.bio) + '</p>' +
         '<p class="sec-t"><i data-lucide="landmark"></i>정산 정보</p><p>' + (a.tax === 'freelancer' ? '프리랜서 (사업소득 ' + db().settings.taxRate + '% 원천징수)' : '개인사업자 (세금계산서 발행)') + ' · ' + E(a.bank) + ' ' + E(a.account) + '</p>' +
+        (I.hasTaxInfo(a) ? '<p class="num" style="margin-top:4px">' + (a.taxInfo.kind === 'rrn' ? '주민등록번호 <b>' + E(a.taxInfo.masked) + '</b>' + (a.taxInfo.foreign ? ' (외국인 · ' + E(a.taxInfo.visa || '') + ')' : '') : '사업자등록번호 <b>' + E(a.taxInfo.bizNo) + '</b> · ' + E(a.taxInfo.bizName) + ' · 계산서 ' + E(a.taxInfo.invoiceMail)) + ' <span class="muted">· 등록 ' + a.taxInfo.at + '</span></p><p class="note" style="margin-top:4px"><i data-lucide="lock" style="width:12px;height:12px;vertical-align:-1px"></i> 암호화 저장 · 전체 번호는 정산 담당 권한만 열람(열람 기록 남김)</p>'
+          : '<p class="demo" style="margin:8px 0 0;background:var(--bad-bg);color:var(--bad)"><i data-lucide="id-card"></i>' + (a.tax === 'business' ? '사업자등록번호' : '주민등록번호') + ' 미등록 · 등록 전까지 지급이 보류됩니다. <button class="btn btn-o btn-s" data-act="askinfo" style="margin-left:auto">등록 요청 보내기</button></p>') +
         '<p class="sec-t"><i data-lucide="history"></i>참여 이력</p>' + (hist.length ? '<div class="list">' + hist.map(function (j) { var p = j.apps.filter(function (x) { return x.a === a.id; })[0]; return '<div class="li"><span class="t"><b>' + E(j.title) + '</b><small>' + I.period(j) + ' · ' + I.skill(j.skill).n + '</small></span>' + appState(p, j) + '</div>'; }).join('') + '</div>' : '<p class="muted">아직 신청 이력이 없어요.</p>') +
         '<div class="mf">' + (a.status === 'pending' ? '<button class="btn btn-o" data-act="reject">반려</button><button class="btn btn-y" data-act="approve"><i data-lucide="check"></i>승인하고 알림 보내기</button>'
           : a.status === 'active' ? '<button class="btn btn-o" data-act="pause">활동 중지</button>' + (rest ? '<button class="btn btn-k" data-act="unrest">휴식 해제</button>' : '') + '<button class="btn btn-y" data-close>닫기</button>'
@@ -365,6 +370,7 @@
               if (act === 'reject') { db().artists = db().artists.filter(function (x) { return x.id !== a.id; }); I.toast('등록 신청을 반려했어요.'); }
               if (act === 'pause') { a.status = 'paused'; I.toast('활동을 중지했어요. 공고 알림이 가지 않습니다.'); }
               if (act === 'resume') { a.status = 'active'; I.toast('활동을 재개했어요.'); }
+              if (act === 'askinfo') { I.send('정산 정보 요청', '', [a.id], db().settings.channels, '정산 정보 등록 안내'); I.toast(a.name + ' 작가에게 정산 정보 등록 요청을 보냈어요.'); }
               if (act === 'unrest') {
                 /* 가장 최근 확정 1건을 끊어 연속을 초기화 (운영자 재량) */
                 db().jobs.push({ id: 'r' + Date.now() % 1e6, title: '휴식 해제(운영자)', client: '-', skill: a.skills[0].k, start: I.today, end: I.today, time: '-', hours: 0, place: '-', region: a.regions[0], need: 0, mode: 'pick', status: 'done', posted: I.stamp(), deadline: I.stamp(), fee: 0, hidden: true, apps: [{ a: a.id, at: I.stamp(), s: 'rest' }] });
@@ -396,6 +402,7 @@
     { k: '미선정 안내', icon: 'mail-x', body: '[IUX ART] 선정 결과 안내\n\n#{작가명} 작가님, 신청해 주셔서 감사합니다.\n이번 #{행사명}은 모집 인원이 마감되었습니다.\n다음 공고에서 꼭 함께해요.', btn: '다른 공고 보기' },
     { k: '행사 리마인드', icon: 'alarm-clock', body: '[IUX ART] 내일 행사 안내\n\n#{작가명} 작가님, 내일 행사가 있어요.\n\n■ #{행사명}\n■ #{시간} · #{장소}\n\n준비물과 도착 시간을 한 번 더 확인해 주세요.', btn: '행사 정보 보기' },
     { k: '정산 완료', icon: 'wallet', body: '[IUX ART] 정산 완료 안내\n\n#{작가명} 작가님, 정산금이 입금되었습니다.\n\n■ 행사: #{행사명}\n■ 지급액: #{지급액}\n■ 원천징수: #{세액}\n■ 실지급액: #{실지급액}\n\n수고하셨습니다.', btn: '정산 내역 보기' },
+    { k: '정산 정보 요청', icon: 'id-card', body: '[IUX ART] 정산 정보 등록 안내\n\n#{작가명} 작가님, 선정을 축하드립니다.\n정산금을 지급하려면 정산 정보 등록이 필요해요.\n\n■ 프리랜서: 주민등록번호 (3.3% 원천징수·지급명세서 제출용)\n■ 개인사업자: 사업자등록번호\n\n입력하신 정보는 암호화해 보관하며, 세무 신고 외에는 쓰지 않습니다.', btn: '정산 정보 등록하기' },
     { k: '작가 승인', icon: 'user-check', body: '[IUX ART] 작가 등록 승인\n\n#{작가명} 작가님, 등록이 승인되었습니다.\n이제 기술·지역에 맞는 공고 알림을 받아 보실 수 있어요.', btn: '작가 포털 열기' }
   ];
   function notify() {
@@ -467,7 +474,7 @@
         '<div class="card kpi"><p class="k"><i data-lucide="banknote"></i>지급 총액(세전)</p><p class="v">' + I.man(sum(A, 'gross')) + '<small>원</small></p><p class="s">' + A.length + '건</p></div>' +
         '<div class="card kpi"><p class="k"><i data-lucide="receipt"></i>원천징수 합계</p><p class="v">' + I.man(sum(A, 'tax')) + '<small>원</small></p><p class="s">사업소득 ' + db().settings.taxRate + '% (소득세 3% + 지방세 0.3%)</p></div>' +
         '<div class="card kpi"><p class="k"><i data-lucide="check-circle-2"></i>지급 완료</p><p class="v">' + I.man(sum(A.filter(function (r) { return r.state === 'paid'; }), 'net')) + '<small>원</small></p><p class="s">실지급액</p></div>' +
-        '<div class="card kpi hl"><p class="k"><i data-lucide="hourglass"></i>지급 대기</p><p class="v">' + I.man(sum(A.filter(function (r) { return r.state === 'due'; }), 'net')) + '<small>원</small></p><p class="s">행사 완료 · 미지급</p></div>';
+        '<div class="card kpi hl"><p class="k"><i data-lucide="hourglass"></i>지급 대기</p><p class="v">' + I.man(sum(A.filter(function (r) { return r.state === 'due'; }), 'net')) + '<small>원</small></p><p class="s">행사 완료 · 미지급' + (A.some(function (r) { return r.state === 'needinfo'; }) ? ' · 정보 미등록 ' + A.filter(function (r) { return r.state === 'needinfo'; }).length + '건 보류' : '') + '</p></div>';
       if (group) {
         var g = {};
         R.forEach(function (r) { var k = r.artist.id; g[k] = g[k] || { a: r.artist, n: 0, gross: 0, tax: 0, net: 0, due: 0 }; g[k].n++; g[k].gross += r.gross; g[k].tax += r.tax; g[k].net += r.net; if (r.state === 'due') g[k].due += r.net; });
@@ -478,7 +485,7 @@
       } else {
         $('#setHead').innerHTML = '<tr><th class="c" style="width:40px"><input type="checkbox" id="chkAll" aria-label="지급 대기 전체 선택"></th><th>행사</th><th>작가</th><th class="r">근무</th><th class="r">단가</th><th class="r">작가료</th><th class="r">교통비</th><th class="r">지급 총액</th><th class="r">원천징수</th><th class="r">실지급액</th><th>상태</th></tr>';
         $('#setBody').innerHTML = R.length ? R.map(function (r) {
-          return '<tr><td class="c">' + (r.state === 'due' ? '<input type="checkbox" class="sp" value="' + r.key + '" aria-label="지급 선택">' : '') + '</td>' +
+          return '<tr><td class="c">' + (r.state === 'due' ? '<input type="checkbox" class="sp" value="' + r.key + '" aria-label="지급 선택">' : r.state === 'needinfo' ? '<button class="x" data-ask="' + r.artist.id + '" title="정산 정보 등록 요청" aria-label="정산 정보 등록 요청"><i data-lucide="send"></i></button>' : '') + '</td>' +
             '<td><b>' + E(r.job.title) + '</b><br><small class="muted num">' + I.period(r.job) + ' · ' + I.skill(r.job.skill).n + '</small></td>' +
             '<td><div class="who">' + I.avatar(r.artist) + '<div><b>' + E(r.artist.name) + '</b><small>' + (r.artist.tax === 'freelancer' ? '프리랜서' : '사업자') + '</small></div></div></td>' +
             '<td class="r">' + r.days + '일 × ' + r.hours + 'h</td><td class="r">' + I.won(r.rate) + '</td><td class="r">' + I.won(r.pay) + '</td><td class="r">' + (r.transport ? I.won(r.transport) : '-') + '</td>' +
@@ -499,6 +506,12 @@
       $('#paySel').innerHTML = '<i data-lucide="check"></i>' + (sel.length ? sel.length + '건 지급 완료 처리 · ' + I.won(amt) : '선택한 정산 지급 완료');
       I.icons();
     }
+    $('#setBody').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-ask]'); if (!b) return;
+      var a = I.artist(b.dataset.ask);
+      I.send('정산 정보 요청', '', [a.id], db().settings.channels, '정산 정보 등록 안내'); I.save();
+      I.toast(a.name + ' 작가에게 정산 정보 등록 요청을 보냈어요.');
+    });
     $('#fMonth').onchange = function (e) { month = e.target.value; render(); };
     $('#fState').onchange = function (e) { state = e.target.value; render(); };
     $('#grp').addEventListener('click', function (e) { var b = e.target.closest('[data-g]'); if (!b) return; group = b.dataset.g === '1'; $$('[data-g]').forEach(function (x) { x.classList.toggle('on', x === b); }); render(); });

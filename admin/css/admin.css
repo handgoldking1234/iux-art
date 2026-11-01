@@ -295,3 +295,4 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
   .modal-card{padding:18px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.side .foot .ext{width:12px!important;height:12px!important;margin-left:auto;opacity:.6}

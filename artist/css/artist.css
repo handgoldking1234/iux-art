@@ -65,3 +65,6 @@
   .mstat div{flex:1;min-width:0;padding:8px 10px}
   .mstat b{font-size:15px}
 }
+.rrn{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;max-width:360px}
+.rrn span{font-weight:800;color:var(--ink-3)}
+#infoNote{align-items:center;flex-wrap:wrap}

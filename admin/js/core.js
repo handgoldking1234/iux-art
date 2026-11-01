@@ -67,6 +67,12 @@ var IUX = (function () {
   var count = function (aid) { return selectedJobs(aid).length; };
 
   /* ---------- 정산 ---------- */
+  /* 정산 정보: 프리랜서는 주민등록번호, 개인사업자는 사업자등록번호가 있어야 지급 가능 */
+  function hasTaxInfo(a) { return !!(a && a.taxInfo && (a.tax === 'business' ? a.taxInfo.kind === 'biz' : a.taxInfo.kind === 'rrn')); }
+  function needInfo() {
+    /* 확정·완료 행사가 있는데 정산 정보가 없는 작가 */
+    return db.artists.filter(function (a) { return !hasTaxInfo(a) && selectedJobs(a.id).length; });
+  }
   function transport(j) { return /서울|경기|인천/.test(j.region) ? 0 : db.settings.transportOutside; }
   function settlements() {
     var rows = [];
@@ -79,8 +85,9 @@ var IUX = (function () {
         var pay = rate * j.hours * d, tr = transport(j) * d, gross = pay + tr;
         var tax = a.tax === 'freelancer' ? Math.floor(gross * db.settings.taxRate / 100 / 10) * 10 : 0;
         var key = j.id + ':' + a.id, paidAt = db.paid[key];
+        var st = paidAt ? 'paid' : (j.status === 'done' ? (hasTaxInfo(a) ? 'due' : 'needinfo') : 'scheduled');
         rows.push({ key: key, job: j, artist: a, days: d, hours: j.hours, rate: rate, pay: pay, transport: tr, gross: gross, tax: tax, net: gross - tax,
-          state: paidAt ? 'paid' : (j.status === 'done' ? 'due' : 'scheduled'), paidAt: paidAt || '' });
+          state: st, paidAt: paidAt || '', infoOk: hasTaxInfo(a) });
       });
     });
     return rows.sort(function (x, y) { return x.job.start < y.job.start ? 1 : -1; });
@@ -108,7 +115,7 @@ var IUX = (function () {
   /* ---------- 상태 라벨 ---------- */
   var JOB_STATE = { open: ['모집 중', 'st-open'], review: ['선정 대기', 'st-review'], confirmed: ['확정', 'st-ok'], done: ['행사 완료', 'st-done'] };
   var ART_STATE = { active: ['활동 중', 'st-ok'], pending: ['승인 대기', 'st-review'], paused: ['활동 중지', 'st-done'] };
-  var PAY_STATE = { paid: ['지급 완료', 'st-ok'], due: ['지급 대기', 'st-review'], scheduled: ['행사 후 정산', 'st-done'] };
+  var PAY_STATE = { paid: ['지급 완료', 'st-ok'], due: ['지급 대기', 'st-review'], needinfo: ['정산 정보 미등록', 'st-bad'], scheduled: ['행사 후 정산', 'st-done'] };
   var badge = function (map, k) { var v = map[k] || [k, '']; return '<span class="badge ' + v[1] + '">' + v[0] + '</span>'; };
   var skillChips = function (a) {
     return a.skills.map(function (s) { return '<span class="chip">' + esc(skill(s.k).n) + ' <b>' + years(s.since) + '년차</b></span>'; }).join('');
@@ -146,7 +153,7 @@ var IUX = (function () {
     today: today, stamp: stamp, toDate: toDate, days: days, md: md, period: period, age: age, years: years,
     skill: skill, artist: artist, job: job, won: won, man: man, esc: esc,
     history: history, selectedJobs: selectedJobs, streak: streak, isRest: isRest, count: count,
-    settlements: settlements, send: send, targets: targets,
+    settlements: settlements, send: send, targets: targets, hasTaxInfo: hasTaxInfo, needInfo: needInfo,
     JOB_STATE: JOB_STATE, ART_STATE: ART_STATE, PAY_STATE: PAY_STATE, badge: badge, skillChips: skillChips, avatar: avatar,
     toast: toast, modal: modal, icons: icons
   };

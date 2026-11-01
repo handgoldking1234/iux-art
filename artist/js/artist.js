@@ -94,6 +94,9 @@
       $('#restNote').hidden = !rest;
       if (rest) $('#restNote').innerHTML = '<i data-lucide="coffee"></i>최근 연속 ' + I.streak(a.id) + '회 참여하셨어요. 다른 작가에게도 기회를 나누기 위해 이번 공고 1회는 자동 선정에서 빠집니다. 신청은 할 수 있어요.';
       $('#pendNote').hidden = a.status !== 'pending';
+      var needInfo = !I.hasTaxInfo(a) && I.selectedJobs(a.id).length;
+      $('#infoNote').hidden = !needInfo;
+      if (needInfo) $('#infoNote').innerHTML = '<i data-lucide="id-card"></i><span>선정을 축하드려요. 정산금을 받으려면 <b>정산 정보</b>를 등록해 주세요. 등록 전까지 지급이 보류됩니다.</span><button class="btn btn-k btn-s" data-goinfo style="margin-left:auto">지금 등록</button>';
     }
 
     function jobsTab() {
@@ -128,7 +131,7 @@
     function payTab() {
       var a = I.artist(me), R = I.settlements().filter(function (r) { return r.artist.id === a.id; });
       var sum = function (k, f) { return R.filter(f || function () { return true; }).reduce(function (s, r) { return s + r[k]; }, 0); };
-      return '<div class="grid g3" style="margin-bottom:14px"><div class="card kpi"><p class="k">지급 완료</p><p class="v">' + I.man(sum('net', function (r) { return r.state === 'paid'; })) + '<small>원</small></p></div><div class="card kpi"><p class="k">지급 대기</p><p class="v">' + I.man(sum('net', function (r) { return r.state === 'due'; })) + '<small>원</small></p></div><div class="card kpi"><p class="k">행사 후 정산</p><p class="v">' + I.man(sum('net', function (r) { return r.state === 'scheduled'; })) + '<small>원</small></p></div></div>' +
+      return '<div class="grid g3" style="margin-bottom:14px"><div class="card kpi"><p class="k">지급 완료</p><p class="v">' + I.man(sum('net', function (r) { return r.state === 'paid'; })) + '<small>원</small></p></div><div class="card kpi"><p class="k">지급 대기</p><p class="v">' + I.man(sum('net', function (r) { return r.state === 'due' || r.state === 'needinfo'; })) + '<small>원</small></p></div><div class="card kpi"><p class="k">행사 후 정산</p><p class="v">' + I.man(sum('net', function (r) { return r.state === 'scheduled'; })) + '<small>원</small></p></div></div>' +
         (R.length ? '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>행사</th><th class="r">근무</th><th class="r">지급 총액</th><th class="r">' + (a.tax === 'freelancer' ? '원천징수 3.3%' : '세금계산서') + '</th><th class="r">실지급액</th><th>상태</th></tr></thead><tbody>' + R.map(function (r) {
           return '<tr><td><b>' + E(r.job.title) + '</b><br><small class="muted num">' + I.period(r.job) + '</small></td><td class="r">' + r.days + '일 × ' + r.hours + 'h</td><td class="r">' + I.won(r.gross) + '</td><td class="r">' + (r.tax ? '-' + I.won(r.tax) : '발행 필요') + '</td><td class="r"><b>' + I.won(r.net) + '</b></td><td>' + I.badge(I.PAY_STATE, r.state) + (r.paidAt ? '<br><small class="muted num">' + r.paidAt + '</small>' : '') + '</td></tr>';
         }).join('') + '</tbody></table></div><p class="note">입금 계좌: ' + E(a.bank + ' ' + a.account) + ' · 계좌 변경은 고객센터로 문의해 주세요.</p>' : '<div class="card empty-s"><i data-lucide="wallet"></i>정산 내역이 없어요.</div>');
@@ -143,12 +146,72 @@
         '<p class="sec-t">소개</p><p>' + E(a.bio) + '</p></div></div></div>';
     }
 
+
+    /* ---------- 정산 정보 (주민등록번호·사업자등록번호) ---------- */
+    function taxTab() {
+      var a = I.artist(me), t = a.taxInfo, biz = a.tax === 'business';
+      var cur = I.hasTaxInfo(a)
+        ? '<div class="demo" style="background:var(--ok-bg);color:var(--ok)"><i data-lucide="shield-check"></i>' + (t.kind === 'rrn' ? '주민등록번호 <b class="num" style="margin:0 4px">' + E(t.masked) + '</b>' : '사업자등록번호 <b class="num" style="margin:0 4px">' + E(t.bizNo) + '</b>') + '등록 완료 (' + t.at + ') · 다시 입력하면 새 정보로 바뀝니다.</div>'
+        : '<div class="demo" style="background:var(--bad-bg);color:var(--bad)"><i data-lucide="id-card"></i>아직 등록하지 않았어요. 첫 정산 전에 등록해 주세요.</div>';
+      var visas = ['E-6 예술흥행', 'F-2 거주', 'F-4 재외동포', 'F-5 영주', 'F-6 결혼이민', 'D-2 유학(시간제 취업허가)', '기타'];
+      return '<div class="card" style="max-width:760px">' + cur +
+        '<form class="form" id="taxForm" novalidate>' +
+        '<div class="fld"><span class="lb">소득 유형</span><div class="togs"><label class="tog"><input type="radio" name="tk" value="freelancer"' + (biz ? '' : ' checked') + '><span>프리랜서 (3.3% 원천징수)</span></label><label class="tog"><input type="radio" name="tk" value="business"' + (biz ? ' checked' : '') + '><span>개인사업자 (세금계산서)</span></label></div></div>' +
+        '<div id="tkRrn"' + (biz ? ' hidden' : '') + '>' +
+          '<label class="ck" style="margin-bottom:10px"><input type="checkbox" id="tFor">외국인입니다 (외국인등록번호)</label>' +
+          '<div class="fld"><label for="tR1" id="tRl">주민등록번호<i>*</i></label><div class="rrn"><input class="inp num" id="tR1" inputmode="numeric" maxlength="6" placeholder="앞 6자리" autocomplete="off" aria-label="앞 6자리"><span>-</span><input class="inp num" id="tR2" type="password" inputmode="numeric" maxlength="7" placeholder="뒤 7자리" autocomplete="off" aria-label="뒤 7자리"></div>' +
+          '<p class="help">소득세법에 따른 원천징수 신고와 (간이)지급명세서 제출에만 사용합니다.</p></div>' +
+          '<div class="fld" id="tVisaF" hidden style="margin-top:10px"><label for="tVisa">체류자격<i>*</i></label><select class="sel" id="tVisa">' + visas.map(function (v) { return '<option>' + v + '</option>'; }).join('') + '</select><p class="help">취업이 가능한 체류자격인지 확인이 필요해 외국인등록증 사본을 따로 요청드릴 수 있어요.</p></div>' +
+        '</div>' +
+        '<div id="tkBiz"' + (biz ? '' : ' hidden') + '><div class="f2"><div class="fld"><label for="tB">사업자등록번호<i>*</i></label><input class="inp num" id="tB" inputmode="numeric" maxlength="12" placeholder="000-00-00000" autocomplete="off"></div>' +
+          '<div class="fld"><label for="tBn">상호<i>*</i></label><input class="inp" id="tBn" value="' + E(t && t.bizName || '') + '"></div></div>' +
+          '<div class="fld" style="margin-top:10px"><label for="tBm">세금계산서 받을 메일<i>*</i></label><input class="inp" id="tBm" type="email" value="' + E(t && t.invoiceMail || a.email) + '"></div></div>' +
+        '<div class="f3"><div class="fld"><label for="tBank">은행<i>*</i></label><input class="inp" id="tBank" value="' + E(a.bank) + '"></div><div class="fld"><label for="tAcc">계좌번호</label><input class="inp num" id="tAcc" inputmode="numeric" placeholder="' + E(a.account) + '"></div><div class="fld"><label for="tHold">예금주<i>*</i></label><input class="inp" id="tHold" value="' + E(t && t.holder || a.name) + '"></div></div>' +
+        '<div class="demo" style="background:var(--soft);color:var(--ink-2);margin:0;align-items:flex-start"><i data-lucide="lock"></i><span>수집 근거: 소득세법(원천징수·지급명세서 제출), 개인정보 보호법 제24조의2 · 보관: 암호화 저장, 정산 담당자만 열람 · 보관 기간: 마지막 지급 후 5년(세무 신고 기준) 뒤 파기 · 법령에 따라 처리되며 다른 용도로 쓰지 않습니다.</span></div>' +
+        '<div style="display:flex;justify-content:flex-end"><button class="btn btn-y" type="submit"><i data-lucide="shield-check"></i>정산 정보 저장</button></div></form>' +
+        '<p class="note">시안에서는 입력한 번호를 저장하지 않고 가린 형태(예: 950505-1******)만 남깁니다. 실제 서비스는 서버에서 암호화해 저장합니다.</p></div>';
+    }
+    function bindTax() {
+      var f = $('#taxForm'); if (!f) return;
+      var a = I.artist(me);
+      $$('input[name=tk]', f).forEach(function (r) { r.onchange = function () { var b = $('input[name=tk]:checked', f).value === 'business'; $('#tkRrn').hidden = b; $('#tkBiz').hidden = !b; }; });
+      $('#tFor').onchange = function () { $('#tVisaF').hidden = !this.checked; $('#tRl').firstChild.textContent = this.checked ? '외국인등록번호' : '주민등록번호'; };
+      var digits = function (el) { el.addEventListener('input', function () { el.value = el.value.replace(/\D/g, ''); }); };
+      digits($('#tR1')); digits($('#tR2'));
+      $('#tR1').addEventListener('input', function () { if (this.value.length === 6) $('#tR2').focus(); });
+      $('#tB').addEventListener('input', function () { var v = this.value.replace(/\D/g, '').slice(0, 10); this.value = v.length > 5 ? v.slice(0, 3) + '-' + v.slice(3, 5) + '-' + v.slice(5) : v.length > 3 ? v.slice(0, 3) + '-' + v.slice(3) : v; });
+      f.onsubmit = function (e) {
+        e.preventDefault();
+        var biz = $('input[name=tk]:checked', f).value === 'business';
+        var bank = $('#tBank').value.trim(), acc = $('#tAcc').value.replace(/\D/g, ''), hold = $('#tHold').value.trim();
+        if (!bank || !hold) { I.toast('은행과 예금주를 입력해 주세요.'); return; }
+        if (biz) {
+          var b = $('#tB').value.replace(/\D/g, '');
+          if (b.length !== 10) { I.toast('사업자등록번호 10자리를 입력해 주세요.'); $('#tB').focus(); return; }
+          if (!$('#tBn').value.trim()) { I.toast('상호를 입력해 주세요.'); return; }
+          a.tax = 'business';
+          a.taxInfo = { kind: 'biz', bizNo: b.slice(0, 3) + '-' + b.slice(3, 5) + '-*****', bizName: $('#tBn').value.trim(), invoiceMail: $('#tBm').value.trim(), holder: hold, at: I.today };
+        } else {
+          var r1 = $('#tR1').value, r2 = $('#tR2').value;
+          if (r1.length !== 6 || r2.length !== 7) { I.toast('번호 앞 6자리와 뒤 7자리를 모두 입력해 주세요.'); (r1.length !== 6 ? $('#tR1') : $('#tR2')).focus(); return; }
+          var foreign = $('#tFor').checked;
+          if (!foreign && !/[1-4]/.test(r2[0])) { I.toast('주민등록번호 뒷자리 첫 숫자를 확인해 주세요. 외국인이면 "외국인입니다"를 체크해 주세요.'); return; }
+          a.tax = 'freelancer';
+          a.taxInfo = { kind: 'rrn', masked: r1 + '-' + r2[0] + '******', foreign: foreign, visa: foreign ? $('#tVisa').value : '', holder: hold, at: I.today };
+          $('#tR2').value = '';
+        }
+        a.bank = bank; if (acc) a.account = '****-**-' + acc.slice(-4);
+        I.save(); render(); I.toast('정산 정보를 저장했어요. 보류된 정산이 지급 대기로 바뀝니다.');
+      };
+    }
+
     function render() {
       header();
       $$('#ptabs [data-t]').forEach(function (b) { b.classList.toggle('on', b.dataset.t === tab); b.setAttribute('aria-selected', b.dataset.t === tab); });
       var n = db().jobs.filter(function (j) { return j.status === 'open'; }).length;
       $('#openN').textContent = n;
-      $('#pbody').innerHTML = tab === 'jobs' ? jobsTab() : tab === 'schedule' ? scheduleTab() : tab === 'pay' ? payTab() : profileTab();
+      $('#pbody').innerHTML = tab === 'jobs' ? jobsTab() : tab === 'schedule' ? scheduleTab() : tab === 'pay' ? payTab() : tab === 'tax' ? taxTab() : profileTab();
+      bindTax();
       I.icons();
       var a = I.artist(me);
       var pk = $('#pk'), pm = $('#pm');
@@ -156,6 +219,7 @@
       if (pm) pm.onchange = function () { a.mail = pm.checked; I.save(); I.toast('메일 수신을 ' + (pm.checked ? '켰어요.' : '껐어요.')); };
     }
     $('#ptabs').addEventListener('click', function (e) { var b = e.target.closest('[data-t]'); if (b) { tab = b.dataset.t; render(); } });
+    $('#infoNote').addEventListener('click', function (e) { if (e.target.closest('[data-goinfo]')) { tab = 'tax'; render(); $('#ptabs').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
     $('#pbody').addEventListener('click', function (e) {
       var ap = e.target.closest('[data-apply]'), cc = e.target.closest('[data-cancel]');
       if (ap) {
