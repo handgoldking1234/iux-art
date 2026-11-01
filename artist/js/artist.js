@@ -101,9 +101,13 @@
       $('#restNote').hidden = !rest;
       if (rest) $('#restNote').innerHTML = '<i data-lucide="coffee"></i>최근 연속 ' + I.streak(a.id) + '회 참여하셨어요. 다른 작가에게도 기회를 나누기 위해 이번 공고 1회는 자동 선정에서 빠집니다. 신청은 할 수 있어요.';
       $('#pendNote').hidden = a.status !== 'pending';
-      var noPh = I.selectedJobs(a.id).filter(function (j) { return j.status === 'done' && !j.hidden && j.start >= '2026-10-01' && !I.postOf(j.id, a.id); });
+      /* 행사 당일부터 30일 동안, 아직 현장 후기를 안 쓴 행사 */
+      var fd = new Date(I.toDate(I.today) - 30 * 864e5), from = fd.getFullYear() + '-' + ('0' + (fd.getMonth() + 1)).slice(-2) + '-' + ('0' + fd.getDate()).slice(-2);
+      var noPh = I.selectedJobs(a.id).filter(function (j) { return !j.hidden && j.start <= I.today && j.start >= from && !I.postOf(j.id, a.id); })
+        .sort(function (x, y) { return x.start < y.start ? 1 : -1; });
       $('#photoNote').hidden = !noPh.length;
-      if (noPh.length) $('#photoNote').innerHTML = '<i data-lucide="camera"></i><span><b>' + E(noPh[0].title) + '</b>' + (noPh.length > 1 ? ' 외 ' + (noPh.length - 1) + '건' : '') + '의 현장 후기를 남겨 주세요. 사진과 분위기 몇 줄이면 돼요.</span><button class="btn btn-k btn-s" data-photo="' + noPh[0].id + '" style="margin-left:auto">현장 후기 올리기</button>';
+      if (noPh.length) $('#photoNote').innerHTML = '<p class="pn-h"><i data-lucide="camera"></i>현장 후기를 남겨 주세요. 사진과 분위기 몇 줄이면 돼요.</p>' +
+        noPh.map(function (j) { return '<div class="pn-r"><span><b>' + E(j.title) + '</b><small>' + I.period(j) + (j.start === I.today ? ' · 오늘 행사' : '') + '</small></span><button class="btn btn-k btn-s" data-photo="' + j.id + '"><i data-lucide="camera"></i>현장 후기 올리기</button></div>'; }).join('');
       var needInfo = !I.hasTaxInfo(a) && I.selectedJobs(a.id).length;
       $('#infoNote').hidden = !needInfo;
       if (needInfo) $('#infoNote').innerHTML = '<i data-lucide="id-card"></i><span>선정을 축하드려요. 정산금을 받으려면 <b>정산 정보</b>를 등록해 주세요. 등록 전까지 지급이 보류됩니다.</span><button class="btn btn-k btn-s" data-goinfo style="margin-left:auto">지금 등록</button>';
@@ -132,7 +136,7 @@
     function scheduleTab() {
       var a = I.artist(me);
       var list = I.history(a.id);
-      return list.length ? '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>행사</th><th>일정</th><th>장소</th><th>결과</th><th>현장 사진</th></tr></thead><tbody>' + list.filter(function (j) { return !j.hidden; }).map(function (j) {
+      return list.length ? '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>행사</th><th>일정</th><th>장소</th><th>결과</th><th>현장 후기</th></tr></thead><tbody>' + list.filter(function (j) { return !j.hidden; }).map(function (j) {
         var p = j.apps.filter(function (x) { return x.a === a.id; })[0];
         var st = p.s === 'selected' ? (j.status === 'done' ? '<span class="badge st-done">참여 완료</span>' : '<span class="badge st-ok">선정 · 예정</span>') : p.s === 'rejected' ? '<span class="badge st-done">미선정</span>' : p.s === 'rest' ? '<span class="badge st-rest">휴식 제외</span>' : '<span class="badge st-open">결과 대기</span>';
         return '<tr><td><b>' + E(j.title) + '</b><br><small class="muted">' + I.skill(j.skill).n + '</small></td><td class="num">' + I.period(j) + '<br><small class="muted">' + j.time + '</small></td><td>' + E(j.place) + '</td><td>' + st + '</td><td>' + photoCell(j, p) + '</td></tr>';

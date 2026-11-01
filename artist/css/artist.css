@@ -130,3 +130,9 @@
 .pc-st{display:inline-flex;align-items:center;gap:6px}
 @media (max-width:860px){.pw{grid-template-columns:1fr}.pv{position:static}.up .mk{opacity:1}}
 .form label.drop,.drop{display:flex;flex-direction:column;align-items:center}
+#photoNote{flex-direction:column;align-items:stretch;gap:0;padding:6px 16px}
+#photoNote .pn-h{display:flex;align-items:center;gap:8px;padding:8px 0;font-weight:800}
+#photoNote .pn-r{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(166,119,0,.18)}
+#photoNote .pn-r b{color:var(--ink);font-size:14px}
+#photoNote .pn-r small{display:block;font-weight:500;color:var(--ink-3);margin-top:2px}
+@media (max-width:560px){#photoNote .pn-r{flex-direction:column;align-items:stretch}#photoNote .pn-r .btn{justify-content:center}}
