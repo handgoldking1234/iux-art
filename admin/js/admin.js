@@ -5,6 +5,15 @@
   var I = IUX, db = function () { return I.db; }, E = I.esc;
   var page = document.body.dataset.page;
 
+  /* ---------- 모바일 메뉴 ---------- */
+  (function () {
+    var side = $('#side'), btn = $('#sideBtn'); if (!btn) return;
+    function set(o) { side.classList.toggle('open', o); btn.setAttribute('aria-expanded', o); btn.setAttribute('aria-label', o ? '메뉴 닫기' : '메뉴 열기'); }
+    btn.addEventListener('click', function () { set(!side.classList.contains('open')); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') set(false); });
+    matchMedia('(min-width:901px)').addEventListener('change', function (e) { if (e.matches) set(false); });
+  })();
+
   /* ---------- 사이드바 숫자·초기화 ---------- */
   function sideCounts() {
     var d = db();
