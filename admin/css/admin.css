@@ -369,3 +369,27 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
   .side.open a.nv [data-lucide]{display:block}
   .side.open .foot{display:flex;flex-direction:column;flex:0 0 100%;margin-top:4px}
 }
+/* 작가 평가 */
+.stars-v{color:#F5A700;letter-spacing:1px;font-size:13px;white-space:nowrap}
+.stars-v i{font-style:normal;color:var(--line-2)}
+.rv-chip{display:inline-flex;align-items:center;height:26px;padding:0 8px;border-radius:var(--pill);background:var(--soft);vertical-align:middle;margin-left:4px}
+.rv-chip:hover{background:var(--line)}
+.rv-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.rv-row>span{font-size:14px;font-weight:700}
+.rate{display:inline-flex;flex-direction:row-reverse}
+.rate input{position:absolute;opacity:0;pointer-events:none}
+.rate label{font-size:28px;line-height:1;padding:0 2px;color:var(--line-2);cursor:pointer;transition:color .12s,transform .12s}
+.rate label:hover,.rate label:hover~label,.rate input:checked~label{color:#F5A700}
+.rate input:focus-visible+label{outline:2px solid var(--ink);outline-offset:2px;border-radius:4px}
+.rate label:active{transform:scale(.9)}
+.rv-sum{display:grid;grid-template-columns:180px 1fr;gap:16px;align-items:center;background:var(--soft);border-radius:12px;padding:14px 16px}
+.rv-sum .big{display:flex;flex-direction:column;gap:2px}
+.rv-sum .big b{font-family:var(--f-display);font-size:34px;font-weight:900;line-height:1}
+.rv-sum .big small{font-size:12px;color:var(--ink-3)}
+.rv-sum .hb{display:grid;grid-template-columns:76px 1fr 30px;align-items:center;gap:8px;font-size:12px;padding:3px 0}
+.rv-sum .tr{height:8px;border-radius:4px;background:var(--panel);overflow:hidden}
+.rv-sum .tr i{display:block;height:100%;background:#F5A700}
+.rv-sum .hb b{text-align:right}
+.rv-li .t small{display:block;margin-top:2px}
+.rv-li .t .memo{color:var(--ink-2);white-space:normal}
+@media (max-width:560px){.rv-sum{grid-template-columns:1fr}.rate label{font-size:26px}}

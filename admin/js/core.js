@@ -118,6 +118,20 @@ var IUX = (function () {
   var PHOTO_STATE = { pending: ['검수 대기', 'st-review'], published: ['홈페이지 게시', 'st-ok'], hidden: ['게시 안 함', 'st-done'], private: ['내부 보관', 'st-bad'] };
   var photoSrc = function (p) { return p.src.indexOf('data:') === 0 ? p.src : '../' + p.src; };
   var photosOf = function (jid, aid) { return (db.photos || []).filter(function (p) { return (!jid || p.job === jid) && (!aid || p.a === aid); }); };
+  /* ---------- 작가 평가 ---------- */
+  var CRIT = [['work', '작품 완성도'], ['time', '시간 준수'], ['cs', '고객 응대'], ['manner', '현장 매너']];
+  var REHIRE = { yes: ['재섭외 추천', 'st-ok'], ok: ['보통', 'st-done'], no: ['재섭외 보류', 'st-bad'] };
+  var reviewOf = function (jid, aid) { return (db.reviews || []).filter(function (r) { return r.job === jid && r.a === aid; })[0]; };
+  var reviewsOf = function (aid) { return (db.reviews || []).filter(function (r) { return r.a === aid; }).sort(function (x, y) { return x.at < y.at ? 1 : -1; }); };
+  var revAvg = function (r) { return CRIT.reduce(function (s, c) { return s + (r.s[c[0]] || 0); }, 0) / CRIT.length; };
+  /* 평점: 평가가 있으면 평가 평균, 없으면 등록 때 값 */
+  var rating = function (a) { var R = reviewsOf(a.id); if (!R.length) return a.rating || 0; return Math.round(R.reduce(function (s, r) { return s + revAvg(r); }, 0) / R.length * 10) / 10; };
+  var needReview = function () {
+    var out = [];
+    db.jobs.forEach(function (j) { if (j.status !== 'done' || j.hidden) return; j.apps.forEach(function (p) { if (p.s === 'selected' && !reviewOf(j.id, p.a)) out.push({ j: j, a: artist(p.a) }); }); });
+    return out;
+  };
+  var stars = function (v) { var n = Math.round(v); return '<span class="stars-v" aria-label="' + v + '점">' + '★★★★★'.slice(0, n) + '<i>' + '★★★★★'.slice(n) + '</i></span>'; };
   var PAY_STATE = { paid: ['지급 완료', 'st-ok'], due: ['지급 대기', 'st-review'], needinfo: ['정산 정보 미등록', 'st-bad'], scheduled: ['행사 후 정산', 'st-done'] };
   var badge = function (map, k) { var v = map[k] || [k, '']; return '<span class="badge ' + v[1] + '">' + v[0] + '</span>'; };
   var skillChips = function (a) {
@@ -157,7 +171,7 @@ var IUX = (function () {
     skill: skill, artist: artist, job: job, won: won, man: man, esc: esc,
     history: history, selectedJobs: selectedJobs, streak: streak, isRest: isRest, count: count,
     settlements: settlements, send: send, targets: targets, hasTaxInfo: hasTaxInfo, needInfo: needInfo,
-    JOB_STATE: JOB_STATE, ART_STATE: ART_STATE, PAY_STATE: PAY_STATE, PHOTO_STATE: PHOTO_STATE, photoSrc: photoSrc, photosOf: photosOf, badge: badge, skillChips: skillChips, avatar: avatar,
+    JOB_STATE: JOB_STATE, ART_STATE: ART_STATE, PAY_STATE: PAY_STATE, PHOTO_STATE: PHOTO_STATE, CRIT: CRIT, REHIRE: REHIRE, reviewOf: reviewOf, reviewsOf: reviewsOf, revAvg: revAvg, rating: rating, needReview: needReview, stars: stars, photoSrc: photoSrc, photosOf: photosOf, badge: badge, skillChips: skillChips, avatar: avatar,
     toast: toast, modal: modal, icons: icons
   };
 })();

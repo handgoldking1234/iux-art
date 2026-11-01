@@ -41,6 +41,45 @@
     if (p.s === 'rest') return '<span class="badge st-rest">휴식 제외</span>';
     return '<span class="badge st-open">신청</span>';
   }
+  function revCell(j, a) {
+    var r = I.reviewOf(j.id, a.id);
+    return r ? ' <button class="rv-chip" data-rev="' + j.id + ':' + a.id + '" title="평가 수정">' + I.stars(I.revAvg(r)) + '</button>'
+             : ' <button class="btn btn-y btn-s" data-rev="' + j.id + ':' + a.id + '"><i data-lucide="star"></i>평가하기</button>';
+  }
+  /* 작가 평가 입력 (운영자 내부용) */
+  function reviewModal(jid, aid, after) {
+    var j = I.job(jid), a = I.artist(aid), r = I.reviewOf(jid, aid);
+    var TAGS = ['손이 빠름', '작품 퀄리티 높음', '고객 반응 좋음', '아이들 응대 좋음', '준비물 완벽', '지각', '복장·용모 미흡', '자리 이탈', '고객 불만'];
+    var starRow = function (c) {
+      var v = r ? r.s[c[0]] : 0, h = '';
+      for (var i = 5; i >= 1; i--) h += '<input type="radio" id="rv_' + c[0] + i + '" name="rv_' + c[0] + '" value="' + i + '"' + (v === i ? ' checked' : '') + ' required><label for="rv_' + c[0] + i + '" title="' + i + '점">★</label>';
+      return '<div class="rv-row"><span>' + c[1] + '</span><div class="rate" role="radiogroup" aria-label="' + c[1] + '">' + h + '</div></div>';
+    };
+    I.modal('<div class="mh"><div class="prof">' + I.avatar(a) + '<div><h3>' + E(a.name) + ' 작가 평가</h3><p class="muted">' + E(j.title) + ' · ' + I.period(j) + '</p></div></div><button class="x" data-close aria-label="닫기"><i data-lucide="x"></i></button></div>' +
+      '<form class="form" id="rvF">' + I.CRIT.map(starRow).join('') +
+      '<div class="fld"><span class="lb">재섭외</span><div class="togs">' + Object.keys(I.REHIRE).map(function (k) { return '<label class="tog"><input type="radio" name="rv_re" value="' + k + '"' + ((r ? r.rehire : 'yes') === k ? ' checked' : '') + '><span>' + I.REHIRE[k][0] + '</span></label>'; }).join('') + '</div></div>' +
+      '<div class="fld"><span class="lb">현장 메모 태그</span><div class="togs">' + TAGS.map(function (t) { return '<label class="tog"><input type="checkbox" name="rv_tag" value="' + t + '"' + (r && r.tags.indexOf(t) > -1 ? ' checked' : '') + '><span>' + t + '</span></label>'; }).join('') + '</div></div>' +
+      '<div class="fld"><label for="rv_note">내부 메모</label><textarea class="inp" id="rv_note" rows="3" placeholder="고객사 피드백, 다음 섭외 때 참고할 점">' + (r ? E(r.note) : '') + '</textarea><p class="help">평가와 메모는 운영자만 봅니다. 작가에게는 공개되지 않아요.</p></div>' +
+      '<div class="mf">' + (r ? '<button type="button" class="btn btn-o" id="rvDel">평가 삭제</button>' : '') + '<button type="button" class="btn btn-o" data-close>취소</button><button class="btn btn-y" type="submit"><i data-lucide="check"></i>' + (r ? '평가 수정' : '평가 저장') + '</button></div></form>',
+      function (m, close) {
+        m.querySelector('.modal-card').classList.add('wide'); I.icons();
+        var done = function (msg) { I.save(); close(); I.toast(msg); sideCounts(); document.dispatchEvent(new Event('iux-review')); if (after) after(); };
+        $('#rvF', m).onsubmit = function (e) {
+          e.preventDefault();
+          if (!e.target.checkValidity()) { I.toast('네 항목 모두 별점을 골라 주세요.'); return; }
+          var s = {}; I.CRIT.forEach(function (c) { s[c[0]] = +$('input[name=rv_' + c[0] + ']:checked', m).value; });
+          var row = { job: jid, a: aid, at: I.stamp(), s: s, rehire: $('input[name=rv_re]:checked', m).value, tags: $$('input[name=rv_tag]:checked', m).map(function (x) { return x.value; }), note: $('#rv_note', m).value.trim() };
+          db().reviews = (db().reviews || []).filter(function (x) { return !(x.job === jid && x.a === aid); }); db().reviews.push(row);
+          done(a.name + ' 작가 평가를 저장했어요. 평점 ★ ' + I.rating(a));
+        };
+        var del = $('#rvDel', m);
+        if (del) del.onclick = function () { db().reviews = db().reviews.filter(function (x) { return !(x.job === jid && x.a === aid); }); done('평가를 지웠어요.'); };
+      });
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('#jobDetail [data-rev]'); if (!b) return;
+    var k = b.dataset.rev.split(':'); reviewModal(k[0], k[1]);
+  });
   function jobMeta(j) {
     return I.period(j) + ' · ' + j.time + ' · ' + j.region;
   }
@@ -72,6 +111,7 @@
     var todo = [];
     d.quotes.forEach(function (q) { todo.push(['y', 'inbox', '견적 문의 → 공고 전환', q.client + ' · ' + I.skill(q.skill).n + ' ' + q.need + '명', 'jobs.html#new-' + q.id]); });
     review.forEach(function (j) { todo.push(['y', 'user-check', '작가 선정 필요', j.title + ' · 신청 ' + j.apps.length + '명 / 모집 ' + j.need + '명', 'jobs.html#' + j.id]); });
+    I.needReview().forEach(function (x) { todo.push(['b', 'star', '작가 평가', x.a.name + ' · ' + x.j.title, 'jobs.html#' + x.j.id]); });
     pend.forEach(function (a) { todo.push(['b', 'user-plus', '작가 등록 승인', a.name + ' · ' + a.skills.map(function (s) { return I.skill(s.k).n; }).join(', '), 'artists.html#' + a.id]); });
     if (due.length) todo.push(['g', 'wallet', '정산 지급', due.length + '건 · ' + I.won(dueSum), 'settlement.html']);
     I.needInfo().forEach(function (a) { todo.push(['r', 'id-card', '정산 정보 미등록', a.name + ' · ' + (a.tax === 'business' ? '사업자등록번호' : '주민등록번호') + ' 등록 전이라 지급 보류', 'artists.html#' + a.id]); });
@@ -137,6 +177,7 @@
       }).join('');
     }
 
+    document.addEventListener('iux-review', function () { renderDetail(); });
     function renderDetail() {
       var j = I.job(cur), box = $('#jobDetail');
       if (!j) { box.innerHTML = '<div class="card empty-s"><i data-lucide="mouse-pointer-click"></i>왼쪽에서 공고를 고르세요.</div>'; I.icons(); return; }
@@ -150,13 +191,13 @@
         return '<tr class="' + (rest ? 'rest' : '') + '">' +
           '<td class="c">' + (editable ? '<input type="checkbox" class="pk" value="' + a.id + '"' + (p.s === 'selected' ? ' checked' : '') + ' aria-label="' + E(a.name) + ' 선택">' : '') + '</td>' +
           '<td class="c"><span class="rank">' + (i + 1) + '</span></td>' +
-          '<td><div class="who">' + I.avatar(a) + '<div><b>' + E(a.name) + '</b><small>만 ' + I.age(a.birth) + '세 · ★ ' + (a.rating || '-') + '</small></div></div></td>' +
+          '<td><div class="who">' + I.avatar(a) + '<div><b>' + E(a.name) + '</b><small>만 ' + I.age(a.birth) + '세 · ★ ' + (I.rating(a) || '-') + '</small></div></div></td>' +
           '<td>' + (sk ? '<span class="chip">' + I.skill(j.skill).n + ' <b>' + I.years(sk.since) + '년차</b></span>' : '-') + '</td>' +
           '<td>' + a.regions.join(', ') + '</td>' +
           '<td class="r">' + I.count(a.id) + '회</td>' +
           '<td class="r">' + (I.streak(a.id) ? '<span class="' + (rest ? 'warn-t' : '') + '">' + I.streak(a.id) + '회</span>' : '-') + '</td>' +
           '<td class="num">' + p.at.slice(5) + '</td>' +
-          '<td>' + (rest ? '<span class="badge st-rest">휴식 대상</span>' : appState(p, j)) + '</td></tr>';
+          '<td>' + (rest ? '<span class="badge st-rest">휴식 대상</span>' : appState(p, j)) + (j.status === 'done' && p.s === 'selected' ? revCell(j, a) : '') + '</td></tr>';
       }).join('');
       box.innerHTML = '<div class="card jd">' +
         '<div class="head"><div><p>' + I.badge(I.JOB_STATE, j.status) + ' <span class="chip">' + I.skill(j.skill).n + '</span> ' + (j.photoOk ? '<span class="badge st-ok">사진 홍보 동의</span>' : '<span class="badge st-done">사진 홍보 미동의</span>') + (I.photosOf(j.id).length ? ' <a class="chip" href="photos.html#' + j.id + '">현장 사진 ' + I.photosOf(j.id).length + '장</a>' : '') + '</p><h2 style="margin-top:8px">' + E(j.title) + '</h2><p class="muted" style="margin-top:2px">' + E(j.client) + ' · 공고 ' + j.posted + '</p></div>' +
@@ -185,7 +226,7 @@
       $$('[data-mode]', box).forEach(function (b) { b.onclick = function () { j.mode = b.dataset.mode; I.save(); renderDetail(); }; });
       $('#autoPick').onclick = function () {
         var ok = apps.filter(function (p) { return !I.isRest(p.a); });
-        if (j.mode === 'pick') ok.sort(function (a, b) { return (I.artist(b.a).rating - I.artist(a.a).rating) || (I.count(a.a) - I.count(b.a)); });
+        if (j.mode === 'pick') ok.sort(function (a, b) { return (I.rating(I.artist(b.a)) - I.rating(I.artist(a.a))) || (I.count(a.a) - I.count(b.a)); });
         var pick = ok.slice(0, j.need).map(function (p) { return p.a; });
         $$('.pk', box).forEach(function (c) { c.checked = pick.indexOf(c.value) > -1; });
         upd();
@@ -324,6 +365,7 @@
     $('#fSkill').innerHTML = '<option value="">기술 전체</option>' + d.skills.map(function (s) { return '<option value="' + s.k + '">' + s.n + '</option>'; }).join('');
     $('#fRegion').innerHTML = '<option value="">지역 전체</option>' + d.regions.map(function (r) { return '<option>' + r + '</option>'; }).join('');
 
+    document.addEventListener('iux-review', function () { render(); });
     function render() {
       var list = db().artists.filter(function (a) {
         if (st.q && (a.name + a.phone + a.email).indexOf(st.q) < 0) return false;
@@ -345,7 +387,7 @@
           '<td class="r">' + I.count(a.id) + '회</td>' +
           '<td class="r">' + (I.streak(a.id) ? '<span class="' + (rest ? 'warn-t' : '') + '">' + I.streak(a.id) + '회</span>' : '-') + '</td>' +
           '<td class="r">' + (earn ? I.won(earn) : '-') + '</td>' +
-          '<td class="c">' + (a.rating ? '★ ' + a.rating : '-') + '</td>' +
+          '<td class="c">' + (I.rating(a) ? '★ ' + I.rating(a) + ' <small class="muted">(' + I.reviewsOf(a.id).length + ')</small>' : '-') + '</td>' +
           '<td>' + (rest ? '<span class="badge st-rest">휴식 대상</span>' : I.badge(I.ART_STATE, a.status)) + '</td></tr>';
       }).join('') : '<tr><td colspan="9"><div class="empty-s">조건에 맞는 작가가 없어요.</div></td></tr>';
       var pend = db().artists.filter(function (a) { return a.status === 'pending'; }).length;
@@ -353,6 +395,17 @@
       $('#pendN').textContent = pend;
     }
 
+    function revBlock(a) {
+      var R = I.reviewsOf(a.id), wait = I.needReview().filter(function (x) { return x.a.id === a.id; });
+      var avg = function (k) { return R.length ? Math.round(R.reduce(function (s, r) { return s + r.s[k]; }, 0) / R.length * 10) / 10 : 0; };
+      var re = { yes: 0, ok: 0, no: 0 }; R.forEach(function (r) { re[r.rehire]++; });
+      return '<p class="sec-t"><i data-lucide="star"></i>운영자 평가 <small class="muted" style="font-weight:500">작가에게 공개되지 않아요</small></p>' +
+        (R.length ? '<div class="rv-sum"><div class="big"><b>' + I.rating(a) + '</b>' + I.stars(I.rating(a)) + '<small>평가 ' + R.length + '건 · 재섭외 추천 ' + re.yes + ' · 보류 ' + re.no + '</small></div>' +
+          '<div class="rv-bars">' + I.CRIT.map(function (c) { var v = avg(c[0]); return '<div class="hb"><span>' + c[1] + '</span><span class="tr"><i style="width:' + v / 5 * 100 + '%"></i></span><b>' + v + '</b></div>'; }).join('') + '</div></div>' +
+          '<div class="list" style="margin-top:8px">' + R.map(function (r) { var j = I.job(r.job); return '<div class="li rv-li"><span class="t"><b>' + E(j ? j.title : '-') + '</b><small>' + (j ? I.period(j) : '') + ' · ' + I.stars(I.revAvg(r)) + ' ' + I.badge(I.REHIRE, r.rehire) + '</small>' + (r.tags.length ? '<small>' + r.tags.map(E).join(' · ') + '</small>' : '') + (r.note ? '<small class="memo">' + E(r.note) + '</small>' : '') + '</span><button class="btn btn-o btn-s" data-revp="' + r.job + '">수정</button></div>'; }).join('') + '</div>'
+        : '<p class="muted">아직 평가가 없어요.</p>') +
+        (wait.length ? '<div class="list" style="margin-top:8px">' + wait.map(function (x) { return '<div class="li"><span class="t"><b>' + E(x.j.title) + '</b><small>' + I.period(x.j) + ' · 평가 대기</small></span><button class="btn btn-y btn-s" data-revp="' + x.j.id + '"><i data-lucide="star"></i>평가하기</button></div>'; }).join('') + '</div>' : '');
+    }
     function profile(id) {
       var a = I.artist(id); if (!a) return;
       var hist = I.history(a.id), S = I.settlements().filter(function (r) { return r.artist.id === a.id; });
@@ -368,12 +421,14 @@
         '<p class="sec-t"><i data-lucide="landmark"></i>정산 정보</p><p>' + (a.tax === 'freelancer' ? '프리랜서 (사업소득 ' + db().settings.taxRate + '% 원천징수)' : '개인사업자 (세금계산서 발행)') + ' · ' + E(a.bank) + ' ' + E(a.account) + '</p>' +
         (I.hasTaxInfo(a) ? '<p class="num" style="margin-top:4px">' + (a.taxInfo.kind === 'rrn' ? '주민등록번호 <b>' + E(a.taxInfo.masked) + '</b>' + (a.taxInfo.foreign ? ' (외국인 · ' + E(a.taxInfo.visa || '') + ')' : '') : '사업자등록번호 <b>' + E(a.taxInfo.bizNo) + '</b> · ' + E(a.taxInfo.bizName) + ' · 계산서 ' + E(a.taxInfo.invoiceMail)) + ' <span class="muted">· 등록 ' + a.taxInfo.at + '</span></p><p class="note" style="margin-top:4px"><i data-lucide="lock" style="width:12px;height:12px;vertical-align:-1px"></i> 암호화 저장 · 전체 번호는 정산 담당 권한만 열람(열람 기록 남김)</p>'
           : '<p class="demo" style="margin:8px 0 0;background:var(--bad-bg);color:var(--bad)"><i data-lucide="id-card"></i>' + (a.tax === 'business' ? '사업자등록번호' : '주민등록번호') + ' 미등록 · 등록 전까지 지급이 보류됩니다. <button class="btn btn-o btn-s" data-act="askinfo" style="margin-left:auto">등록 요청 보내기</button></p>') +
+        revBlock(a) +
         '<p class="sec-t"><i data-lucide="history"></i>참여 이력</p>' + (hist.length ? '<div class="list">' + hist.map(function (j) { var p = j.apps.filter(function (x) { return x.a === a.id; })[0]; return '<div class="li"><span class="t"><b>' + E(j.title) + '</b><small>' + I.period(j) + ' · ' + I.skill(j.skill).n + '</small></span>' + appState(p, j) + '</div>'; }).join('') + '</div>' : '<p class="muted">아직 신청 이력이 없어요.</p>') +
         '<div class="mf">' + (a.status === 'pending' ? '<button class="btn btn-o" data-act="reject">반려</button><button class="btn btn-y" data-act="approve"><i data-lucide="check"></i>승인하고 알림 보내기</button>'
           : a.status === 'active' ? '<button class="btn btn-o" data-act="pause">활동 중지</button>' + (rest ? '<button class="btn btn-k" data-act="unrest">휴식 해제</button>' : '') + '<button class="btn btn-y" data-close>닫기</button>'
           : '<button class="btn btn-y" data-act="resume">활동 재개</button>') + '</div>',
         function (m, close) {
           m.querySelector('.modal-card').classList.add('wide'); I.icons();
+          $$('[data-revp]', m).forEach(function (b) { b.onclick = function () { close(); reviewModal(b.dataset.revp, id, function () { profile(id); }); }; });
           $$('[data-act]', m).forEach(function (b) {
             b.onclick = function () {
               var act = b.dataset.act;

@@ -1,6 +1,6 @@
 /* IUX ART 관리자 — 시안용 샘플 데이터 (개발 단계에서 DB로 교체) */
 var IUX_SEED = {
-  version: 3,
+  version: 4,
 
   skills: [
     { k: 'caricature',   n: '캐리커처',          rate: 60000 },
@@ -109,6 +109,21 @@ var IUX_SEED = {
     { id: 'p6', job: 'j7', a: 'a7', src: 'images/live-drawing-02.jpg', at: '2026-10-18 18:30', subj: true, state: 'pending' },
     { id: 'p7', job: 'j7', a: 'a1', src: 'images/site-friends-01.jpg', at: '2026-10-18 18:42', subj: true, state: 'pending' },
     { id: 'p8', job: 'j8', a: 'a3', src: 'images/site-kid-01.jpg', at: '2026-10-24 12:20', subj: true, state: 'pending' }
+  ],
+
+  /* 행사별 작가 평가 (운영자 내부용, 작가에게 공개하지 않음)
+     s: work 작품 완성도 / time 시간 준수 / cs 고객 응대 / manner 현장 매너 (1~5)
+     rehire: yes 재섭외 추천 / ok 보통 / no 재섭외 보류 */
+  reviews: [
+    { job: 'j1', a: 'a1', at: '2026-09-07 10:20', s: { work: 5, time: 5, cs: 5, manner: 5 }, rehire: 'yes', tags: ['손이 빠름', '고객 반응 좋음'], note: '대기 줄이 길었는데 속도 조절 잘함. 담당자 칭찬.' },
+    { job: 'j1', a: 'a4', at: '2026-09-07 10:24', s: { work: 4, time: 5, cs: 4, manner: 5 }, rehire: 'yes', tags: ['준비물 완벽'], note: '' },
+    { job: 'j2', a: 'a3', at: '2026-09-14 09:40', s: { work: 5, time: 4, cs: 5, manner: 5 }, rehire: 'yes', tags: ['아이들 응대 좋음'], note: '도안 샘플판 준비해 와서 선택이 빨랐음.' },
+    { job: 'j2', a: 'a6', at: '2026-09-14 09:45', s: { work: 4, time: 3, cs: 4, manner: 4 }, rehire: 'ok', tags: ['지각'], note: '20분 늦게 도착. 사전 연락은 있었음.' },
+    { job: 'j3', a: 'a2', at: '2026-09-21 11:00', s: { work: 5, time: 5, cs: 4, manner: 5 }, rehire: 'yes', tags: ['작품 퀄리티 높음'], note: '' },
+    { job: 'j4', a: 'a7', at: '2026-09-29 10:10', s: { work: 5, time: 5, cs: 5, manner: 5 }, rehire: 'yes', tags: ['손이 빠름'], note: '이틀 연속인데 컨디션 유지 좋음.' },
+    { job: 'j4', a: 'a10', at: '2026-09-29 10:15', s: { work: 4, time: 4, cs: 3, manner: 4 }, rehire: 'ok', tags: [], note: '응대가 다소 무뚝뚝하다는 현장 피드백.' },
+    { job: 'j5', a: 'a9', at: '2026-10-05 09:30', s: { work: 4, time: 5, cs: 5, manner: 5 }, rehire: 'yes', tags: ['아이들 응대 좋음'], note: '' },
+    { job: 'j6', a: 'a1', at: '2026-10-12 10:00', s: { work: 5, time: 5, cs: 5, manner: 4 }, rehire: 'yes', tags: ['고객 반응 좋음'], note: '' }
   ],
 
   /* 홈페이지 견적 문의 (공고로 전환 전) */
