@@ -929,3 +929,105 @@ img[width][height]{height:auto}
 .collage{padding-bottom:72px}
 .collage-copy{margin-top:72px}
 @media (max-width:720px){.collage{padding-bottom:32px}.collage-copy{margin-top:40px}}
+
+/* =========================================================
+   모바일 헤더 · 햄버거 메뉴 (우측)
+   ========================================================= */
+.hd-act{margin-left:auto}
+.menu-btn [data-lucide]{width:24px;height:24px}
+.menu-btn .ic-close{display:none}
+.hd.open .menu-btn .ic-open{display:none}
+.hd.open .menu-btn .ic-close{display:block}
+.m-cta{display:none}
+@media (max-width:1024px){
+  .hd-in{gap:12px}
+  .hd-act{gap:6px}
+  .menu-btn{display:grid;margin-right:-8px}
+  .nav{position:fixed;top:calc(68px + env(safe-area-inset-top,0px));left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:0;margin:0;
+       padding:8px max(20px,env(safe-area-inset-right,0px)) calc(32px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));
+       background:var(--bg);border-top:1px solid var(--line);overflow-y:auto;overscroll-behavior:contain;
+       opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .25s,transform .25s,visibility .25s}
+  .hd.open .nav{opacity:1;visibility:visible;transform:none}
+  .nav>li{border-bottom:1px solid var(--line)}
+  .nav>li>a{height:56px;padding:0 4px;font-size:17px;font-weight:800;color:var(--ink);justify-content:space-between}
+  .nav>li>a [data-lucide]{display:none}
+  .nav>li.on>a{color:var(--brand-text)}
+  .nav>li.on>a::after{display:none}
+  .nav .sub{display:flex!important;flex-wrap:wrap;gap:6px;position:static;transform:none;opacity:1;visibility:visible;min-width:0;
+            background:none;box-shadow:none;padding:0 0 16px;margin:0}
+  .nav .sub a{padding:7px 12px;border-radius:var(--r-pill);background:var(--card);color:var(--ink-2);font-size:13px;font-weight:700}
+  .nav .sub a:hover{background:var(--ink);color:var(--bg)}
+  .m-cta{display:grid;grid-template-columns:1fr 1fr;gap:8px;list-style:none;margin-top:20px;border:0!important}
+  .m-cta a{height:50px;border-radius:var(--r-pill);display:grid;place-items:center;font-weight:800;font-size:15px}
+  .m-cta .q{background:var(--brand);color:var(--on-brand)}
+  .m-cta .l{border:1px solid var(--line-strong)}
+  .m-cta .tel{grid-column:1/-1;text-align:center;font-size:13px;color:var(--ink-3);margin-top:6px}
+  .m-cta .tel b{color:var(--ink);font-family:var(--f-display);font-size:16px;user-select:all}
+  body.menu-open{overflow:hidden}
+}
+@media (max-width:720px){
+  .hd-in{height:60px}
+  .nav{top:calc(60px + env(safe-area-inset-top,0px))}
+  .logo{font-size:18px}
+  .logo-mark{width:28px;height:28px}
+  .hd-act .btn{display:inline-flex!important;height:34px;padding:0 14px;font-size:12px}
+  .anchor-tabs{top:calc(60px + env(safe-area-inset-top,0px))}
+
+  /* 메인 */
+  .hero-media{width:calc(100% - 32px);margin-top:28px;border-radius:20px}
+  .stage{height:380px}
+  .chip{padding:9px 12px;font-size:12px;gap:8px}
+  .chip b{font-size:13px}
+  .chip .ico{width:28px;height:28px}
+  .bento{grid-auto-rows:auto}
+  .bc{min-height:300px}
+  .bc .art{margin-top:28px}
+  .bc .bigmark .m{width:110px;height:110px;padding-bottom:30px}
+  .data .wrap{padding-block:80px}
+  .stats{margin-top:40px}
+  .tscroll{margin-top:36px;gap:12px}
+  .tcard{flex-basis:78vw}
+  .collage{grid-template-columns:1fr 1fr}
+  .collage .c3{display:block;grid-column:1/-1}
+  .collage .c3 .tile{aspect-ratio:auto}
+  .collage .c4,.collage .c5{display:none}
+  .btns{width:100%}
+  .hero-side .btns .btn,.collage-copy .btns .btn{flex:1;padding:0 12px}
+  .sec{padding-block:72px}
+  .sec-head{margin-bottom:28px}
+  .toolbar{margin-bottom:22px}
+  .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px;width:calc(100% + 32px)}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none}
+  .subhero h1{font-size:28px}
+  .subhero .lead{font-size:15px}
+  .subhero .btns .btn{flex:1;padding:0 12px}
+  .ev-visual.fit{aspect-ratio:1}
+  .split,.donate-band{gap:24px}
+  .donate-photo{height:260px}
+  .manifesto{font-size:22px}
+  .values{margin-top:32px}
+  .ft-top{gap:28px 16px}
+}
+
+/* 헤더 블러가 fixed 기준을 바꾸므로 높이를 직접 지정 */
+@media (max-width:1024px){
+  .nav{position:absolute;top:100%;bottom:auto;height:calc(100vh - 68px - env(safe-area-inset-top,0px));height:calc(100dvh - 68px - env(safe-area-inset-top,0px))}
+}
+@media (max-width:720px){
+  .nav{top:100%;height:calc(100vh - 60px - env(safe-area-inset-top,0px));height:calc(100dvh - 60px - env(safe-area-inset-top,0px))}
+}
+/* 햄버거: CSS 선 (아이콘 로딩과 무관하게 표시) */
+.menu-btn{position:relative;width:40px;height:40px}
+.menu-btn [data-lucide],.menu-btn svg{display:none!important}
+.menu-btn .bar{position:absolute;left:10px;right:10px;height:2px;border-radius:2px;background:var(--ink);transition:transform .25s,opacity .2s,top .25s}
+.menu-btn .bar:nth-child(1){top:13px}
+.menu-btn .bar:nth-child(2){top:19px}
+.menu-btn .bar:nth-child(3){top:25px}
+.hd.open .menu-btn .bar:nth-child(1){top:19px;transform:rotate(45deg)}
+.hd.open .menu-btn .bar:nth-child(2){opacity:0}
+.hd.open .menu-btn .bar:nth-child(3){top:19px;transform:rotate(-45deg)}
+@media (max-width:1024px){
+  .nav>li.m-cta>a{height:50px;padding:0;justify-content:center;font-size:15px;display:flex;align-items:center}
+  .nav>li.m-cta>a.q{color:var(--on-brand)}
+}

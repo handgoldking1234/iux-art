@@ -20,10 +20,18 @@
 
   /* ---------- 헤더 / 모바일 메뉴 ---------- */
   var hd = $('#hd'), menuBtn = $('#menuBtn');
-  if (menuBtn) menuBtn.addEventListener('click', function () {
-    var open = hd.classList.toggle('open');
+  function setMenu(open) {
+    hd.classList.toggle('open', open);
+    d.body.classList.toggle('menu-open', open);
     menuBtn.setAttribute('aria-expanded', open);
-  });
+    menuBtn.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+  }
+  if (menuBtn) {
+    menuBtn.addEventListener('click', function () { setMenu(!hd.classList.contains('open')); });
+    $$('#nav a').forEach(function (a) { a.addEventListener('click', function () { setMenu(false); }); });
+    addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+    addEventListener('resize', function () { if (innerWidth > 1024) setMenu(false); });
+  }
 
   /* ---------- 스크롤 등장 + 숫자 카운트 ---------- */
   function countUp(el) {
