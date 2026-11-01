@@ -170,7 +170,7 @@
         '<div class="hints">' + HINTS.map(function (h) { return '<button type="button" class="hint" data-hint="' + h[1] + '">+ ' + h[0] + '</button>'; }).join('') + '</div>' +
         '<textarea class="inp" id="upM" rows="4" maxlength="300" required placeholder="공간, 손님 반응, 기억에 남는 순간을 2~3문장으로 적어 주세요.">' + (po ? E(po.mood) : '') + '</textarea></div>' +
         '<div class="f2"><div class="fld"><span class="lb">분위기 태그 <small class="muted">최대 4개</small></span><div class="togs">' + MOODS.map(function (t) { return '<label class="tog"><input type="checkbox" name="upTag" value="' + t + '"' + (po && po.tags.indexOf(t) > -1 ? ' checked' : '') + '><span>#' + t + '</span></label>'; }).join('') + '</div></div>' +
-        '<div class="fld"><label for="upG">참여 손님 (대략)</label><select class="sel" id="upG">' + GUESTS.map(function (g) { return '<option' + (po && po.guests === g ? ' selected' : '') + '>' + g + '</option>'; }).join('') + '</select></div></div>' +
+        '<div class="fld"><label for="upN">그린 인원 <i>*</i></label><div class="n-in"><input class="inp" id="upN" type="number" min="1" max="2000" inputmode="numeric" required value="' + (po && po.count ? po.count : '') + '" placeholder="예) 120"><span>명</span></div><p class="help">실제로 그려 드린 손님 수예요. 담당자에게 보내는 결과 리포트에 들어가요.</p></div></div>' +
         (j.photoOk ? '<label class="ck"><input type="checkbox" id="upAgree"' + (po ? ' checked' : '') + '>얼굴이 나온 손님에게 촬영·게시 동의를 받았어요. 어린이는 보호자 동의를 받았어요. (필수)</label>' : '') +
         '<div class="mf">' + (po && po.state !== 'published' ? '<button type="button" class="btn btn-o" id="upDel">삭제</button>' : '') + '<button type="button" class="btn btn-o" data-close>취소</button><button class="btn btn-y" type="submit"><i data-lucide="send"></i>' + (j.photoOk ? (po ? '수정해서 다시 올리기' : '후기 올리기') : '내부 기록으로 저장') + '</button></div></form>' +
         '<aside class="pv"><p class="pv-l">홈페이지 미리보기</p><article class="sk-card" id="upPv"></article></aside></div>',
@@ -220,10 +220,11 @@
             if (!shots.length) { I.toast('사진을 1장 이상 올려 주세요.'); return; }
             if (!$('#upT', m).value.trim()) { $('#upT', m).focus(); I.toast('제목을 적어 주세요.'); return; }
             if ($('#upM', m).value.trim().length < 20) { $('#upM', m).focus(); I.toast('현장 분위기를 20자 이상 적어 주세요.'); return; }
+            if (!(+$('#upN', m).value > 0)) { $('#upN', m).focus(); I.toast('그린 인원을 적어 주세요.'); return; }
             if (j.photoOk && !$('#upAgree', m).checked) { I.toast('손님 촬영·게시 동의를 확인해 주세요.'); return; }
             var row = po || { id: 's' + Date.now(), job: jid, a: me };
             row.at = I.stamp(); row.subj = true; row.title = $('#upT', m).value.trim(); row.mood = $('#upM', m).value.trim();
-            row.tags = tags(); row.guests = $('#upG', m).value; row.photos = shots; row.state = j.photoOk ? 'pending' : 'private';
+            row.tags = tags(); var cnt = +$('#upN', m).value; row.count = cnt; row.guests = cnt <= 50 ? '50명 이하' : cnt <= 100 ? '50~100명' : cnt <= 200 ? '100~200명' : '200명 이상'; row.photos = shots; row.state = j.photoOk ? 'pending' : 'private';
             db().posts = db().posts || []; if (!po) db().posts.push(row);
             I.save(); close(); render();
             I.toast(j.photoOk ? '현장 후기를 올렸어요. 운영자 확인 후 홈페이지에 게시돼요.' : '내부 기록으로 저장했어요.');

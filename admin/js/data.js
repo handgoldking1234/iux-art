@@ -1,6 +1,6 @@
 /* IUX ART 관리자 — 시안용 샘플 데이터 (개발 단계에서 DB로 교체) */
 var IUX_SEED = {
-  version: 5,
+  version: 6,
 
   skills: [
     { k: 'caricature',   n: '캐리커처',          rate: 60000 },
@@ -102,30 +102,42 @@ var IUX_SEED = {
      state: pending 검수 대기 / published 후기 게시 / hidden 게시 안 함 / private 내부 보관(고객 홍보 미동의)
      공개 화면에는 업체명·정확한 장소·작가 실명 없이 프로그램·지역·작가 연차만 노출 */
   posts: [
-    { id: 's1', job: 'j1', a: 'a1', at: '2026-09-06 18:10', state: 'published', subj: true,
+    { id: 's1', job: 'j1', a: 'a1', at: '2026-09-06 18:10', state: 'published', subj: true, count: 168,
       title: '추석 맞이 임직원 가족 캐리커처', guests: '100~200명', tags: ['기업행사', '가족', '실내'],
       mood: '로비에 부스 두 개를 펴자마자 줄이 길게 섰어요. 아이 손을 잡고 온 가족이 많아서 4인 가족 그림을 제일 많이 그렸고, 완성된 그림을 받고 사진 찍는 모습이 끝날 때까지 이어졌습니다.',
       photos: ['images/live-drawing-01.jpg', 'images/site-family-01.jpg', 'images/work-family-02.jpg'] },
-    { id: 's2', job: 'j2', a: 'a3', at: '2026-09-13 18:40', state: 'published', subj: true,
+    { id: 's2', job: 'j2', a: 'a3', at: '2026-09-13 18:40', state: 'published', subj: true, count: 212,
       title: '가을 축제 부스 페이스페인팅', guests: '200명 이상', tags: ['대학축제', '야외', '학생'],
       mood: '축제 메인 거리 한가운데 부스라 오후 내내 대기 줄이 끊이지 않았어요. 학생들은 학과 상징이나 별·하트 도안을 많이 골랐고, 친구끼리 같은 도안으로 맞추는 경우가 많았어요.',
       photos: ['images/fp-live-bee.jpg', 'images/fp-rainbow.jpg', 'images/fp-cat.jpg', 'images/fp-stars.jpg'] },
-    { id: 's3', job: 'j4', a: 'a7', at: '2026-09-28 18:20', state: 'published', subj: true,
+    { id: 's3', job: 'j4', a: 'a7', at: '2026-09-28 18:20', state: 'published', subj: true, count: 265,
       title: '이틀간의 구민 문화 축제 캐리커처', guests: '200명 이상', tags: ['지역축제', '야외', '가족'],
       mood: '공원 잔디 광장에서 이틀 동안 진행했어요. 둘째 날은 첫날 그림을 받은 분이 가족을 데리고 다시 오시기도 했고, 어르신 부부 그림을 그려 드릴 때 반응이 특히 좋았습니다.',
       photos: ['images/live-drawing-02.jpg', 'images/site-friends-01.jpg'] },
-    { id: 's4', job: 'j6', a: 'a1', at: '2026-10-11 17:20', state: 'private', subj: true,
+    { id: 's4', job: 'j6', a: 'a1', at: '2026-10-11 17:20', state: 'private', subj: true, count: 38,
       title: 'VIP 고객 감사 행사', guests: '50명 이하', tags: ['VIP', '실내'],
       mood: '라운지에서 차분한 분위기로 진행했어요. 한 분씩 대화를 나누며 천천히 그렸습니다.',
       photos: ['images/site-single-01.jpg'] },
-    { id: 's5', job: 'j7', a: 'a7', at: '2026-10-18 18:30', state: 'pending', subj: true,
+    { id: 's5', job: 'j7', a: 'a7', at: '2026-10-18 18:30', state: 'pending', subj: true, count: 120,
       title: '창립 10주년 파티 라이브 드로잉', guests: '100~200명', tags: ['기업행사', '파티', '실내'],
       mood: '루프탑 파티장에서 진행했어요. 팀 단위로 와서 단체 캐리커처를 요청하는 분이 많았고, 완성작을 사무실에 걸겠다며 좋아해 주셨어요.',
       photos: ['images/work-single-02.jpg', 'images/work-couple-03.jpg'] },
-    { id: 's6', job: 'j8', a: 'a3', at: '2026-10-24 12:20', state: 'pending', subj: true,
+    { id: 's6', job: 'j8', a: 'a3', at: '2026-10-24 12:20', state: 'pending', subj: true, count: 64,
       title: '어린이집 가을 운동회 페이스페인팅', guests: '50~100명', tags: ['어린이', '야외', '운동회'],
       mood: '운동장 그늘막 아래에서 진행했어요. 경기 중간 쉬는 시간에 아이들이 몰려와서 짧고 귀여운 도안 위주로 빠르게 그렸고, 부모님들 사진 촬영이 이어졌어요.',
-      photos: ['images/fp-octopus.jpg', 'images/site-kid-01.jpg', 'images/fp-jellyfish.jpg'] }
+      photos: ['images/fp-octopus.jpg', 'images/site-kid-01.jpg', 'images/fp-jellyfish.jpg'] },
+    { id: 's7', job: 'j1', a: 'a4', at: '2026-09-06 18:30', state: 'published', subj: true, count: 142,
+      title: '가족의 날 두 번째 부스 캐리커처', guests: '100~200명', tags: ['기업행사', '가족'],
+      mood: '두 번째 부스는 커플과 부부 손님이 많았어요. 사내 커플이 함께 그림을 받아 가며 사원증 사진으로 쓰겠다고 해서 다 같이 웃었습니다.',
+      photos: ['images/work-family-03.jpg', 'images/work-couple-02.jpg'] },
+    { id: 's8', job: 'j2', a: 'a6', at: '2026-09-13 18:55', state: 'hidden', subj: true, count: 188,
+      title: '축제 부스 반짝이 페이스페인팅', guests: '200명 이상', tags: ['대학축제', '야외'],
+      mood: '해 질 무렵부터는 글리터 포인트를 찾는 학생이 많았어요. 잠자리와 아이스크림 도안이 특히 인기였습니다.',
+      photos: ['images/fp-dragonfly.jpg', 'images/fp-icecream.jpg'] },
+    { id: 's9', job: 'j4', a: 'a10', at: '2026-09-28 18:40', state: 'published', subj: true, count: 231,
+      title: '구민 축제 가족 캐리커처', guests: '200명 이상', tags: ['지역축제', '가족'],
+      mood: '자매·형제를 함께 그려 달라는 요청이 많았어요. 둘째 날 오후에는 대기 번호표를 나눠 드려 줄 서는 시간을 줄였습니다.',
+      photos: ['images/work-sisters.jpg', 'images/work-couple-03.jpg'] }
   ],
 
   /* 행사별 작가 평가 (운영자 내부용, 작가에게 공개하지 않음)
@@ -142,6 +154,14 @@ var IUX_SEED = {
     { job: 'j5', a: 'a9', at: '2026-10-05 09:30', s: { work: 4, time: 5, cs: 5, manner: 5 }, rehire: 'yes', tags: ['아이들 응대 좋음'], note: '' },
     { job: 'j6', a: 'a1', at: '2026-10-12 10:00', s: { work: 5, time: 5, cs: 5, manner: 4 }, rehire: 'yes', tags: ['고객 반응 좋음'], note: '' }
   ],
+
+  /* 고객 담당자에게 보내는 결과 리포트 (키: 공고ID)
+     state: draft 발송 대기 / sent 발송 완료 · token: 리포트 주소용 임의 문자열 */
+  reports: {
+    j1: { state: 'sent', token: 'r7k2m9qa', sentAt: '2026-09-08 10:30', openedAt: '2026-09-08 11:02', to: '인사팀 김OO 매니저', intro: '추석을 앞두고 임직원 가족분들께 특별한 추억을 선물해 드릴 수 있어 기뻤습니다. 당일 현장 기록을 정리해 보내드립니다.', rating: 5, review: '대기 줄이 길었는데도 끝까지 웃으며 그려 주셔서 직원들 반응이 정말 좋았어요. 내년에도 부탁드릴게요.' },
+    j2: { state: 'sent', token: 'p3x8n1vd', sentAt: '2026-09-15 09:50', openedAt: '', to: '총학생회 박OO', intro: '축제 첫날 페이스페인팅 부스 운영 결과를 정리해 보내드립니다.' },
+    j4: { state: 'draft', token: 'h6w4c2ze', to: '문화체육과 이OO 주무관', intro: '이틀간의 가을 문화 축제 캐리커처 부스 운영 결과를 정리해 보내드립니다.' }
+  },
 
   /* 홈페이지 견적 문의 (공고로 전환 전) */
   quotes: [

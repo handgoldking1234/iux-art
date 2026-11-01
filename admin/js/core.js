@@ -120,6 +120,25 @@ var IUX = (function () {
   var src = function (s) { return s.indexOf('data:') === 0 ? s : '../' + s; };
   var postOf = function (jid, aid) { return (db.posts || []).filter(function (p) { return p.job === jid && p.a === aid; })[0]; };
   var postsOf = function (jid) { return (db.posts || []).filter(function (p) { return !jid || p.job === jid; }); };
+  /* ---------- 결과 리포트 ---------- */
+  var REPORT_STATE = { wait: ['후기 대기', 'st-open'], draft: ['발송 대기', 'st-review'], sent: ['발송 완료', 'st-ok'] };
+  /* 행사 하나의 리포트 재료: 선정 작가, 작가별 현장 후기, 참여 인원 합계, 사진 */
+  function reportOf(jid) {
+    var j = job(jid); if (!j) return null;
+    var sel = j.apps.filter(function (p) { return p.s === 'selected'; }).map(function (p) { return artist(p.a); }).filter(Boolean);
+    var P = (db.posts || []).filter(function (p) { return p.job === jid; });
+    var missing = sel.filter(function (a) { return !P.some(function (p) { return p.a === a.id; }); });
+    var total = P.reduce(function (s, p) { return s + (+p.count || 0); }, 0);
+    var hrs = j.hours * days(j.start, j.end);
+    var r = (db.reports = db.reports || {})[jid];
+    var state = r ? r.state : 'wait';
+    return { job: j, artists: sel, posts: P, missing: missing, total: total, hours: hrs, perHour: hrs ? Math.round(total / hrs / Math.max(1, sel.length)) : 0,
+      photos: P.reduce(function (s, p) { return s.concat(p.photos); }, []), rep: r, state: state };
+  }
+  /* 리포트 만들 차례인 행사: 완료 + 후기 1건 이상 */
+  function reportJobs() { return db.jobs.filter(function (j) { return j.status === 'done' && !j.hidden && (db.posts || []).some(function (p) { return p.job === j.id; }); }); }
+  function newToken() { var c = 'abcdefghjkmnpqrstuvwxyz23456789', t = ''; for (var i = 0; i < 8; i++) t += c[Math.floor(Math.random() * c.length)]; return t; }
+
   /* ---------- 작가 평가 ---------- */
   var CRIT = [['work', '작품 완성도'], ['time', '시간 준수'], ['cs', '고객 응대'], ['manner', '현장 매너']];
   var REHIRE = { yes: ['재섭외 추천', 'st-ok'], ok: ['보통', 'st-done'], no: ['재섭외 보류', 'st-bad'] };
@@ -173,7 +192,7 @@ var IUX = (function () {
     skill: skill, artist: artist, job: job, won: won, man: man, esc: esc,
     history: history, selectedJobs: selectedJobs, streak: streak, isRest: isRest, count: count,
     settlements: settlements, send: send, targets: targets, hasTaxInfo: hasTaxInfo, needInfo: needInfo,
-    JOB_STATE: JOB_STATE, ART_STATE: ART_STATE, PAY_STATE: PAY_STATE, POST_STATE: POST_STATE, src: src, postOf: postOf, postsOf: postsOf, CRIT: CRIT, REHIRE: REHIRE, reviewOf: reviewOf, reviewsOf: reviewsOf, revAvg: revAvg, rating: rating, needReview: needReview, stars: stars, badge: badge, skillChips: skillChips, avatar: avatar,
+    JOB_STATE: JOB_STATE, ART_STATE: ART_STATE, PAY_STATE: PAY_STATE, POST_STATE: POST_STATE, REPORT_STATE: REPORT_STATE, reportOf: reportOf, reportJobs: reportJobs, newToken: newToken, src: src, postOf: postOf, postsOf: postsOf, CRIT: CRIT, REHIRE: REHIRE, reviewOf: reviewOf, reviewsOf: reviewsOf, revAvg: revAvg, rating: rating, needReview: needReview, stars: stars, badge: badge, skillChips: skillChips, avatar: avatar,
     toast: toast, modal: modal, icons: icons
   };
 })();

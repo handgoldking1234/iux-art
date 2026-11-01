@@ -21,6 +21,7 @@
       jobs: d.jobs.filter(function (j) { return j.status === 'review'; }).length + d.quotes.length,
       artists: d.artists.filter(function (a) { return a.status === 'pending'; }).length,
       photos: (d.posts || []).filter(function (p) { return p.state === 'pending'; }).length,
+      reports: reportsReady().length,
       settle: I.settlements().filter(function (r) { return r.state === 'due' || r.state === 'needinfo'; }).length
     };
     Object.keys(c).forEach(function (k) {
@@ -200,7 +201,7 @@
           '<td>' + (rest ? '<span class="badge st-rest">휴식 대상</span>' : appState(p, j)) + (j.status === 'done' && p.s === 'selected' ? revCell(j, a) : '') + '</td></tr>';
       }).join('');
       box.innerHTML = '<div class="card jd">' +
-        '<div class="head"><div><p>' + I.badge(I.JOB_STATE, j.status) + ' <span class="chip">' + I.skill(j.skill).n + '</span> ' + (j.photoOk ? '<span class="badge st-ok">사진 홍보 동의</span>' : '<span class="badge st-done">사진 홍보 미동의</span>') + (I.postsOf(j.id).length ? ' <a class="chip" href="photos.html#' + j.id + '">현장 후기 ' + I.postsOf(j.id).length + '건</a>' : '') + '</p><h2 style="margin-top:8px">' + E(j.title) + '</h2><p class="muted" style="margin-top:2px">' + E(j.client) + ' · 공고 ' + j.posted + '</p></div>' +
+        '<div class="head"><div><p>' + I.badge(I.JOB_STATE, j.status) + ' <span class="chip">' + I.skill(j.skill).n + '</span> ' + (j.photoOk ? '<span class="badge st-ok">사진 홍보 동의</span>' : '<span class="badge st-done">사진 홍보 미동의</span>') + (I.postsOf(j.id).length ? ' <a class="chip" href="photos.html#' + j.id + '">현장 후기 ' + I.postsOf(j.id).length + '건</a>' : '') + (j.status === 'done' && I.postsOf(j.id).length ? ' <a class="chip" href="reports.html#' + j.id + '">결과 리포트 · ' + I.REPORT_STATE[I.reportOf(j.id).state === 'sent' ? 'sent' : 'draft'][0] + '</a>' : '') + '</p><h2 style="margin-top:8px">' + E(j.title) + '</h2><p class="muted" style="margin-top:2px">' + E(j.client) + ' · 공고 ' + j.posted + '</p></div>' +
         (editable ? '<div class="mode" role="group" aria-label="선정 방식"><button data-mode="fcfs" class="' + (j.mode === 'fcfs' ? 'on' : '') + '">선착순</button><button data-mode="pick" class="' + (j.mode === 'pick' ? 'on' : '') + '">직접 선택</button></div>' : '<span class="chip">' + (j.mode === 'fcfs' ? '선착순' : '직접 선택') + '</span>') + '</div>' +
         '<dl class="dl"><div><dt>행사 기간</dt><dd class="num">' + I.period(j) + ' (' + dd + '일)</dd></div><div><dt>진행 시간</dt><dd>' + j.time + ' · ' + j.hours + '시간</dd></div><div><dt>장소</dt><dd>' + E(j.place) + '</dd></div><div><dt>모집 마감</dt><dd class="num">' + j.deadline + '</dd></div>' +
         '<div><dt>섭외 작가</dt><dd>' + j.need + '명</dd></div><div><dt>작가 1인 지급</dt><dd class="num">' + I.won(per) + '</dd></div><div><dt>업체 견적</dt><dd class="num">' + I.won(j.fee) + '</dd></div><div><dt>예상 마진</dt><dd class="num">' + I.won(j.fee - per * j.need) + '</dd></div></dl>' +
@@ -684,6 +685,7 @@
       d.artists.filter(function (a) { return a.status === 'pending'; }).forEach(function (a) { L.push({ k: 'a' + a.id, ic: 'user-plus', c: 'b', t: '작가 등록 승인 대기', s: a.name + ' · ' + a.skills.map(function (x) { return I.skill(x.k).n; }).join(', '), at: a.joined + ' 00:00', href: 'artists.html#' + a.id }); });
       (d.posts || []).filter(function (p) { return p.state === 'pending'; }).forEach(function (p) { var a = I.artist(p.a); L.push({ k: 'p' + p.id, ic: 'image', c: 'g', t: '현장 후기 검수', s: (a ? a.name + ' · ' : '') + p.title, at: p.at, href: 'photos.html' }); });
       I.needInfo().forEach(function (a) { var js = I.selectedJobs(a.id).map(function (j) { return j.posted; }).sort(); L.push({ k: 'i' + a.id, ic: 'id-card', c: 'r', t: '정산 정보 미등록', s: a.name + ' · 지급 보류 중', at: js[js.length - 1] || I.stamp(), href: 'settlement.html' }); });
+      reportsReady().forEach(function (x) { L.push({ k: 'rp' + x.job.id, ic: 'file-text', c: 'g', t: '결과 리포트 발송', s: x.job.client + ' · ' + x.job.title, at: x.posts.map(function (p) { return p.at; }).sort().pop(), href: 'reports.html#' + x.job.id }); });
       I.needReview().forEach(function (x) { L.push({ k: 'v' + x.j.id + x.a.id, ic: 'star', c: 'b', t: '작가 평가', s: x.a.name + ' · ' + x.j.title, at: x.j.end + ' 22:00', href: 'jobs.html#' + x.j.id }); });
       return L.sort(function (a, b) { return a.at < b.at ? 1 : -1; });
     }
@@ -817,7 +819,84 @@
     render();
   }
 
-  var PAGES = { photos: photos, dashboard: dashboard, jobs: jobs, artists: artists, notify: notify, settlement: settlement, stats: stats, settings: settings };
+  /* ---------- 결과 리포트 ---------- */
+  function reportsReady() { return I.reportJobs().map(function (j) { return I.reportOf(j.id); }).filter(function (x) { return x.state !== 'sent' && !x.missing.length; }); }
+  function seasonNext() {
+    var m = +I.today.slice(5, 7);
+    return m >= 10 ? '연말 송년회 시즌에는 캐리커처와 타로카드를 함께 운영하는 부스가 가장 인기가 많아요. 12월은 일정이 빨리 마감되니 미리 날짜를 잡아 두시면 좋아요.'
+      : m <= 1 ? '설 명절·신년회에는 이름에 덕담을 담는 혁필화와 캘리그라피가 잘 어울려요.'
+      : m <= 4 ? '5월 가정의 달 행사에는 페이스페인팅과 요술풍선 삐에로가 아이들에게 반응이 좋아요.'
+      : m <= 7 ? '여름 축제에는 헤나와 페이스페인팅이 시원한 분위기를 더해 줍니다.'
+      : '추석·가을 축제에는 혁필화와 가족 캐리커처를 추천드려요.';
+  }
+  function reportEditor(jid, after) {
+    var x = I.reportOf(jid), j = x.job, d = db();
+    d.reports = d.reports || {};
+    var r = d.reports[jid] || { state: 'draft', token: I.newToken(), to: j.client + ' 담당자님', intro: j.title + ' 운영 결과를 정리해 보내드립니다. 함께해 주셔서 감사합니다.', next: '', skip: [] };
+    r.next = r.next || seasonNext(); r.skip = r.skip || [];
+    I.modal('<div class="mh"><div><h3>결과 리포트 ' + (x.state === 'sent' ? '보기' : '만들기') + '</h3><p class="muted">' + E(j.title) + ' · ' + I.period(j) + ' · ' + E(j.client) + '</p></div><button class="x" data-close aria-label="닫기"><i data-lucide="x"></i></button></div>' +
+      (x.missing.length ? '<p class="demo"><i data-lucide="hourglass"></i><span>아직 현장 후기를 올리지 않은 작가가 있어요: <b>' + x.missing.map(function (a) { return E(a.name); }).join(', ') + '</b> · 기다리거나 지금 있는 내용으로 보낼 수 있어요.</span><button type="button" class="btn btn-o btn-s" id="rpAsk" style="margin-left:auto">후기 요청 보내기</button></p>' : '') +
+      '<div class="rp-sum"><div><span>참여 인원</span><b>' + x.total.toLocaleString() + '명</b></div><div><span>운영 시간</span><b>' + x.hours + '시간</b></div><div><span>투입 작가</span><b>' + x.artists.length + '명</b></div><div><span>현장 사진</span><b>' + x.photos.length + '장</b></div></div>' +
+      '<form class="form" id="rpF"><div class="f2"><div class="fld"><label for="rp_to">받는 사람</label><input class="inp" id="rp_to" value="' + E(r.to) + '"></div><div class="fld"><span class="lb">보내는 방법</span><div class="togs"><label class="tog"><input type="checkbox" id="rp_k" checked><span>알림톡</span></label><label class="tog"><input type="checkbox" id="rp_e" checked><span>메일</span></label></div></div></div>' +
+      '<div class="fld"><label for="rp_in">인사말</label><textarea class="inp" id="rp_in" rows="3">' + E(r.intro) + '</textarea></div>' +
+      '<div class="fld"><span class="lb">넣을 사진 <small class="muted">눌러서 빼거나 다시 넣어요</small></span><div class="rp-shots">' + x.photos.map(function (s) { return '<label class="rp-shot"><input type="checkbox" value="' + E(s) + '"' + (r.skip.indexOf(s) > -1 ? '' : ' checked') + '><img src="' + I.src(s) + '" alt=""><i data-lucide="check"></i></label>'; }).join('') + '</div></div>' +
+      '<div class="fld"><label for="rp_nx">다음 행사 제안</label><textarea class="inp" id="rp_nx" rows="2">' + E(r.next) + '</textarea></div>' +
+      (r.rating ? '<p class="demo" style="background:var(--ok-bg);color:var(--ok)"><i data-lucide="star"></i><span>담당자 만족도 <b>' + I.stars(r.rating) + '</b> · “' + E(r.review || '') + '”</span></p>' : '') +
+      '<div class="mf"><button type="button" class="btn btn-o" id="rpPv"><i data-lucide="external-link"></i>미리보기 (새 창)</button><button class="btn btn-y" type="submit"><i data-lucide="send"></i>' + (x.state === 'sent' ? '다시 보내기' : '담당자에게 보내기') + '</button></div></form>',
+      function (m, close) {
+        m.querySelector('.modal-card').classList.add('wide'); I.icons();
+        var keep = function () {
+          r.to = $('#rp_to', m).value.trim(); r.intro = $('#rp_in', m).value.trim(); r.next = $('#rp_nx', m).value.trim();
+          r.skip = $$('.rp-shot input', m).filter(function (c) { return !c.checked; }).map(function (c) { return c.value; });
+          d.reports[jid] = r; I.save();
+        };
+        $('#rpPv', m).onclick = function () { keep(); window.open('../report.html?r=' + r.token + '&pv=1', '_blank', 'noopener'); };
+        var ask = $('#rpAsk', m);
+        if (ask) ask.onclick = function () { var n = I.send('현장 후기 요청', jid, x.missing.map(function (a) { return a.id; }), d.settings.channels, j.title).reduce(function (s, l) { return s + l.to.length; }, 0); I.save(); I.toast('현장 후기 요청 ' + n + '건을 보냈어요.'); };
+        $('#rpF', m).onsubmit = function (e) {
+          e.preventDefault(); keep();
+          var ch = []; if ($('#rp_k', m).checked) ch.push('kakao'); if ($('#rp_e', m).checked) ch.push('email');
+          if (!ch.length) { I.toast('보내는 방법을 하나 이상 골라 주세요.'); return; }
+          r.state = 'sent'; r.sentAt = I.stamp(); r.openedAt = '';
+          ch.forEach(function (c) { d.logs.unshift({ at: I.stamp(), ch: c, type: '결과 리포트', jid: jid, to: [r.to || '담당자'], note: j.client + ' · ' + j.title }); });
+          I.save(); close(); sideCounts(); if (after) after();
+          I.toast(j.client + '에 결과 리포트를 보냈어요.');
+        };
+      });
+  }
+  function reports() {
+    var f = location.hash.slice(1) && location.hash.slice(1).charAt(0) === 'j' ? 'all' : 'todo';
+    var TABS = [['todo', '보낼 리포트'], ['wait', '후기 대기'], ['sent', '발송 완료'], ['all', '전체']];
+    function render() {
+      var X = I.reportJobs().map(function (j) { return I.reportOf(j.id); }).sort(function (a, b) { return a.job.start < b.job.start ? 1 : -1; });
+      var todo = X.filter(function (x) { return x.state !== 'sent' && !x.missing.length; });
+      var wait = X.filter(function (x) { return x.state !== 'sent' && x.missing.length; });
+      var sent = X.filter(function (x) { return x.state === 'sent'; });
+      var rated = sent.filter(function (x) { return x.rep.rating; });
+      var avg = rated.length ? Math.round(rated.reduce(function (s, x) { return s + x.rep.rating; }, 0) / rated.length * 10) / 10 : 0;
+      $('#rpKpi').innerHTML = [['send', '보낼 리포트', todo.length, '건', '후기가 모두 모인 행사'], ['hourglass', '후기 대기', wait.length, '건', '작가 후기를 기다리는 중'], ['mail-check', '발송 완료', sent.length, '건', '열람 ' + sent.filter(function (x) { return x.rep.openedAt; }).length + '건'], ['star', '담당자 만족도', avg || '-', avg ? '점' : '', '응답 ' + rated.length + '건']].map(function (k, i) {
+        return '<div class="card kpi' + (i === 0 && k[2] ? ' hl' : '') + '"><p class="k"><i data-lucide="' + k[0] + '"></i>' + k[1] + '</p><p class="v">' + k[2] + '<small>' + k[3] + '</small></p><p class="s">' + k[4] + '</p></div>';
+      }).join('');
+      var C = { todo: todo, wait: wait, sent: sent, all: X };
+      $('#rpTabs').innerHTML = TABS.map(function (t) { return '<button class="tab' + (f === t[0] ? ' on' : '') + '" data-f="' + t[0] + '">' + t[1] + ' <span class="n">' + C[t[0]].length + '</span></button>'; }).join('');
+      var V = C[f];
+      $('#rpBody').innerHTML = V.length ? V.map(function (x) {
+        var j = x.job, st = x.state === 'sent' ? 'sent' : x.missing.length ? 'wait' : 'draft';
+        var act = x.state === 'sent' ? '<button class="btn btn-o btn-s" data-rp="' + j.id + '">보기</button>' : '<button class="btn btn-' + (x.missing.length ? 'o' : 'y') + ' btn-s" data-rp="' + j.id + '"><i data-lucide="file-text"></i>' + (x.missing.length ? '미리 만들기' : '리포트 보내기') + '</button>';
+        return '<tr' + (location.hash === '#' + j.id ? ' class="hl-row"' : '') + '><td><b>' + E(j.title) + '</b><br><small class="muted">' + E(j.client) + ' · ' + I.skill(j.skill).n + '</small></td><td class="num">' + I.period(j) + '</td>' +
+          '<td class="c">' + (x.artists.length - x.missing.length) + ' / ' + x.artists.length + '</td><td class="r">' + (x.total ? x.total.toLocaleString() + '명' : '-') + '</td><td class="r">' + x.photos.length + '장</td>' +
+          '<td>' + I.badge(I.REPORT_STATE, st) + (x.state === 'sent' ? '<br><small class="muted">' + x.rep.sentAt.slice(5, 16) + (x.rep.openedAt ? ' · 열람' : ' · 미열람') + '</small>' : '') + '</td>' +
+          '<td class="c">' + (x.rep && x.rep.rating ? I.stars(x.rep.rating) : '-') + '</td><td class="r">' + act + '</td></tr>';
+      }).join('') : '<tr><td colspan="8"><div class="empty-s">해당하는 리포트가 없어요.</div></td></tr>';
+      I.icons();
+    }
+    $('#rpTabs').addEventListener('click', function (e) { var b = e.target.closest('[data-f]'); if (b) { f = b.dataset.f; render(); } });
+    $('#rpBody').addEventListener('click', function (e) { var b = e.target.closest('[data-rp]'); if (b) reportEditor(b.dataset.rp, render); });
+    render();
+    var h = location.hash.slice(1); if (h && I.job(h)) reportEditor(h, render);
+  }
+
+  var PAGES = { reports: reports, photos: photos, dashboard: dashboard, jobs: jobs, artists: artists, notify: notify, settlement: settlement, stats: stats, settings: settings };
   if (PAGES[page]) PAGES[page]();
   sideCounts();
   I.icons();
