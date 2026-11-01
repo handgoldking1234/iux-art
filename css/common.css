@@ -1099,3 +1099,6 @@ img[width][height]{height:auto}
   .dr-sel{flex-basis:100%;margin-bottom:4px}
   .dr-btn{flex:1}
 }
+.bc .art-card.bento-art{width:150px;margin:0 auto;transform:rotate(-3deg)}
+.bc:hover .art-card.bento-art{transform:rotate(0)}
+@media (max-width:720px){.bc .art-card.bento-art{width:130px}}
