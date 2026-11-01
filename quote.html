@@ -62,10 +62,15 @@
           <div class="field"><label for="q_type">행사 유형<i class="req">*</i></label><select id="q_type" name="evtype" required><option value="">선택해 주세요</option><option>기업 행사</option><option>대학 축제·학교 행사</option><option>웨딩·돌잔치</option><option>어린이 행사</option><option>지역 축제·관공서</option><option>매장 오픈·팝업</option><option>기타</option></select></div>
           <div class="field"><label for="q_people">섭외 작가 수<i class="req">*</i></label><input id="q_people" name="people" type="number" min="1" required placeholder="예) 2" inputmode="numeric"><p class="help">잘 모르시면 예상 손님 수를 요청 사항에 적어 주세요. 알맞은 작가 수를 추천해 드려요.</p></div>
         </div>
-        <div class="row2">
-          <div class="field"><label for="q_date">행사 날짜<i class="req">*</i></label><input id="q_date" name="date" type="date" required></div>
-          <div class="field"><label for="q_time">진행 시간</label><input id="q_time" name="time" placeholder="예) 14:00 ~ 17:00"></div>
+        <div class="field"><span class="lbl2" id="q_period_lbl">행사 기간<i class="req" style="color:var(--brand-text);font-style:normal;margin-left:2px">*</i></span>
+          <div class="range" role="group" aria-labelledby="q_period_lbl">
+            <input id="q_date" name="date" type="date" required aria-label="시작일">
+            <span class="tilde" aria-hidden="true">~</span>
+            <input id="q_date_end" name="date_end" type="date" aria-label="종료일">
+          </div>
+          <p class="help">하루 행사는 시작일만 고르시면 돼요.</p>
         </div>
+        <div class="field"><label for="q_time">하루 진행 시간</label><input id="q_time" name="time" placeholder="예) 14:00 ~ 17:00"></div>
         <div class="field"><label for="q_place">행사 장소<i class="req">*</i></label><input id="q_place" name="place" required placeholder="예) 서울 강남구 OO호텔 그랜드볼룸"><p class="help">실내·실외 여부도 함께 적어 주시면 준비에 도움이 돼요.</p></div>
         <div class="form-actions"><button type="button" class="btn btn-ghost" data-prev>이전</button><button type="button" class="btn btn-brand" data-next>다음 <i data-lucide="arrow-right"></i></button></div>
       </div>
@@ -90,7 +95,7 @@
   </div>
   <aside class="aside">
     <h3>문의 요약</h3>
-    <dl><dt>프로그램</dt><dd id="sumProg">선택 전</dd><dt>행사 유형</dt><dd id="sum_evtype">-</dd><dt>날짜</dt><dd id="sum_date">-</dd><dt>시간</dt><dd id="sum_time">-</dd><dt>장소</dt><dd id="sum_place">-</dd><dt>작가 수</dt><dd id="sum_people">-</dd><dt>예상 진행 인원</dt><dd id="sumArtist">-</dd></dl>
+    <dl><dt>프로그램</dt><dd id="sumProg">선택 전</dd><dt>행사 유형</dt><dd id="sum_evtype">-</dd><dt>기간</dt><dd id="sum_date">-</dd><dt>시간</dt><dd id="sum_time">-</dd><dt>장소</dt><dd id="sum_place">-</dd><dt>작가 수</dt><dd id="sum_people">-</dd><dt>예상 진행 인원</dt><dd id="sumArtist">-</dd></dl>
     <div class="call">전화로 바로 상담<b>010-9033-1491</b>연중무휴 08:00 ~ 22:00</div>
   </aside>
 </div></section>

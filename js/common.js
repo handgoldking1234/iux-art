@@ -229,9 +229,25 @@
         var el = q.querySelector('[name="' + k + '"]'), out = $('#sum_' + k);
         if (el && out) out.textContent = el.value ? el.value + (k === 'people' ? '명' : '') : '-';
       });
+      /* 행사 기간: 시작일 ~ 종료일 (일수 표시) */
+      var ds = q.querySelector('[name="date"]'), de = q.querySelector('[name="date_end"]');
+      if (ds && de) {
+        de.min = ds.value || '';
+        if (ds.value && de.value && de.value < ds.value) de.value = ds.value;
+        var fmt = function (v) { var p = v.split('-'); return (+p[1]) + '/' + (+p[2]); };
+        var txt = '-';
+        if (ds.value) {
+          txt = fmt(ds.value);
+          if (de.value && de.value !== ds.value) {
+            var days = Math.round((new Date(de.value) - new Date(ds.value)) / 864e5) + 1;
+            txt += ' ~ ' + fmt(de.value) + ' (' + days + '일)';
+          } else txt += ' (1일)';
+        }
+        $('#sum_date').textContent = txt;
+      }
       var ppl = +(q.querySelector('[name="people"]').value || 0);
       /* 작가 1명이 1시간에 약 15명 · 기본 3시간 기준 */
-      $('#sumArtist').textContent = ppl ? '약 ' + (ppl * 45).toLocaleString('ko-KR') + '명 (3시간 기준)' : '-';
+      $('#sumArtist').textContent = ppl ? '하루 약 ' + (ppl * 45).toLocaleString('ko-KR') + '명 (3시간 기준)' : '-';
     };
     q.addEventListener('input', sum);
     q.addEventListener('change', sum);
