@@ -60,7 +60,7 @@
         <div><h2>행사 정보를 알려주세요</h2><p class="sub-t" style="margin:0">정확하지 않아도 괜찮아요. 대략적인 내용으로 견적을 드립니다.</p></div>
         <div class="row2">
           <div class="field"><label for="q_type">행사 유형<i class="req">*</i></label><select id="q_type" name="evtype" required><option value="">선택해 주세요</option><option>기업 행사</option><option>대학 축제·학교 행사</option><option>웨딩·돌잔치</option><option>어린이 행사</option><option>지역 축제·관공서</option><option>매장 오픈·팝업</option><option>기타</option></select></div>
-          <div class="field"><label for="q_people">예상 참여 인원<i class="req">*</i></label><input id="q_people" name="people" type="number" min="1" required placeholder="100"></div>
+          <div class="field"><label for="q_people">섭외 작가 수<i class="req">*</i></label><input id="q_people" name="people" type="number" min="1" required placeholder="예) 2" inputmode="numeric"><p class="help">잘 모르시면 예상 손님 수를 요청 사항에 적어 주세요. 알맞은 작가 수를 추천해 드려요.</p></div>
         </div>
         <div class="row2">
           <div class="field"><label for="q_date">행사 날짜<i class="req">*</i></label><input id="q_date" name="date" type="date" required></div>
@@ -80,7 +80,7 @@
           <div class="field"><label for="q_tel">연락처<i class="req">*</i></label><input id="q_tel" name="tel" type="tel" required placeholder="010-0000-0000"></div>
           <div class="field"><label for="q_mail">이메일</label><input id="q_mail" name="mail" type="email" placeholder="견적서를 받을 메일"></div>
         </div>
-        <div class="field"><label for="q_msg">추가 요청 사항</label><textarea id="q_msg" name="msg" placeholder="로고 인쇄, 원하는 작가, 예산 범위 등"></textarea></div>
+        <div class="field"><label for="q_msg">추가 요청 사항</label><textarea id="q_msg" name="msg" placeholder="예상 손님 수, 로고 인쇄, 원하는 작가, 예산 범위 등"></textarea></div>
         <div class="agree"><p>수집 항목: 담당자명, 연락처, 이메일, 회사명 · 이용 목적: 행사 견적 상담 · 보관 기간: 상담 종료 후 1년</p>
           <label class="check"><input type="checkbox" id="q_agree" required>개인정보 수집·이용에 동의합니다. (필수)</label></div>
         <div class="form-actions"><button type="button" class="btn btn-ghost" data-prev>이전</button><button type="submit" class="btn btn-brand">견적 요청하기</button></div>
@@ -90,7 +90,7 @@
   </div>
   <aside class="aside">
     <h3>문의 요약</h3>
-    <dl><dt>프로그램</dt><dd id="sumProg">선택 전</dd><dt>행사 유형</dt><dd id="sum_evtype">-</dd><dt>날짜</dt><dd id="sum_date">-</dd><dt>시간</dt><dd id="sum_time">-</dd><dt>장소</dt><dd id="sum_place">-</dd><dt>인원</dt><dd id="sum_people">-</dd><dt>예상 작가</dt><dd id="sumArtist">-</dd></dl>
+    <dl><dt>프로그램</dt><dd id="sumProg">선택 전</dd><dt>행사 유형</dt><dd id="sum_evtype">-</dd><dt>날짜</dt><dd id="sum_date">-</dd><dt>시간</dt><dd id="sum_time">-</dd><dt>장소</dt><dd id="sum_place">-</dd><dt>작가 수</dt><dd id="sum_people">-</dd><dt>예상 진행 인원</dt><dd id="sumArtist">-</dd></dl>
     <div class="call">전화로 바로 상담<b>010-9033-1491</b>연중무휴 08:00 ~ 22:00</div>
   </aside>
 </div></section>

@@ -230,7 +230,8 @@
         if (el && out) out.textContent = el.value ? el.value + (k === 'people' ? '명' : '') : '-';
       });
       var ppl = +(q.querySelector('[name="people"]').value || 0);
-      $('#sumArtist').textContent = progs.length && ppl ? (progs.length * Math.max(1, Math.ceil(ppl / 120))) + '명 내외' : '-';
+      /* 작가 1명이 1시간에 약 15명 · 기본 3시간 기준 */
+      $('#sumArtist').textContent = ppl ? '약 ' + (ppl * 45).toLocaleString('ko-KR') + '명 (3시간 기준)' : '-';
     };
     q.addEventListener('input', sum);
     q.addEventListener('change', sum);
