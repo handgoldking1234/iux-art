@@ -11,6 +11,7 @@
     var c = {
       jobs: d.jobs.filter(function (j) { return j.status === 'review'; }).length + d.quotes.length,
       artists: d.artists.filter(function (a) { return a.status === 'pending'; }).length,
+      photos: (d.photos || []).filter(function (p) { return p.state === 'pending'; }).length,
       settle: I.settlements().filter(function (r) { return r.state === 'due' || r.state === 'needinfo'; }).length
     };
     Object.keys(c).forEach(function (k) {
@@ -149,7 +150,7 @@
           '<td>' + (rest ? '<span class="badge st-rest">휴식 대상</span>' : appState(p, j)) + '</td></tr>';
       }).join('');
       box.innerHTML = '<div class="card jd">' +
-        '<div class="head"><div><p>' + I.badge(I.JOB_STATE, j.status) + ' <span class="chip">' + I.skill(j.skill).n + '</span></p><h2 style="margin-top:8px">' + E(j.title) + '</h2><p class="muted" style="margin-top:2px">' + E(j.client) + ' · 공고 ' + j.posted + '</p></div>' +
+        '<div class="head"><div><p>' + I.badge(I.JOB_STATE, j.status) + ' <span class="chip">' + I.skill(j.skill).n + '</span> ' + (j.photoOk ? '<span class="badge st-ok">사진 홍보 동의</span>' : '<span class="badge st-done">사진 홍보 미동의</span>') + (I.photosOf(j.id).length ? ' <a class="chip" href="photos.html#' + j.id + '">현장 사진 ' + I.photosOf(j.id).length + '장</a>' : '') + '</p><h2 style="margin-top:8px">' + E(j.title) + '</h2><p class="muted" style="margin-top:2px">' + E(j.client) + ' · 공고 ' + j.posted + '</p></div>' +
         (editable ? '<div class="mode" role="group" aria-label="선정 방식"><button data-mode="fcfs" class="' + (j.mode === 'fcfs' ? 'on' : '') + '">선착순</button><button data-mode="pick" class="' + (j.mode === 'pick' ? 'on' : '') + '">직접 선택</button></div>' : '<span class="chip">' + (j.mode === 'fcfs' ? '선착순' : '직접 선택') + '</span>') + '</div>' +
         '<dl class="dl"><div><dt>행사 기간</dt><dd class="num">' + I.period(j) + ' (' + dd + '일)</dd></div><div><dt>진행 시간</dt><dd>' + j.time + ' · ' + j.hours + '시간</dd></div><div><dt>장소</dt><dd>' + E(j.place) + '</dd></div><div><dt>모집 마감</dt><dd class="num">' + j.deadline + '</dd></div>' +
         '<div><dt>섭외 작가</dt><dd>' + j.need + '명</dd></div><div><dt>작가 1인 지급</dt><dd class="num">' + I.won(per) + '</dd></div><div><dt>업체 견적</dt><dd class="num">' + I.won(j.fee) + '</dd></div><div><dt>예상 마진</dt><dd class="num">' + I.won(j.fee - per * j.need) + '</dd></div></dl>' +
@@ -253,6 +254,7 @@
         '<div class="fld"><label for="nj_dl">모집 마감일<i>*</i></label><input class="inp" id="nj_dl" type="date" required value="' + dls + '"></div>' +
         '<div class="fld"><span class="lb">선정 방식</span><div class="togs"><label class="tog"><input type="radio" name="nj_m" value="fcfs"' + (d.settings.defaultMode === 'fcfs' ? ' checked' : '') + '><span>선착순</span></label><label class="tog"><input type="radio" name="nj_m" value="pick"' + (d.settings.defaultMode === 'pick' ? ' checked' : '') + '><span>직접 선택</span></label></div></div></div>' +
         '<p class="note" id="nj_info"></p>' +
+        '<label class="ck"><input type="checkbox" id="nj_ph"' + (q && q.photoOk ? ' checked' : '') + '>고객이 현장 사진 홈페이지·SNS 홍보 활용에 동의함' + (q ? ' <small class="muted">(견적 문의 때 ' + (q.photoOk ? '동의' : '미동의') + ')</small>' : '') + '</label>' +
         '<label class="ck"><input type="checkbox" id="nj_a" ' + (d.settings.autoNotice ? 'checked' : '') + '>등록하면 기술·지역이 맞는 작가에게 공고 알림 보내기 (알림톡·메일)</label>' +
         '<div class="mf" style="margin-top:6px"><button type="button" class="btn btn-o" data-close>취소</button><button class="btn btn-y" type="submit"><i data-lucide="megaphone"></i>공고 등록</button></div></form>',
         function (m, close) {
@@ -275,7 +277,7 @@
             if (d2 < d1) { I.toast('종료일이 시작일보다 빠릅니다.'); return; }
             var j = { id: id, title: $('#nj_t', m).value, client: $('#nj_c', m).value, skill: $('#nj_s', m).value, start: d1, end: d2, time: $('#nj_tm', m).value.replace(/\s/g, ''), hours: Math.max(1, Math.round(r.h * 10) / 10),
               place: $('#nj_p', m).value, region: $('#nj_r', m).value, need: +$('#nj_n', m).value || 1, mode: $('input[name=nj_m]:checked', m).value, status: 'open', posted: I.stamp(), deadline: $('#nj_dl', m).value + ' 18:00',
-              fee: +$('#nj_f', m).value || Math.round(r.per * (+$('#nj_n', m).value || 1) * 1.7 / 10000) * 10000, apps: [] };
+              photoOk: $('#nj_ph', m).checked, fee: +$('#nj_f', m).value || Math.round(r.per * (+$('#nj_n', m).value || 1) * 1.7 / 10000) * 10000, apps: [] };
             db().jobs.push(j);
             if (q) db().quotes = db().quotes.filter(function (x) { return x.id !== q.id; });
             var n = 0;
@@ -640,7 +642,46 @@
     });
   })();
 
-  var PAGES = { dashboard: dashboard, jobs: jobs, artists: artists, notify: notify, settlement: settlement, stats: stats, settings: settings };
+  /* ---------- 현장 사진 ---------- */
+  function photos() {
+    var jf = location.hash.slice(1), f = jf ? 'all' : 'pending';
+    var TABS = [['all', '전체'], ['pending', '검수 대기'], ['published', '홈페이지 게시'], ['hidden', '게시 안 함'], ['private', '내부 보관']];
+    function list() { return (db().photos || []).slice().sort(function (a, b) { return a.at < b.at ? 1 : -1; }); }
+    function find(id) { return db().photos.filter(function (p) { return p.id === id; })[0]; }
+    function render() {
+      var P = list(), cnt = function (s) { return P.filter(function (p) { return p.state === s; }).length; };
+      $('#phKpi').innerHTML = [['image', '전체 사진', P.length, '작가 업로드 누적'], ['hourglass', '검수 대기', cnt('pending'), '게시 여부를 정해 주세요'], ['globe', '홈페이지 게시', cnt('published'), '갤러리 행사 현장'], ['lock', '내부 보관', cnt('private'), '고객 홍보 미동의']].map(function (k, i) {
+        return '<div class="card kpi' + (i === 1 && k[2] ? ' hl' : '') + '"><p class="k"><i data-lucide="' + k[0] + '"></i>' + k[1] + '</p><p class="v">' + k[2] + '<small>장</small></p><p class="s">' + k[3] + '</p></div>';
+      }).join('');
+      $('#phTabs').innerHTML = TABS.map(function (t) { var n = t[0] === 'all' ? P.length : cnt(t[0]); return '<button class="tab' + (f === t[0] ? ' on' : '') + '" data-f="' + t[0] + '">' + t[1] + ' <span class="n">' + n + '</span></button>'; }).join('');
+      var jobsW = db().jobs.filter(function (j) { return P.some(function (p) { return p.job === j.id; }); });
+      $('#phJob').innerHTML = '<option value="">행사 전체</option>' + jobsW.map(function (j) { return '<option value="' + j.id + '"' + (jf === j.id ? ' selected' : '') + '>' + E(j.title) + '</option>'; }).join('');
+      var V = P.filter(function (p) { return (f === 'all' || p.state === f) && (!jf || p.job === jf); });
+      $('#phGrid').innerHTML = V.length ? V.map(function (p) {
+        var j = I.job(p.job), a = I.artist(p.a), ok = j && j.photoOk;
+        var act = !ok ? '<p class="lock"><i data-lucide="lock"></i>고객 미동의 · 게시 불가</p>'
+          : '<div class="act">' + (p.state !== 'published' ? '<button class="btn btn-y btn-s" data-pub="' + p.id + '"><i data-lucide="globe"></i>게시</button>' : '') + (p.state !== 'hidden' ? '<button class="btn btn-o btn-s" data-hide="' + p.id + '">' + (p.state === 'published' ? '게시 내리기' : '게시 안 함') + '</button>' : '') + '</div>';
+        return '<article class="phc"><button class="im" data-view="' + p.id + '" aria-label="크게 보기"><img src="' + I.photoSrc(p) + '" alt="' + E(j ? j.title : '') + ' 현장 사진" loading="lazy"><span class="tag">' + I.badge(I.PHOTO_STATE, p.state) + '</span></button>' +
+          '<div class="b"><b>' + E(j ? j.title : '-') + '</b><small>' + (a ? E(a.name) : '-') + ' · ' + p.at.slice(5) + '</small>' +
+          '<p class="cs">' + (ok ? '<span class="ok"><i data-lucide="check"></i>고객 홍보 동의</span>' : '<span class="no"><i data-lucide="x"></i>고객 홍보 미동의</span>') + (p.subj ? '<span class="ok"><i data-lucide="check"></i>당사자 동의</span>' : '') + '</p>' + act + '</div></article>';
+      }).join('') : '<div class="card empty-s" style="grid-column:1/-1"><i data-lucide="image"></i>해당하는 사진이 없어요.</div>';
+      sideCounts(); I.icons();
+    }
+    $('#phTabs').addEventListener('click', function (e) { var b = e.target.closest('[data-f]'); if (b) { f = b.dataset.f; render(); } });
+    $('#phJob').onchange = function () { jf = this.value; history.replaceState(null, '', jf ? '#' + jf : location.pathname); render(); };
+    $('#phGrid').addEventListener('click', function (e) {
+      var pb = e.target.closest('[data-pub]'), hd = e.target.closest('[data-hide]'), vw = e.target.closest('[data-view]');
+      if (pb) { find(pb.dataset.pub).state = 'published'; I.save(); render(); I.toast('홈페이지에 게시했어요.'); }
+      if (hd) { var p = find(hd.dataset.hide), was = p.state; p.state = 'hidden'; I.save(); render(); I.toast(was === 'published' ? '게시를 내렸어요.' : '게시하지 않기로 했어요.'); }
+      if (vw) {
+        var q = find(vw.dataset.view), j = I.job(q.job), a = I.artist(q.a);
+        I.modal('<div class="mh"><h3>' + E(j.title) + '</h3><button class="x" data-close aria-label="닫기"><i data-lucide="x"></i></button></div><img class="ph-big" src="' + I.photoSrc(q) + '" alt=""><p class="muted" style="margin-top:10px">' + E(a.name) + ' 작가 · ' + q.at + ' · ' + E(j.client) + ' · ' + (j.photoOk ? '고객 홍보 동의' : '고객 홍보 미동의(내부 보관)') + '</p>', function (m) { m.querySelector('.modal-card').classList.add('wide'); I.icons(); });
+      }
+    });
+    render();
+  }
+
+  var PAGES = { photos: photos, dashboard: dashboard, jobs: jobs, artists: artists, notify: notify, settlement: settlement, stats: stats, settings: settings };
   if (PAGES[page]) PAGES[page]();
   sideCounts();
   I.icons();

@@ -101,6 +101,9 @@
       $('#restNote').hidden = !rest;
       if (rest) $('#restNote').innerHTML = '<i data-lucide="coffee"></i>최근 연속 ' + I.streak(a.id) + '회 참여하셨어요. 다른 작가에게도 기회를 나누기 위해 이번 공고 1회는 자동 선정에서 빠집니다. 신청은 할 수 있어요.';
       $('#pendNote').hidden = a.status !== 'pending';
+      var noPh = I.selectedJobs(a.id).filter(function (j) { return j.status === 'done' && !j.hidden && j.start >= '2026-10-01' && !I.photosOf(j.id, a.id).length; });
+      $('#photoNote').hidden = !noPh.length;
+      if (noPh.length) $('#photoNote').innerHTML = '<i data-lucide="camera"></i><span>최근 행사 <b>' + E(noPh[0].title) + '</b>' + (noPh.length > 1 ? ' 외 ' + (noPh.length - 1) + '건' : '') + '의 현장 사진을 올려 주세요.</span><button class="btn btn-k btn-s" data-photo="' + noPh[0].id + '" style="margin-left:auto">사진 올리기</button>';
       var needInfo = !I.hasTaxInfo(a) && I.selectedJobs(a.id).length;
       $('#infoNote').hidden = !needInfo;
       if (needInfo) $('#infoNote').innerHTML = '<i data-lucide="id-card"></i><span>선정을 축하드려요. 정산금을 받으려면 <b>정산 정보</b>를 등록해 주세요. 등록 전까지 지급이 보류됩니다.</span><button class="btn btn-k btn-s" data-goinfo style="margin-left:auto">지금 등록</button>';
@@ -129,11 +132,68 @@
     function scheduleTab() {
       var a = I.artist(me);
       var list = I.history(a.id);
-      return list.length ? '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>행사</th><th>일정</th><th>장소</th><th>결과</th></tr></thead><tbody>' + list.filter(function (j) { return !j.hidden; }).map(function (j) {
+      return list.length ? '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>행사</th><th>일정</th><th>장소</th><th>결과</th><th>현장 사진</th></tr></thead><tbody>' + list.filter(function (j) { return !j.hidden; }).map(function (j) {
         var p = j.apps.filter(function (x) { return x.a === a.id; })[0];
         var st = p.s === 'selected' ? (j.status === 'done' ? '<span class="badge st-done">참여 완료</span>' : '<span class="badge st-ok">선정 · 예정</span>') : p.s === 'rejected' ? '<span class="badge st-done">미선정</span>' : p.s === 'rest' ? '<span class="badge st-rest">휴식 제외</span>' : '<span class="badge st-open">결과 대기</span>';
-        return '<tr><td><b>' + E(j.title) + '</b><br><small class="muted">' + I.skill(j.skill).n + '</small></td><td class="num">' + I.period(j) + '<br><small class="muted">' + j.time + '</small></td><td>' + E(j.place) + '</td><td>' + st + '</td></tr>';
+        return '<tr><td><b>' + E(j.title) + '</b><br><small class="muted">' + I.skill(j.skill).n + '</small></td><td class="num">' + I.period(j) + '<br><small class="muted">' + j.time + '</small></td><td>' + E(j.place) + '</td><td>' + st + '</td><td>' + photoCell(j, p) + '</td></tr>';
       }).join('') + '</tbody></table></div>' : '<div class="card empty-s"><i data-lucide="calendar"></i>신청한 행사가 없어요.</div>';
+    }
+    function photoCell(j, p) {
+      if (p.s !== 'selected') return '<small class="muted">-</small>';
+      if (j.start > I.today) return '<small class="muted">행사 당일부터</small>';
+      var n = I.photosOf(j.id, me).length;
+      return '<button class="btn btn-' + (n ? 'o' : 'y') + ' btn-s" data-photo="' + j.id + '"><i data-lucide="camera"></i>' + (n ? n + '장 · 더 올리기' : '사진 올리기') + '</button>';
+    }
+    function photoModal(jid) {
+      var j = I.job(jid), picked = [];
+      var mine = function () { return I.photosOf(jid, me); };
+      var list = function () {
+        return mine().map(function (p) { return '<figure class="up"><img src="' + I.photoSrc(p) + '" alt="">' + I.badge(I.PHOTO_STATE, p.state) + (p.state === 'pending' || p.state === 'private' ? '<button type="button" class="del" data-del="' + p.id + '" aria-label="삭제">×</button>' : '') + '</figure>'; }).join('');
+      };
+      I.modal('<div class="mh"><h3>현장 사진 올리기</h3><button class="x" data-close aria-label="닫기"><i data-lucide="x"></i></button></div>' +
+        '<p class="muted" style="margin-bottom:12px"><b>' + E(j.title) + '</b> · ' + I.period(j) + '</p>' +
+        (j.photoOk
+          ? '<p class="demo" style="background:var(--ok-bg);color:var(--ok)"><i data-lucide="badge-check"></i>고객이 현장 사진 홍보 활용에 동의한 행사예요. 올린 사진은 운영자 검수 후 홈페이지·SNS에 실릴 수 있어요.</p>'
+          : '<p class="demo" style="background:var(--bad-bg);color:var(--bad)"><i data-lucide="lock"></i>고객이 홍보 활용에 동의하지 않은 행사예요. 사진은 내부 기록용으로만 보관되고 외부에 공개되지 않아요.</p>') +
+        '<div class="ups" id="upMine">' + list() + '</div>' +
+        '<form class="form" id="upF"><label class="drop"><input type="file" id="upFile" accept="image/*" multiple><i data-lucide="image-plus"></i><b>사진 고르기</b><small>여러 장 한 번에 · 장당 10MB 이하</small></label>' +
+        '<div class="ups" id="upNew"></div>' +
+        '<ul class="tips"><li>완성 작품, 부스 전경, 작업하는 모습 위주로 찍어 주세요.</li><li>얼굴이 드러난 손님 사진은 촬영 전에 게시 동의를 받아 주세요. 어린이는 보호자 동의가 필요해요.</li><li>행사장 내부 자료, 다른 손님의 개인정보가 보이는 사진은 피해 주세요.</li></ul>' +
+        '<label class="ck"><input type="checkbox" id="upAgree" required>사진에 나온 분들께 촬영·게시 동의를 받았어요. (필수)</label>' +
+        '<div class="mf"><button type="button" class="btn btn-o" data-close>닫기</button><button class="btn btn-y" type="submit" id="upGo" disabled><i data-lucide="upload"></i>올리기</button></div></form>',
+        function (m, close) {
+          m.querySelector('.modal-card').classList.add('wide'); I.icons();
+          var shrink = function (file) {
+            return new Promise(function (res) {
+              var r = new FileReader();
+              r.onload = function () { var im = new Image(); im.onload = function () { var k = Math.min(1, 720 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', .72)); }; im.onerror = function () { res(null); }; im.src = r.result; };
+              r.readAsDataURL(file);
+            });
+          };
+          var draw = function () {
+            $('#upNew', m).innerHTML = picked.map(function (src, i) { return '<figure class="up"><img src="' + src + '" alt=""><button type="button" class="del" data-rm="' + i + '" aria-label="빼기">×</button></figure>'; }).join('');
+            $('#upGo', m).disabled = !picked.length;
+            $('#upGo', m).innerHTML = '<i data-lucide="upload"></i>' + (picked.length ? picked.length + '장 올리기' : '올리기'); I.icons();
+          };
+          $('#upFile', m).onchange = function () {
+            var fs = [].slice.call(this.files).filter(function (f) { return /^image\//.test(f.type) && f.size <= 10 * 1024 * 1024; });
+            Promise.all(fs.map(shrink)).then(function (r) { picked = picked.concat(r.filter(Boolean)); draw(); });
+            this.value = '';
+          };
+          m.addEventListener('click', function (e) {
+            var rm = e.target.closest('[data-rm]'), dl = e.target.closest('[data-del]');
+            if (rm) { picked.splice(+rm.dataset.rm, 1); draw(); }
+            if (dl) { db().photos = db().photos.filter(function (p) { return p.id !== dl.dataset.del; }); I.save(); $('#upMine', m).innerHTML = list(); render(); I.toast('사진을 지웠어요.'); }
+          });
+          $('#upF', m).onsubmit = function (e) {
+            e.preventDefault();
+            if (!$('#upAgree', m).checked) { $('#upAgree', m).reportValidity(); return; }
+            db().photos = db().photos || [];
+            picked.forEach(function (src, i) { db().photos.push({ id: 'p' + Date.now() + i, job: jid, a: me, src: src, at: I.stamp(), subj: true, state: j.photoOk ? 'pending' : 'private' }); });
+            I.save(); var n = picked.length; close(); render();
+            I.toast(n + '장을 올렸어요. ' + (j.photoOk ? '운영자 검수 후 게시 여부가 정해져요.' : '내부 기록용으로 보관됩니다.'));
+          };
+        });
     }
     function payTab() {
       var a = I.artist(me), R = I.settlements().filter(function (r) { return r.artist.id === a.id; });
@@ -227,6 +287,7 @@
     }
     $('#ptabs').addEventListener('click', function (e) { var b = e.target.closest('[data-t]'); if (b) { tab = b.dataset.t; render(); } });
     $('#infoNote').addEventListener('click', function (e) { if (e.target.closest('[data-goinfo]')) { tab = 'tax'; render(); $('#ptabs').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
+    document.addEventListener('click', function (e) { var b = e.target.closest('[data-photo]'); if (b) photoModal(b.dataset.photo); });
     $('#pbody').addEventListener('click', function (e) {
       var ap = e.target.closest('[data-apply]'), cc = e.target.closest('[data-cancel]');
       if (ap) {
