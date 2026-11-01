@@ -924,3 +924,8 @@ img[width][height]{height:auto}
   .prog9{grid-template-columns:1fr 1fr}
   .occ,.opts,.pick{grid-template-columns:1fr}
 }
+
+/* 콜라주와 문구 사이 간격 */
+.collage{padding-bottom:72px}
+.collage-copy{margin-top:72px}
+@media (max-width:720px){.collage{padding-bottom:32px}.collage-copy{margin-top:40px}}
