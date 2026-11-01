@@ -1031,3 +1031,8 @@ img[width][height]{height:auto}
   .nav>li.m-cta>a{height:50px;padding:0;justify-content:center;font-size:15px;display:flex;align-items:center}
   .nav>li.m-cta>a.q{color:var(--on-brand)}
 }
+
+/* 모바일: 헤더 견적 버튼 숨김 (메뉴 패널·플로팅 버튼과 중복) */
+@media (max-width:1024px){
+  .hd-act .btn{display:none!important}
+}
