@@ -239,14 +239,79 @@
           return '<tr><td><b>' + E(r.job.title) + '</b><br><small class="muted num">' + I.period(r.job) + '</small></td><td class="r">' + r.days + '일 × ' + r.hours + 'h</td><td class="r">' + I.won(r.gross) + '</td><td class="r">' + (r.tax ? '-' + I.won(r.tax) : '발행 필요') + '</td><td class="r"><b>' + I.won(r.net) + '</b></td><td>' + I.badge(I.PAY_STATE, r.state) + (r.paidAt ? '<br><small class="muted num">' + r.paidAt + '</small>' : '') + '</td></tr>';
         }).join('') + '</tbody></table></div><p class="note">입금 계좌: ' + E(a.bank + ' ' + a.account) + ' · 계좌 변경은 고객센터로 문의해 주세요.</p>' : '<div class="card empty-s"><i data-lucide="wallet"></i>정산 내역이 없어요.</div>');
     }
+    var editing = false, pfDraft = null;
+    var pfSrc = function (p) { return p.indexOf('data:') === 0 ? p : '../images/' + p + '.jpg'; };
     function profileTab() {
       var a = I.artist(me);
-      return '<div class="card"><div class="grid g2"><div><p class="sec-t" style="margin-top:0">기본 정보</p><p>만 ' + I.age(a.birth) + '세 (' + a.birth + ')</p><p class="num">' + E(a.phone) + ' · ' + E(a.email) + '</p>' +
+      if (!editing) return '<div class="card"><div class="pf-top"><p class="muted">다른 작가·업체에게는 실명과 연락처가 보이지 않아요. 공고 선정과 정산에만 쓰여요.</p><button class="btn btn-y btn-s" id="pfEdit"><i data-lucide="pencil"></i>프로필 수정</button></div><div class="grid g2"><div><p class="sec-t" style="margin-top:0">기본 정보</p><p>' + E(a.name) + ' · 만 ' + I.age(a.birth) + '세 (' + a.birth + ')</p><p class="num">' + E(a.phone) + ' · ' + E(a.email) + '</p>' +
         '<p class="sec-t">기술·경력 <small class="muted" style="font-weight:500">해가 바뀌면 연차가 자동으로 올라가요</small></p><div class="chips">' + a.skills.map(function (s) { return '<span class="chip">' + I.skill(s.k).n + ' <b>' + I.years(s.since) + '년차</b> <span class="muted">(' + s.since + '~)</span></span>'; }).join('') + '</div>' +
         '<p class="sec-t">활동 지역</p><div class="chips">' + a.regions.map(function (r) { return '<span class="chip">' + r + '</span>'; }).join('') + '</div>' +
         '<p class="sec-t">알림 수신</p><label class="ck"><input type="checkbox" id="pk" ' + (a.kakao ? 'checked' : '') + '>카카오 알림톡</label><label class="ck" style="margin-top:6px"><input type="checkbox" id="pm" ' + (a.mail ? 'checked' : '') + '>메일</label></div>' +
-        '<div><p class="sec-t" style="margin-top:0">포트폴리오</p><div class="port">' + (a.portfolio.length ? a.portfolio.map(function (p) { return '<img src="../images/' + p + '.jpg" alt="포트폴리오">'; }).join('') : '<p class="empty">' + (a.localFiles ? '등록 시 올린 사진 ' + a.localFiles + '장은 개발 단계에서 저장됩니다.' : '등록된 포트폴리오가 없어요.') + '</p>') + '</div>' +
+        '<div><p class="sec-t" style="margin-top:0">포트폴리오</p><div class="port">' + (a.portfolio.length ? a.portfolio.map(function (p) { return '<img src="' + pfSrc(p) + '" alt="포트폴리오">'; }).join('') : '<p class="empty">등록된 포트폴리오가 없어요.</p>') + '</div>' +
         '<p class="sec-t">소개</p><p>' + E(a.bio) + '</p></div></div></div>';
+      var d = db(), Y = new Date().getFullYear();
+      pfDraft = pfDraft || a.portfolio.slice();
+      var yopt = function (v) { var h = ''; for (var y = Y; y >= Y - 40; y--) h += '<option value="' + y + '"' + (y === v ? ' selected' : '') + '>' + y + '년부터</option>'; return h; };
+      return '<form class="card form" id="pfF" novalidate><div class="pf-top"><h3 style="font-size:17px">프로필 수정</h3><span class="muted">저장하면 바로 반영돼요</span></div>' +
+        '<div class="grid g2"><div>' +
+        '<p class="sec-t" style="margin-top:0">기본 정보</p><div class="f2"><div class="fld"><label>이름</label><input class="inp" value="' + E(a.name) + '" disabled></div><div class="fld"><label>생년월일</label><input class="inp" value="' + a.birth + '" disabled></div></div>' +
+        '<p class="pf-lock">이름·생년월일은 본인 인증 정보라 바꿀 수 없어요. 잘못됐다면 운영자에게 문의해 주세요.</p>' +
+        '<div class="f2"><div class="fld"><label for="pf_ph">휴대폰<i>*</i></label><input class="inp" id="pf_ph" inputmode="tel" value="' + E(a.phone) + '" required><p class="help">바꾸면 휴대폰 인증을 다시 해요.</p></div><div class="fld"><label for="pf_em">이메일<i>*</i></label><input class="inp" id="pf_em" type="email" value="' + E(a.email) + '" required></div></div>' +
+        '<p class="sec-t">기술·경력</p><div id="pfSk">' + d.skills.map(function (s) {
+          var mine = a.skills.filter(function (x) { return x.k === s.k; })[0];
+          return '<div class="skrow' + (mine ? ' on' : '') + '" data-k="' + s.k + '"><label class="tog"><input type="checkbox"' + (mine ? ' checked' : '') + '><span>' + s.n + '</span></label><span class="since"' + (mine ? '' : ' hidden') + '><select class="sel" aria-label="' + s.n + ' 시작 연도">' + yopt(mine ? mine.since : Y - 2) + '</select><b class="yr">' + I.years(mine ? mine.since : Y - 2) + '년차</b></span></div>';
+        }).join('') + '</div>' +
+        '<p class="sec-t">활동 지역</p><div class="togs" id="pfRg">' + d.regions.map(function (r) { return '<label class="tog"><input type="checkbox" value="' + r + '"' + (a.regions.indexOf(r) > -1 ? ' checked' : '') + '><span>' + r + '</span></label>'; }).join('') + '</div>' +
+        '</div><div>' +
+        '<p class="sec-t" style="margin-top:0">포트폴리오 <small class="muted" id="pfCnt"></small></p><div class="ups up-edit" id="pfList"></div>' +
+        '<label class="drop" id="pfDrop"><input type="file" id="pfFile" accept="image/*" multiple><i data-lucide="image-plus"></i><b>작품 사진 추가</b><small>최대 8장 · 첫 번째 사진이 프로필 사진이 돼요</small></label>' +
+        '<p class="sec-t">소개</p><div class="fld"><textarea class="inp" id="pf_bio" rows="4" maxlength="200" placeholder="주로 하는 행사, 화풍, 완성 시간 등을 적어 주세요.">' + E(a.bio) + '</textarea><p class="help" id="pfBioC"></p></div>' +
+        '</div></div>' +
+        '<div class="mf"><button type="button" class="btn btn-o" id="pfCancel">취소</button><button class="btn btn-y" type="submit"><i data-lucide="check"></i>저장</button></div></form>';
+    }
+    function bindProfile() {
+      var ed = $('#pfEdit'); if (ed) ed.onclick = function () { editing = true; pfDraft = null; render(); };
+      var f = $('#pfF'); if (!f) return;
+      var MAX = 8;
+      var draw = function () {
+        $('#pfList').innerHTML = pfDraft.map(function (p, i) { return '<figure class="up"><img src="' + pfSrc(p) + '" alt="">' + (i === 0 ? '<span class="cover-b">프로필</span>' : '<button type="button" class="mk" data-pfc="' + i + '">맨 앞으로</button>') + '<button type="button" class="del" data-pfr="' + i + '" aria-label="사진 빼기">×</button></figure>'; }).join('');
+        $('#pfCnt').textContent = pfDraft.length + ' / ' + MAX; $('#pfDrop').hidden = pfDraft.length >= MAX;
+      };
+      var shrink = function (file) {
+        return new Promise(function (res) { var r = new FileReader(); r.onload = function () { var im = new Image(); im.onload = function () { var k = Math.min(1, 900 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', .72)); }; im.onerror = function () { res(null); }; im.src = r.result; }; r.readAsDataURL(file); });
+      };
+      $('#pfFile').onchange = function () {
+        var fs = [].slice.call(this.files).filter(function (x) { return /^image\//.test(x.type) && x.size <= 10 * 1024 * 1024; }).slice(0, MAX - pfDraft.length);
+        Promise.all(fs.map(shrink)).then(function (r) { pfDraft = pfDraft.concat(r.filter(Boolean)); draw(); }); this.value = '';
+      };
+      f.addEventListener('click', function (e) {
+        var r = e.target.closest('[data-pfr]'), c = e.target.closest('[data-pfc]');
+        if (r) { pfDraft.splice(+r.dataset.pfr, 1); draw(); }
+        if (c) { pfDraft.unshift(pfDraft.splice(+c.dataset.pfc, 1)[0]); draw(); }
+      });
+      $$('#pfSk .skrow').forEach(function (row) {
+        var cb = $('input', row), sp = $('.since', row), sel = $('select', row);
+        cb.onchange = function () { sp.hidden = !cb.checked; row.classList.toggle('on', cb.checked); };
+        sel.onchange = function () { $('.yr', row).textContent = I.years(+sel.value) + '년차'; };
+      });
+      var bio = $('#pf_bio'), bc = function () { $('#pfBioC').textContent = bio.value.length + ' / 200'; }; bio.oninput = bc; bc();
+      $('#pfCancel').onclick = function () { editing = false; pfDraft = null; render(); };
+      f.onsubmit = function (e) {
+        e.preventDefault();
+        var a = I.artist(me);
+        var sk = $$('#pfSk .skrow').filter(function (r) { return $('input', r).checked; }).map(function (r) { return { k: r.dataset.k, since: +$('select', r).value }; });
+        var rg = $$('#pfRg input:checked').map(function (x) { return x.value; });
+        var ph = $('#pf_ph').value.replace(/[^\d]/g, ''), em = $('#pf_em').value.trim();
+        if (!/^01\d{8,9}$/.test(ph)) { $('#pf_ph').focus(); I.toast('휴대폰 번호를 확인해 주세요.'); return; }
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { $('#pf_em').focus(); I.toast('이메일 주소를 확인해 주세요.'); return; }
+        if (!sk.length) { I.toast('기술을 1개 이상 골라 주세요.'); return; }
+        if (!rg.length) { I.toast('활동 지역을 1곳 이상 골라 주세요.'); return; }
+        var phF = ph.replace(/^(\d{3})(\d{3,4})(\d{4})$/, '$1-$2-$3'), phChanged = phF !== a.phone;
+        a.phone = phF; a.email = em; a.skills = sk; a.regions = rg; a.portfolio = pfDraft.slice(); a.bio = bio.value.trim() || a.bio;
+        I.save(); editing = false; pfDraft = null; render(); scrollTo({ top: $('#ptabs').offsetTop - 80, behavior: 'smooth' });
+        I.toast('프로필을 저장했어요.' + (phChanged ? ' 바뀐 번호로 인증 문자를 보냈어요. (시안)' : ''));
+      };
+      draw();
     }
 
 
@@ -314,14 +379,14 @@
       var n = db().jobs.filter(function (j) { return j.status === 'open'; }).length;
       $('#openN').textContent = n;
       $('#pbody').innerHTML = tab === 'jobs' ? jobsTab() : tab === 'schedule' ? scheduleTab() : tab === 'pay' ? payTab() : tab === 'tax' ? taxTab() : profileTab();
-      bindTax();
+      bindTax(); bindProfile();
       I.icons();
       var a = I.artist(me);
       var pk = $('#pk'), pm = $('#pm');
       if (pk) pk.onchange = function () { a.kakao = pk.checked; I.save(); I.toast('알림톡 수신을 ' + (pk.checked ? '켰어요.' : '껐어요.')); };
       if (pm) pm.onchange = function () { a.mail = pm.checked; I.save(); I.toast('메일 수신을 ' + (pm.checked ? '켰어요.' : '껐어요.')); };
     }
-    $('#ptabs').addEventListener('click', function (e) { var b = e.target.closest('[data-t]'); if (b) { tab = b.dataset.t; render(); } });
+    $('#ptabs').addEventListener('click', function (e) { var b = e.target.closest('[data-t]'); if (b) { tab = b.dataset.t; editing = false; pfDraft = null; render(); } });
     $('#infoNote').addEventListener('click', function (e) { if (e.target.closest('[data-goinfo]')) { tab = 'tax'; render(); $('#ptabs').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
     document.addEventListener('click', function (e) { var b = e.target.closest('[data-photo]'); if (b) photoModal(b.dataset.photo); });
     $('#pbody').addEventListener('click', function (e) {

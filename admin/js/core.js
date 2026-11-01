@@ -141,7 +141,7 @@ var IUX = (function () {
   };
   var avatar = function (a, cls) {
     var img = a.portfolio && a.portfolio[0];
-    return img ? '<span class="av ' + (cls || '') + '"><img src="../images/' + img + '.jpg" alt=""></span>'
+    return img ? '<span class="av ' + (cls || '') + '"><img src="' + (img.indexOf('data:') === 0 ? img : '../images/' + img + '.jpg') + '" alt=""></span>'
                : '<span class="av ' + (cls || '') + '">' + esc(a.name.slice(-2)) + '</span>';
   };
 
