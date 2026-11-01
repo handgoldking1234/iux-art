@@ -76,13 +76,20 @@
   function portal() {
     var me = null, tab = 'jobs';
     try { me = localStorage.getItem('iuxart-me'); } catch (e) {}
-    var pick = $('#me');
+    // 시안 확인용: artist/index.html?a=a3 처럼 주소로 작가 전환 (실서비스는 로그인한 본인)
+    var qa = (location.search.match(/[?&]a=([\w-]+)/) || [])[1];
+    if (qa) { me = qa; try { localStorage.setItem('iuxart-me', me); } catch (e) {} }
     function fillMe() {
-      var list = db().artists.filter(function (a) { return a.status !== 'paused'; });
       if (!me || !I.artist(me)) me = 'a1';
-      pick.innerHTML = list.map(function (a) { return '<option value="' + a.id + '"' + (a.id === me ? ' selected' : '') + '>' + E(a.name) + (a.status === 'pending' ? ' (승인 대기)' : '') + '</option>'; }).join('');
+      var a = I.artist(me);
+      $('#umAv').innerHTML = I.avatar(a); $('#umName').textContent = a.name + ' 작가님';
     }
-    pick.onchange = function () { me = pick.value; try { localStorage.setItem('iuxart-me', me); } catch (e) {} render(); };
+    var um = $('#um'), umBtn = $('#umBtn'), umMenu = $('#umMenu');
+    function umSet(o) { um.classList.toggle('open', o); umMenu.hidden = !o; umBtn.setAttribute('aria-expanded', o); }
+    umBtn.onclick = function (e) { e.stopPropagation(); umSet(umMenu.hidden); };
+    document.addEventListener('click', function (e) { if (!um.contains(e.target)) umSet(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') umSet(false); });
+    umMenu.addEventListener('click', function (e) { var b = e.target.closest('[data-go]'); if (!b) return; tab = b.dataset.go; umSet(false); render(); $('#ptabs').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 
     function header() {
       var a = I.artist(me), rest = a.status === 'active' && I.isRest(a.id);
