@@ -1,6 +1,6 @@
 # IUX ART
 
-캐리커처·캘리그라피·페이스페인팅 출장 행사회사 **IUX ART(아이유엑스 아트)** 홈페이지 퍼블리싱 파일입니다.
+캐리커처·페이스페인팅·캘리그라피·타로카드·요술풍선 삐에로·헤나·혁필화·손마사지&네일아트·비즈공예 출장 행사회사 **IUX ART(아이유엑스 아트)** 홈페이지 퍼블리싱 파일입니다.
 
 순수 HTML·CSS와 간단한 스크립트로만 구성된 정적 사이트라 빌드 과정 없이 바로 배포할 수 있습니다.
 
@@ -10,7 +10,7 @@
 | --- | --- |
 | 메인 | `index.html` |
 | 회사소개 | `about.html`, `artists.html`, `news.html`, `news-view.html` |
-| 출장 이벤트 | `event-caricature.html`, `event-calligraphy.html`, `event-facepainting.html` |
+| 출장 이벤트 | `event.html`(전체 프로그램), `event-caricature.html`, `event-facepainting.html`, `event-calligraphy.html`, `event-tarot.html`, `event-balloon.html`, `event-henna.html`, `event-hyukpil.html`, `event-handcare.html`, `event-beads.html` |
 | 주문제작 | `custom.html`, `product.html` |
 | 교육센터 | `edu.html`, `edu-apply.html`, `edu-qna.html` |
 | 기타 | `review.html`, `donation.html`, `quote.html`, `faq.html`, `login.html` |

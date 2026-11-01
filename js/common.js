@@ -62,7 +62,8 @@
       hm.style.width = (base + (vw - base) * p) + 'px';
       hm.style.borderRadius = (28 * (1 - p)) + 'px';
     }
-    if (collage && !reduce) {
+    if (collage && (reduce || innerWidth < 721)) cols.forEach(function (c) { c.style.transform = ''; });
+    else if (collage) {
       var r = collage.getBoundingClientRect(), mid = r.top + r.height / 2 - innerHeight / 2;
       cols.forEach(function (c) { c.style.transform = 'translateY(' + (mid * +c.dataset.speed) + 'px)'; });
     }
