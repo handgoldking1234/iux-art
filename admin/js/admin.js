@@ -387,7 +387,7 @@
           '<td class="r">' + I.count(a.id) + '회</td>' +
           '<td class="r">' + (I.streak(a.id) ? '<span class="' + (rest ? 'warn-t' : '') + '">' + I.streak(a.id) + '회</span>' : '-') + '</td>' +
           '<td class="r">' + (earn ? I.won(earn) : '-') + '</td>' +
-          '<td class="c">' + (I.rating(a) ? '★ ' + I.rating(a) + ' <small class="muted">(' + I.reviewsOf(a.id).length + ')</small>' : '-') + '</td>' +
+          '<td class="c">' + (I.rating(a) ? '★ ' + I.rating(a) + (I.reviewsOf(a.id).length ? ' <small class="muted">(' + I.reviewsOf(a.id).length + ')</small>' : '') : '-') + '</td>' +
           '<td>' + (rest ? '<span class="badge st-rest">휴식 대상</span>' : I.badge(I.ART_STATE, a.status)) + '</td></tr>';
       }).join('') : '<tr><td colspan="9"><div class="empty-s">조건에 맞는 작가가 없어요.</div></td></tr>';
       var pend = db().artists.filter(function (a) { return a.status === 'pending'; }).length;
@@ -672,13 +672,71 @@
     };
   }
 
+  /* ---------- 알림 드롭다운 ---------- */
+  function notiMenu() {
+    var nt = $('#nt'); if (!nt) return;
+    var btn = $('#ntBtn'), menu = $('#ntMenu'), tab = 'todo', KEY = 'iuxart-nt-read', read = {};
+    try { read = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
+    function todo() {
+      var d = db(), L = [];
+      d.quotes.forEach(function (q) { L.push({ k: 'q' + q.id, ic: 'inbox', c: 'y', t: '새 견적 문의', s: q.client + ' · ' + I.skill(q.skill).n + ' ' + q.need + '명', at: q.at, href: 'jobs.html#new-' + q.id }); });
+      d.jobs.filter(function (j) { return j.status === 'review'; }).forEach(function (j) { L.push({ k: 'r' + j.id, ic: 'user-check', c: 'y', t: '작가 선정 필요', s: j.title + ' · 신청 ' + j.apps.length + '명', at: j.deadline, href: 'jobs.html#' + j.id }); });
+      d.artists.filter(function (a) { return a.status === 'pending'; }).forEach(function (a) { L.push({ k: 'a' + a.id, ic: 'user-plus', c: 'b', t: '작가 등록 승인 대기', s: a.name + ' · ' + a.skills.map(function (x) { return I.skill(x.k).n; }).join(', '), at: a.joined + ' 00:00', href: 'artists.html#' + a.id }); });
+      (d.posts || []).filter(function (p) { return p.state === 'pending'; }).forEach(function (p) { var a = I.artist(p.a); L.push({ k: 'p' + p.id, ic: 'image', c: 'g', t: '현장 후기 검수', s: (a ? a.name + ' · ' : '') + p.title, at: p.at, href: 'photos.html' }); });
+      I.needInfo().forEach(function (a) { var js = I.selectedJobs(a.id).map(function (j) { return j.posted; }).sort(); L.push({ k: 'i' + a.id, ic: 'id-card', c: 'r', t: '정산 정보 미등록', s: a.name + ' · 지급 보류 중', at: js[js.length - 1] || I.stamp(), href: 'settlement.html' }); });
+      I.needReview().forEach(function (x) { L.push({ k: 'v' + x.j.id + x.a.id, ic: 'star', c: 'b', t: '작가 평가', s: x.a.name + ' · ' + x.j.title, at: x.j.end + ' 22:00', href: 'jobs.html#' + x.j.id }); });
+      return L.sort(function (a, b) { return a.at < b.at ? 1 : -1; });
+    }
+    function act() {
+      var d = db(), L = [];
+      d.jobs.forEach(function (j) { j.apps.forEach(function (p) { var a = I.artist(p.a); if (a && !j.hidden) L.push({ ic: 'hand', c: 'b', t: a.name + ' 작가가 공고에 신청', s: j.title, at: p.at, href: 'jobs.html#' + j.id }); }); });
+      (d.posts || []).forEach(function (p) { var a = I.artist(p.a); L.push({ ic: 'camera', c: 'g', t: (a ? a.name : '작가') + ' 작가가 현장 후기 등록', s: p.title, at: p.at, href: 'photos.html' }); });
+      d.logs.slice(0, 20).forEach(function (l) { L.push({ ic: l.ch === 'kakao' ? 'message-circle' : 'mail', c: 'n', t: l.type + ' ' + l.to.length + '건 전송', s: (l.ch === 'kakao' ? '알림톡' : '메일') + (l.note ? ' · ' + l.note : ''), at: l.at, href: 'notify.html' }); });
+      return L.filter(function (x) { return x.at <= I.stamp(); }).sort(function (a, b) { return a.at < b.at ? 1 : -1; }).slice(0, 15);
+    }
+    function ago(at) {
+      var m = Math.round((new Date() - new Date(at.replace(' ', 'T'))) / 6e4);
+      if (isNaN(m)) return at.slice(5, 10);
+      if (m < 0) return '마감 ' + at.slice(5, 10).replace('-', '/');
+      if (m < 60) return Math.max(1, m) + '분 전'; if (m < 1440) return Math.round(m / 60) + '시간 전';
+      if (m < 10080) return Math.round(m / 1440) + '일 전'; return at.slice(5, 10).replace('-', '/');
+    }
+    function badge() {
+      var n = todo().filter(function (x) { return !read[x.k]; }).length, el = $('#hdrDot');
+      el.hidden = !n; el.textContent = n > 9 ? '9+' : n;
+      btn.setAttribute('aria-label', '알림' + (n ? ' ' + n + '건 안 읽음' : ''));
+      $('#ntTodoN').textContent = todo().length;
+    }
+    function draw() {
+      var L = tab === 'todo' ? todo() : act();
+      $$('.nt-tabs [data-nt]', menu).forEach(function (b) { b.classList.toggle('on', b.dataset.nt === tab); b.setAttribute('aria-selected', b.dataset.nt === tab); });
+      $('#ntRead').hidden = tab !== 'todo';
+      $('#ntList').innerHTML = L.length ? L.map(function (x) {
+        var un = tab === 'todo' && !read[x.k];
+        return '<a class="nt-i' + (un ? ' un' : '') + '" href="' + x.href + '"' + (x.k ? ' data-k="' + x.k + '"' : '') + '><span class="nt-ic c-' + x.c + '"><i data-lucide="' + x.ic + '"></i></span><span class="nt-t"><b>' + E(x.t) + '</b><small>' + E(x.s) + '</small></span><time>' + ago(x.at) + '</time></a>';
+      }).join('') : '<p class="nt-empty"><i data-lucide="check-circle-2"></i>' + (tab === 'todo' ? '처리할 일이 없어요.' : '최근 활동이 없어요.') + '</p>';
+      I.icons();
+    }
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(read)); } catch (e) {} }
+    function open(v) { menu.hidden = !v; nt.classList.toggle('open', v); btn.setAttribute('aria-expanded', v); if (v) draw(); }
+    btn.addEventListener('click', function (e) { e.stopPropagation(); open(menu.hidden); var um = $('#umMenu'); if (um && !um.hidden) $('#umBtn').click(); });
+    document.addEventListener('click', function (e) { if (!nt.contains(e.target)) open(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) { open(false); btn.focus(); } });
+    menu.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-nt]'); if (t) { tab = t.dataset.nt; draw(); return; }
+      var i = e.target.closest('.nt-i[data-k]'); if (i) { read[i.dataset.k] = 1; save(); }
+    });
+    $('#ntRead').onclick = function () { todo().forEach(function (x) { read[x.k] = 1; }); save(); badge(); draw(); I.toast('알림을 모두 읽음으로 표시했어요.'); };
+    badge();
+    window.addEventListener('focus', badge);
+  }
+
   /* ---------- 상단 헤더 · 사용자 메뉴 ---------- */
   (function header() {
     var w = ['일', '월', '화', '수', '목', '금', '토'], d = new Date();
     var hd = $('#hdrDate'); if (hd) hd.textContent = I.today.replace(/-/g, '.') + ' (' + w[d.getDay()] + ')';
     var ul = $('#umLast'); if (ul) ul.textContent = I.today.slice(5).replace('-', '/') + ' 09:12';
-    var dd = db(), todo = dd.quotes.length + dd.jobs.filter(function (j) { return j.status === 'review'; }).length + dd.artists.filter(function (a) { return a.status === 'pending'; }).length + I.needInfo().length;
-    var dot = $('#hdrDot'); if (dot) dot.hidden = !todo;
+    notiMenu();
     var um = $('#um'), btn = $('#umBtn'), menu = $('#umMenu');
     if (!um) return;
     var items = function () { return $$('[role=menuitem]', menu); };

@@ -37,7 +37,15 @@
     <header class="hdr">
       <p class="hdr-date" id="hdrDate"></p>
       <div class="hdr-r">
-        <a class="hdr-ic" href="index.html" aria-label="처리할 일"><i data-lucide="bell"></i><span class="dot" id="hdrDot" hidden></span></a>
+        <div class="nt" id="nt">
+          <button type="button" class="hdr-ic" id="ntBtn" aria-label="알림" aria-haspopup="true" aria-expanded="false" aria-controls="ntMenu"><i data-lucide="bell"></i><span class="nt-n" id="hdrDot" hidden></span></button>
+          <div class="nt-menu" id="ntMenu" hidden>
+            <div class="nt-h"><b>알림</b><button type="button" id="ntRead">모두 읽음</button></div>
+            <div class="nt-tabs" role="tablist"><button type="button" class="on" data-nt="todo" role="tab">처리할 일 <span id="ntTodoN"></span></button><button type="button" data-nt="act" role="tab">최근 활동</button></div>
+            <div class="nt-list" id="ntList"></div>
+            <a class="nt-f" href="index.html">대시보드에서 모두 보기</a>
+          </div>
+        </div>
         <div class="um" id="um">
           <button type="button" class="um-btn" id="umBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="umMenu">
             <span class="av">운영</span><span class="um-t"><b>홍길동</b><small>운영 관리자</small></span><i data-lucide="chevron-down" class="um-cv"></i>
