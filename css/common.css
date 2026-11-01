@@ -1043,3 +1043,14 @@ img[width][height]{height:auto}
 .range input:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 40%,transparent)}
 .range .tilde{font-weight:800;color:var(--ink-3)}
 @media (max-width:380px){.range{gap:6px}.range input{padding:0 10px;font-size:14px}}
+
+/* 셀렉트 화살표: 좌우 여백 동일 (오른쪽 16px) */
+.field select,.searchbar select{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:48px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235E5752' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 16px center;background-size:16px 16px;cursor:pointer}
+.searchbar select{padding-right:40px;background-position:right 14px center;background-size:14px 14px}
+.field select::-ms-expand{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .field select,:root:not([data-theme="light"]) .searchbar select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23B3B3B3' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")}}
+:root[data-theme="dark"] .field select,:root[data-theme="dark"] .searchbar select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23B3B3B3' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")}
