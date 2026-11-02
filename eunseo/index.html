@@ -381,7 +381,11 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 .lb{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.72);display:grid;place-items:center;padding:max(20px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .lb-card{display:grid;grid-template-columns:minmax(0,auto) 340px;background:#fff;border-radius:6px;overflow:hidden;max-height:88vh;max-width:min(1000px,100%)}
 .lb-card .media{background:#000;display:grid;place-items:center;min-width:0;position:relative;overflow:hidden;touch-action:pan-y}
-.lb-card .media img{will-change:transform;user-select:none;-webkit-user-drag:none}
+.lb-card .media{background:#fff}
+.lb-track{position:relative;will-change:transform;display:grid;place-items:center;width:100%}
+.lb-track img{user-select:none;-webkit-user-drag:none}
+.lb-card .media .lb-side-img{position:absolute;top:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;background:#fff}
+.lb-card .media .lb-side-img.is-prev{left:-100%}.lb-card .media .lb-side-img.is-next{left:100%}
 .lb-card .media img{max-height:88vh;width:auto;max-width:100%;object-fit:contain}
 .lb-side{display:flex;flex-direction:column;min-width:0;border-left:1px solid var(--line)}
 .lb-side .post-h{border-bottom:1px solid var(--line);padding:14px 16px}
@@ -731,7 +735,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="작품 크게 보기">
   <button class="x" id="lb-x" aria-label="닫기"><i data-lucide="x"></i></button>
   <div class="lb-card">
-    <div class="media"><img id="lb-img" alt="">
+    <div class="media"><div class="lb-track" id="lbTrack"><img class="lb-side-img is-prev" id="lb-prev" alt="" aria-hidden="true"><img id="lb-img" alt=""><img class="lb-side-img is-next" id="lb-next" alt="" aria-hidden="true"></div>
       <button class="nav-b prev" id="lb-p" aria-label="이전 작품"><i data-lucide="chevron-left"></i></button>
       <button class="nav-b next" id="lb-n" aria-label="다음 작품"><i data-lucide="chevron-right"></i></button></div>
     <div class="lb-side">
@@ -782,6 +786,8 @@ document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
 const lb=document.getElementById('lb'),$=id=>document.getElementById(id);
 let cur=0;
 function show(i){cur=i;const w=WORKS[i];
+  const k=visible.indexOf(i),n=visible.length;
+  if(n){$('lb-prev').src=`img/${WORKS[visible[(k-1+n)%n]].src}.jpg`;$('lb-next').src=`img/${WORKS[visible[(k+1)%n]].src}.jpg`;}
   $('lb-img').src=`img/${w.src}.jpg`;$('lb-img').alt=w.t+' 캐리커처';
   $('lb-sub').textContent=w.d;$('lb-say').textContent=w.t;$('lb-tags').textContent=TAGS[w.f];
   $('lb-cap').textContent=w.t;$('lb-date').textContent=w.dt;
@@ -793,32 +799,34 @@ $('lb-x').onclick=close;$('lb-p').onclick=()=>slideTo(-1);$('lb-n').onclick=()=>
 $('lb-like').onclick=()=>{const s=$('lb-like').querySelector('svg');s&&s.classList.toggle('liked');};
 lb.addEventListener('click',e=>{if(e.target===lb)close();});
 addEventListener('keydown',e=>{if(lb.hidden)return;if(e.key==='Escape')close();if(e.key==='ArrowLeft')slideTo(-1);if(e.key==='ArrowRight')slideTo(1);});
-/* 손가락을 따라 좌우로 밀리는 슬라이드 */
-const media=document.querySelector('.lb-card .media'),lbImg=$('lb-img');
+/* 손가락을 따라 좌우로 밀리는 슬라이드 (이전·다음 그림이 옆에 붙어 따라옴) */
+const media=document.querySelector('.lb-card .media'),track=$('lbTrack');
 let sx=null,sy=null,dx=0,dragging=false,busy=false,axis=null;
-const EASE='transform .32s cubic-bezier(.22,.8,.3,1)';
+const EASE='transform .34s cubic-bezier(.22,.8,.3,1)';
+function setX(x,anim){track.style.transition=anim?EASE:'none';track.style.transform=`translateX(${x}px)`;}
 function slideTo(d){
   if(busy)return; busy=true;
-  const w=media.clientWidth;
-  lbImg.style.transition=EASE; lbImg.style.transform=`translateX(${d>0?-w:w}px)`;
+  const w=track.clientWidth;
+  setX(d>0?-w:w,true);
   setTimeout(()=>{
-    step(d);
-    lbImg.style.transition='none'; lbImg.style.transform=`translateX(${d>0?w:-w}px)`;
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{lbImg.style.transition=EASE;lbImg.style.transform='translateX(0)';setTimeout(()=>busy=false,330);}));
-  },300);
+    const main=$('lb-img'),incoming=$(d>0?'lb-next':'lb-prev');
+    main.src=incoming.src;
+    const done=()=>{setX(0,false);step(d);busy=false;};
+    if(main.decode)main.decode().then(done,done);else done();
+  },340);
 }
-media.addEventListener('touchstart',e=>{if(busy)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;axis=null;dragging=true;lbImg.style.transition='none';},{passive:true});
+media.addEventListener('touchstart',e=>{if(busy)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;axis=null;dragging=true;track.style.transition='none';},{passive:true});
 media.addEventListener('touchmove',e=>{
   if(!dragging)return;
   const mx=e.touches[0].clientX-sx,my=e.touches[0].clientY-sy;
   if(!axis&&(Math.abs(mx)>6||Math.abs(my)>6))axis=Math.abs(mx)>Math.abs(my)?'x':'y';
   if(axis!=='x')return;
-  e.preventDefault(); dx=mx; lbImg.style.transform=`translateX(${dx}px)`;
+  e.preventDefault(); dx=mx; setX(dx,false);
 },{passive:false});
 media.addEventListener('touchend',()=>{
   if(!dragging)return; dragging=false;
-  if(axis==='x'&&Math.abs(dx)>media.clientWidth*0.18){slideTo(dx<0?1:-1);}
-  else{lbImg.style.transition=EASE;lbImg.style.transform='translateX(0)';}
+  if(axis==='x'&&Math.abs(dx)>track.clientWidth*0.18) slideTo(dx<0?1:-1);
+  else setX(0,true);
 });
 
 /* before / after */
