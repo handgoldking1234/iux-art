@@ -106,6 +106,18 @@ body.menu-open{overflow:hidden}
 @media (max-width:860px){.menu-btn{display:block}.nav .wrap{gap:8px}}
 @media (min-width:861px){.mnav{display:none!important}}
 
+
+/* 붓으로 휘리릭 쓰는 효과 */
+.brush-write{position:relative;white-space:nowrap}
+.brush-write .ch{display:inline-block;-webkit-mask-image:linear-gradient(105deg,#000 46%,rgba(0,0,0,.35) 50%,transparent 54%);mask-image:linear-gradient(105deg,#000 46%,rgba(0,0,0,.35) 50%,transparent 54%);-webkit-mask-size:320% 100%;mask-size:320% 100%;-webkit-mask-position:0 0;mask-position:0 0;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;animation:brushIn .42s cubic-bezier(.7,0,.25,1) calc(.75s + var(--i) * .2s) both}
+@keyframes brushIn{
+  0%{-webkit-mask-position:100% 0;mask-position:100% 0;filter:blur(2px);transform:translateY(2px) skewX(-6deg)}
+  70%{filter:blur(.3px)}
+  100%{-webkit-mask-position:0 0;mask-position:0 0;filter:blur(0);transform:none}}
+.brush-write .swoosh{position:absolute;left:-2%;bottom:-.08em;width:104%;height:.36em;overflow:visible;pointer-events:none}
+.brush-write .swoosh path{fill:none;stroke:var(--accent);stroke-width:7;stroke-linecap:round;opacity:.55;stroke-dasharray:320;stroke-dashoffset:0;animation:swoosh .5s cubic-bezier(.6,0,.2,1) 1.65s both}
+@keyframes swoosh{from{stroke-dashoffset:320;stroke-width:3}to{stroke-dashoffset:0;stroke-width:7}}
+
 /* mobile tab bar */
 .tabbar{display:none}
 @media (max-width:860px){
@@ -400,7 +412,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
     <div class="wrap">
       <div>
         <span class="eyebrow"><i data-lucide="sparkles"></i>은서작가 · 수채 파스텔 캐리커처 & 캘리그라피</span>
-        <h1>마주 앉은 15분,<br>평생 꺼내 볼<br><em>우리 얼굴</em></h1>
+        <h1>마주 앉은 15분,<br>평생 꺼내 볼<br><em class="brush-write" aria-label="우리 얼굴"><span class="ch" style="--i:0">우</span><span class="ch" style="--i:1">리</span> <span class="ch" style="--i:2">얼</span><span class="ch" style="--i:3">굴</span><svg class="swoosh" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 28 C 70 18, 150 14, 210 20 S 285 30, 294 14"/></svg></em></h1>
         <p class="lead">붓펜 선 위에 파스텔을 문질러 올리는 손그림이에요. 그 자리에서 완성하고, 하고 싶은 말은 캘리그라피로 하트 안에 적어 드려요.</p>
         <div class="hero-cta">
           <a href="#contact" class="btn btn-green"><i data-lucide="calendar-heart"></i>그림 예약하기</a>
