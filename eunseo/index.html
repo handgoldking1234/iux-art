@@ -273,7 +273,11 @@ body.menu-open{overflow:hidden}
 .calli{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:56px;align-items:center}
 .calli-board{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .slot{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:1/1;background:repeating-linear-gradient(135deg,#f6f7f5 0 14px,#eff1ee 14px 28px);border:1.5px dashed #c9ccc7;display:grid;place-content:center;justify-items:center;gap:8px;color:var(--dim);font-size:13.5px;font-weight:700;text-align:center;padding:12px}
-.slot.big{grid-column:1/-1;aspect-ratio:16/10}
+.slot.big{grid-column:1/-1;aspect-ratio:3/2}
+.slot.filled{border:0;background:var(--surface);margin:0;box-shadow:0 1px 2px rgba(20,30,20,.06),0 10px 26px rgba(20,30,20,.12)}
+.slot figcaption{position:absolute;left:10px;bottom:10px;padding:5px 11px;border-radius:var(--r-pill);background:rgba(18,18,18,.72);color:#fff;font-size:12.5px;font-weight:700;backdrop-filter:blur(6px)}
+.slot.filled img{transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.slot.filled:hover img{transform:scale(1.04)}
 .slot svg{width:28px;height:28px}
 .slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .calli-opts{display:grid;gap:10px;margin-top:30px}
@@ -551,14 +555,14 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
         <div class="calli-opts">
           <div class="copt"><span class="ic"><i data-lucide="sticker"></i></span><div><b>이름·한마디 카드</b><span>엽서 크기 · 그 자리에서 바로</span></div><em>5,000원</em></div>
           <div class="copt"><span class="ic"><i data-lucide="frame"></i></span><div><b>액자용 문구</b><span>A4 · 가훈, 좌우명, 기념일 문구</span></div><em>15,000원</em></div>
+          <div class="copt"><span class="ic"><i data-lucide="gift"></i></span><div><b>손글씨 소품</b><span>꽃 그림 + 문구 · 선물·답례품</span></div><em>문의</em></div>
           <div class="copt"><span class="ic"><i data-lucide="users"></i></span><div><b>행사 즉석 캘리</b><span>캐리커처 대기 줄과 함께 운영</span></div><em>시간당 문의</em></div>
         </div>
       </div>
-      <!-- 캘리그라피 사진 자리: 이미지를 받으면 각 .slot 안을 <img src="img/calli-1.jpg" alt="..."> 로 바꾸면 돼요 -->
-      <div class="calli-board" aria-label="캘리그라피 작품 사진 자리">
-        <div class="slot big"><i data-lucide="image"></i><span>캘리그라피 작품 사진</span></div>
-        <div class="slot"><i data-lucide="image"></i><span>문구 카드</span></div>
-        <div class="slot"><i data-lucide="image"></i><span>행사 현장</span></div>
+      <div class="calli-board" aria-label="캘리그라피 작품 사진">
+        <figure class="slot big filled"><img src="img/calli-stones.jpg" alt="꽃 그림과 캘리그라피 문구를 그린 흙 소품들" loading="lazy"><figcaption>손글씨 소품</figcaption></figure>
+        <figure class="slot filled"><img src="img/calli-card.jpg" alt="토닥토닥 오늘도 수고했어요 캘리그라피 카드" loading="lazy"><figcaption>이름 넣은 문구 카드</figcaption></figure>
+        <figure class="slot filled"><img src="img/calli-event.jpg" alt="행사장 부스에서 캘리그라피를 쓰는 은서작가" loading="lazy"><figcaption>행사 현장</figcaption></figure>
       </div>
     </div>
   </section>
