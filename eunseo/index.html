@@ -120,18 +120,17 @@ body.menu-open{overflow:hidden}
 
 
 /* 텍스트 애니메이션: 단어가 아래에서 밀려 올라옴 */
-.split .w{display:inline-block;vertical-align:bottom}
-.split .w > span{display:inline-block;opacity:0}
-.split.go .w > span{animation:titleIn 1.2s cubic-bezier(.22,.8,.3,1) calc(var(--wi) * var(--step,220ms) + var(--wd,0ms)) both}
-/* 타이틀: 안 보이다가 서서히 또렷하게 */
-@keyframes titleIn{0%{opacity:0;filter:blur(12px);transform:translateY(18px);letter-spacing:.04em}60%{filter:blur(1px)}100%{opacity:1;filter:blur(0);transform:none;letter-spacing:-.035em}}
+.split .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding:0 .02em .1em;margin-bottom:-.1em}
+.split .w > span{display:inline-block;transform:translateY(110%) rotate(4deg);transform-origin:0 100%}
+.split.go .w > span{animation:wordUp .9s cubic-bezier(.19,1,.22,1) calc(var(--wi) * var(--step,160ms) + var(--wd,0ms)) both}
+@keyframes wordUp{from{transform:translateY(110%) rotate(4deg)}to{transform:none}}
 @keyframes riseBlur{from{opacity:0;translate:0 24px;filter:blur(6px)}to{opacity:1;translate:0 0;filter:blur(0)}}
 .rv.txt.in{animation-name:riseBlur;animation-duration:1s}
 .hero .lead{animation:riseBlur 1s cubic-bezier(.16,.84,.3,1) 1.25s both!important}
 .eyebrow.go{animation:eyebrowIn .8s cubic-bezier(.16,.84,.3,1) both}
 @keyframes eyebrowIn{from{opacity:0;letter-spacing:.4em}to{opacity:1;letter-spacing:.06em}}
 .fact b{font-variant-numeric:tabular-nums}
-@media (prefers-reduced-motion:reduce){.split .w > span{opacity:1}}
+@media (prefers-reduced-motion:reduce){.split .w > span{transform:none}}
 
 
 /* 이미지 내부: 아래에서 걷히며 확대→원래 크기 */
