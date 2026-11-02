@@ -191,6 +191,14 @@ body.menu-open{overflow:hidden}
 @keyframes spreadC{0%{transform:translateY(8px) scale(.97)}45%{transform:translateY(-6px) scale(1.02)}100%{transform:none}}
 .fan:hover .p1{transform:rotate(-12deg) translateX(-12px)}
 .fan:hover .p3{transform:rotate(12deg) translateX(12px)}
+/* 카드에 마우스를 올리면 부드럽게 위로 */
+.fan .post{transition:transform .55s cubic-bezier(.2,.8,.2,1),box-shadow .55s}
+.fan .p1:hover{transform:rotate(-10deg) translate(-14px,-26px);z-index:3}
+.fan .p2:hover{transform:translateY(-22px) scale(1.02);z-index:3}
+.fan .p3:hover{transform:rotate(10deg) translate(14px,-26px);z-index:3}
+.fan .post:hover{box-shadow:0 2px 4px rgba(20,30,20,.06),0 30px 60px rgba(20,30,20,.22)}
+.feed .post,.plan,.ev{transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s,background .2s}
+@media (hover:hover){.feed .post:hover,.plan:hover{transform:translateY(-8px);box-shadow:0 2px 4px rgba(20,30,20,.06),0 24px 48px rgba(20,30,20,.16)}}
 @keyframes bob{50%{translate:0 -10px}}
 @media (max-width:860px){
   .hero .wrap{grid-template-columns:1fr;gap:36px}
@@ -208,8 +216,8 @@ body.menu-open{overflow:hidden}
 .chip:hover{background:var(--raised)}
 .chip[aria-pressed="true"]{background:#121212;color:#fff;border-color:transparent}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;margin-top:26px}
-.card{background:var(--surface);border-radius:16px;padding:12px;cursor:pointer;transition:background .2s,transform .2s;border:0;text-align:left;width:100%;min-width:0}
-.card:hover{background:var(--raised);transform:translateY(-3px)}
+.card{background:var(--surface);border-radius:16px;padding:12px;cursor:pointer;transition:background .25s,transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s;border:0;text-align:left;width:100%;min-width:0}
+.card:hover{background:var(--raised);transform:translateY(-8px);box-shadow:0 18px 36px rgba(20,30,20,.12)}
 .card .ph{position:relative;border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(20,30,20,.06),0 8px 22px rgba(20,30,20,.12)}
 .card .ph img{aspect-ratio:3/4;object-fit:cover;width:100%;transition:transform .5s}
 .card:hover .ph img{transform:scale(1.04)}
