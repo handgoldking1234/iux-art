@@ -275,9 +275,11 @@ body.menu-open{overflow:hidden}
 
 /* CALLIGRAPHY */
 .calli{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:56px;align-items:center}
-.calli-board{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.calli-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .slot{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:4/5;background:repeating-linear-gradient(135deg,#f6f7f5 0 14px,#eff1ee 14px 28px);border:1.5px dashed #c9ccc7;display:grid;place-content:center;justify-items:center;gap:8px;color:var(--dim);font-size:13.5px;font-weight:700;text-align:center;padding:12px}
 .slot.big{grid-column:1/-1;aspect-ratio:3/2}
+.calli-board .slot:not(.big){aspect-ratio:3/4}
+@media (max-width:420px){.calli-board{gap:8px}.slot figcaption{font-size:11px;padding:4px 8px;left:6px;bottom:6px}}
 .slot.filled{border:0;background:var(--surface);margin:0;box-shadow:0 1px 2px rgba(20,30,20,.06),0 10px 26px rgba(20,30,20,.12)}
 .slot figcaption{position:absolute;left:10px;bottom:10px;padding:5px 11px;border-radius:var(--r-pill);background:rgba(18,18,18,.72);color:#fff;font-size:12.5px;font-weight:700;backdrop-filter:blur(6px)}
 .slot.filled img{transition:transform .6s cubic-bezier(.2,.8,.2,1)}
@@ -571,6 +573,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
       <div class="calli-board" aria-label="캘리그라피 작품 사진">
         <figure class="slot big filled"><img src="img/calli-stones.jpg" alt="꽃 그림과 캘리그라피 문구를 그린 흙 소품들" loading="lazy"><figcaption>손글씨 소품</figcaption></figure>
         <figure class="slot filled"><img src="img/calli-card.jpg" alt="토닥토닥 오늘도 수고했어요 캘리그라피 카드" loading="lazy"><figcaption>이름 넣은 문구 카드</figcaption></figure>
+        <figure class="slot filled"><img src="img/calli-lucky.jpg" alt="나는 운이 좋은 사람 캘리그라피 엽서" loading="lazy"><figcaption>엽서 캘리</figcaption></figure>
         <figure class="slot filled"><img src="img/calli-event.jpg" alt="행사장 부스에서 완성한 캘리그라피 카드를 들어 보이는 은서작가" loading="lazy"><figcaption>행사 현장</figcaption></figure>
       </div>
     </div>
