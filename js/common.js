@@ -390,3 +390,37 @@
     f.addEventListener('submit', function (e) { e.preventDefault(); toast('검색 기능은 개발 단계에서 연결됩니다.'); });
   });
 })();
+
+/* ---------- 메인 비주얼: 이벤트 롤링 ---------- */
+(function () {
+  var hs = document.getElementById('heroSlider'); if (!hs) return;
+  var slides = [].slice.call(hs.querySelectorAll('.hs-slide')), tabs = [].slice.call(hs.querySelectorAll('.hs-tab'));
+  var cur = 0, DUR = 5000, t = null, start = 0, left = DUR, stopped = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  hs.style.setProperty('--hs-dur', DUR / 1000 + 's');
+  function go(n) {
+    cur = (n + slides.length) % slides.length;
+    slides.forEach(function (s, i) { var on = i === cur; s.classList.toggle('on', on); s.setAttribute('aria-hidden', !on); var a = s.querySelector('.easel'); if (a) a.tabIndex = on ? 0 : -1; });
+    tabs.forEach(function (b, i) { var on = i === cur; b.classList.remove('on'); void b.offsetWidth; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+    var tb = tabs[cur], bar = tb.parentNode; bar.scrollTo({ left: tb.offsetLeft - bar.clientWidth / 2 + tb.clientWidth / 2, behavior: 'smooth' });
+    document.getElementById('hsName').textContent = tb.textContent;
+    left = DUR; schedule();
+  }
+  function schedule() { clearTimeout(t); if (stopped || hs.classList.contains('paused')) return; start = Date.now(); t = setTimeout(function () { go(cur + 1); }, left); }
+  function pause() { if (stopped) return; hs.classList.add('paused'); clearTimeout(t); left = Math.max(300, left - (Date.now() - start)); }
+  function resume() { if (!hs.classList.contains('paused')) return; hs.classList.remove('paused'); schedule(); }
+  tabs.forEach(function (b, i) { b.addEventListener('click', function () { go(i); }); });
+  hs.querySelector('.prev').addEventListener('click', function () { go(cur - 1); });
+  hs.querySelector('.next').addEventListener('click', function () { go(cur + 1); });
+  var play = hs.querySelector('.hs-play');
+  function setStop(v) { stopped = v; hs.classList.toggle('stopped', v); play.setAttribute('aria-label', v ? '자동 넘김 시작' : '자동 넘김 멈춤'); if (v) clearTimeout(t); else { left = DUR; go(cur); } }
+  play.addEventListener('click', function () { setStop(!stopped); });
+  hs.addEventListener('mouseenter', pause); hs.addEventListener('mouseleave', resume);
+  hs.addEventListener('focusin', pause); hs.addEventListener('focusout', function (e) { if (!hs.contains(e.relatedTarget)) resume(); });
+  var x0 = null;
+  hs.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+  hs.addEventListener('touchend', function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) go(cur + (dx < 0 ? 1 : -1)); x0 = null; });
+  hs.addEventListener('keydown', function (e) { if (e.key === 'ArrowLeft') go(cur - 1); if (e.key === 'ArrowRight') go(cur + 1); });
+  document.addEventListener('visibilitychange', function () { if (document.hidden) pause(); else resume(); });
+  if (stopped) hs.classList.add('stopped');
+  schedule();
+})();
