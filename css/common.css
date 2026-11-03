@@ -1272,3 +1272,4 @@ img[width][height]{height:auto}
 }
 @media (prefers-reduced-motion:reduce){.hs-slide,.hs-slide>.cover,.hs .easel.photo{transition:none}}
 @media (max-width:720px){.hs-slide .pen-note{top:68px;left:20px;font-size:22px}.hs .easel.photo,.hs-slide.on .easel.photo{top:50%}}
+.stage.hs{overflow:clip}
