@@ -85,7 +85,9 @@ h1,h2,h3{margin:0;text-wrap:balance}
 body.menu-open{overflow:hidden}
 body.menu-open .hd{background:transparent;box-shadow:none}
 body.menu-open .hd .logo{color:#fff}
-body.menu-open .menu-btn span{background:#fff}
+body.menu-open .hd .menu-btn span,body.menu-open .hd.solid .menu-btn span{background:#fff}
+body.menu-open .hd.solid .logo{color:#fff}
+body.menu-open .menu-btn{border-radius:50%;background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35)}
 @media (max-width:900px){.hd nav{display:none}.hd .wrap{grid-template-columns:1fr auto}.menu-btn{display:block}}
 @media (min-width:901px){.mnav{display:none!important}}
 
