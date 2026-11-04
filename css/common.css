@@ -1296,3 +1296,12 @@ img[width][height]{height:auto}
 @media (max-width:720px){.pr-tiers,.pr-bundles{grid-template-columns:1fr}.pr-tier{padding:20px}.pr-p b{font-size:22px}}
 @media (max-width:720px){.prog9 h3{font-size:11px;letter-spacing:-.02em}}
 @media (min-width:721px) and (max-width:1024px){.prog9{grid-template-columns:repeat(5,1fr);gap:20px 10px}}
+.pr-cari{margin-top:16px;background:var(--card);border-radius:var(--r-card);padding:24px 28px;display:grid;grid-template-columns:1fr 1.3fr;gap:20px;align-items:center}
+.pr-cari h3{font-size:18px;font-weight:800;margin-top:6px}
+.pr-cari>div>p:not(.pr-k){font-size:14px;color:var(--ink-2);margin-top:2px}
+.pr-cari .pr-p{margin-top:0}
+.pr-cari .pr-p em{display:block;font-style:normal;font-size:13px;color:var(--ink-3);font-weight:700}
+.pr-cari .pr-p .hl{background:var(--brand)}
+.pr-cari .pr-p .hl span,.pr-cari .pr-p .hl em{color:#5a4300}
+.pr-note{font-size:12px;color:var(--brand-text);font-weight:700;margin-top:10px}
+@media (max-width:720px){.pr-cari{grid-template-columns:1fr;padding:20px}}

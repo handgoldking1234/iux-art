@@ -304,6 +304,7 @@
         '<div class="f3"><div class="fld"><label for="nj_f">업체 견적 금액</label><input class="inp" id="nj_f" type="number" min="0" step="10000" placeholder="원"></div>' +
         '<div class="fld"><label for="nj_dl">모집 마감일<i>*</i></label><input class="inp" id="nj_dl" type="date" required value="' + dls + '"></div>' +
         '<div class="fld"><span class="lb">선정 방식</span><div class="togs"><label class="tog"><input type="radio" name="nj_m" value="fcfs"' + (d.settings.defaultMode === 'fcfs' ? ' checked' : '') + '><span>선착순</span></label><label class="tog"><input type="radio" name="nj_m" value="pick"' + (d.settings.defaultMode === 'pick' ? ' checked' : '') + '><span>직접 선택</span></label></div></div></div>' +
+        '<div class="fld" id="nj_cw"><span class="lb">캐리커처 종류</span><div class="togs"><label class="tog"><input type="radio" name="nj_c" value="0" checked><span>포인트(흑백)</span></label><label class="tog"><input type="radio" name="nj_c" value="1"><span>컬러</span></label></div><p class="help">A5·A4 사이즈는 같은 가격이에요.</p></div>' +
         '<p class="note" id="nj_info"></p>' +
         '<label class="ck"><input type="checkbox" id="nj_ph"' + (q && q.photoOk ? ' checked' : '') + '>고객이 현장 사진 홈페이지·SNS 홍보 활용에 동의함' + (q ? ' <small class="muted">(견적 문의 때 ' + (q.photoOk ? '동의' : '미동의') + ')</small>' : '') + '</label>' +
         '<label class="ck"><input type="checkbox" id="nj_a" ' + (d.settings.autoNotice ? 'checked' : '') + '>등록하면 기술·지역이 맞는 작가에게 공고 알림 보내기 (알림톡·메일)</label>' +
@@ -316,7 +317,8 @@
             var tm = ($('#nj_tm', m).value.match(/(\d+):(\d+)\s*~\s*(\d+):(\d+)/) || []);
             var h = tm.length ? ((+tm[3] * 60 + +tm[4]) - (+tm[1] * 60 + +tm[2])) / 60 : 3;
             var dd = d1 ? I.days(d1, d2) : 1, per = Math.round(I.unitPrice(sk, h) * dd * db().settings.share / 100 / 1000) * 1000;
-            var fee = +$('#nj_f', m).value || I.quoteFee(sk, h, n, dd); $('#nj_f', m).placeholder = I.won(I.quoteFee(sk, h, n, dd)) + ' (단가표 기준)';
+            var col = sk === 'caricature' && $('input[name=nj_c]:checked', m).value === '1'; $('#nj_cw', m).hidden = sk !== 'caricature';
+            var fee = +$('#nj_f', m).value || I.quoteFee(sk, h, n, dd, col); $('#nj_f', m).placeholder = I.won(I.quoteFee(sk, h, n, dd, col)) + ' (단가표 기준)';
             $('#nj_info', m).innerHTML = '알림 대상 작가 <b>' + t.length + '명</b> (' + I.skill(sk).n + ' · ' + rg + ') · 업체 견적 <b>' + I.won(fee) + '</b> · 작가 1인 <b>' + I.won(Math.round(fee / n * db().settings.share / 100 / 1000) * 1000) + '</b> (' + db().settings.share + '%) · 회사 몫 <b>' + I.won(fee - Math.round(fee / n * db().settings.share / 100 / 1000) * 1000 * n) + '</b>';
             return { h: h, per: per };
           };
@@ -329,7 +331,7 @@
             if (d2 < d1) { I.toast('종료일이 시작일보다 빠릅니다.'); return; }
             var j = { id: id, title: $('#nj_t', m).value, client: $('#nj_c', m).value, skill: $('#nj_s', m).value, start: d1, end: d2, time: $('#nj_tm', m).value.replace(/\s/g, ''), hours: Math.max(1, Math.round(r.h * 10) / 10),
               place: $('#nj_p', m).value, region: $('#nj_r', m).value, need: +$('#nj_n', m).value || 1, mode: $('input[name=nj_m]:checked', m).value, status: 'open', posted: I.stamp(), deadline: $('#nj_dl', m).value + ' 18:00',
-              photoOk: $('#nj_ph', m).checked, fee: +$('#nj_f', m).value || I.quoteFee($('#nj_s', m).value, r.h, +$('#nj_n', m).value || 1, I.days(d1, d2)), apps: [] };
+              color: $('#nj_s', m).value === 'caricature' && $('input[name=nj_c]:checked', m).value === '1', photoOk: $('#nj_ph', m).checked, fee: +$('#nj_f', m).value || I.quoteFee($('#nj_s', m).value, r.h, +$('#nj_n', m).value || 1, I.days(d1, d2), $('#nj_s', m).value === 'caricature' && $('input[name=nj_c]:checked', m).value === '1'), apps: [] };
             db().jobs.push(j);
             if (q) db().quotes = db().quotes.filter(function (x) { return x.id !== q.id; });
             var n = 0;
@@ -661,7 +663,9 @@
     $('#rateBody').innerHTML = db().skills.map(function (k, i) {
       var cnt = db().artists.filter(function (a) { return a.status === 'active' && a.skills.some(function (x) { return x.k === k.k; }); }).length;
       var inp = function (f) { return '<input class="inp num" style="width:110px;text-align:right" type="number" step="10000" min="0" data-p="' + i + ':' + f + '" value="' + k[f] + '" aria-label="' + k.n + ' ' + (f === 'p4' ? '4시간' : '6시간') + ' 단가">'; };
-      return '<tr><td><b>' + k.n + '</b></td><td class="r">' + inp('p4') + '</td><td class="r">' + inp('p6') + '</td><td class="r muted">' + I.won(Math.round(k.p4 * (s.share || 70) / 100)) + '</td><td class="r">' + cnt + '명</td></tr>';
+      var row = '<tr><td><b>' + k.n + (k.pc4 ? ' <small class="muted">포인트(흑백)</small>' : '') + '</b></td><td class="r">' + inp('p4') + '</td><td class="r">' + inp('p6') + '</td><td class="r muted">' + I.won(Math.round(k.p4 * (s.share || 70) / 100)) + '</td><td class="r">' + cnt + '명</td></tr>';
+      if (k.pc4) row += '<tr><td><b>' + k.n + ' <small class="muted">컬러 · A5·A4 동일</small></b></td><td class="r">' + inp('pc4') + '</td><td class="r">' + inp('pc6') + '</td><td class="r muted">' + I.won(Math.round(k.pc4 * (s.share || 70) / 100)) + '</td><td class="r">-</td></tr>';
+      return row;
     }).join('');
     var prev = function () {
       $('#restPrev').textContent = '최근 ' + ($('#s_rw').value || 30) + '일 안에 연속 ' + ($('#s_rc').value || 3) + '회 이상 확정된 작가는 다음 공고 1회에서 자동으로 빠집니다.';

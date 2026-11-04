@@ -37,8 +37,8 @@ var IUX = (function () {
   /* ---------- 조회 ---------- */
   var skill = function (k) { for (var i = 0; i < db.skills.length; i++) if (db.skills[i].k === k) return db.skills[i]; return { k: k, n: k, p4: 0, p6: 0 }; };
   /* 업체 견적 단가(작가 1명·1일): 4시간 이하 p4, 6시간까지 p6, 그 이상은 시간당 (p6-p4)/2 추가 */
-  var unitPrice = function (k, h) { var s = skill(k); if (h <= 4) return s.p4; if (h <= 6) return s.p6; return s.p6 + Math.ceil(h - 6) * Math.round((s.p6 - s.p4) / 2); };
-  var quoteFee = function (k, h, need, d) { return unitPrice(k, h) * (need || 1) * (d || 1); };
+  var unitPrice = function (k, h, color) { var s = skill(k), a = color && s.pc4 ? s.pc4 : s.p4, b = color && s.pc6 ? s.pc6 : s.p6; if (h <= 4) return a; if (h <= 6) return b; return b + Math.ceil(h - 6) * Math.round((b - a) / 2); };
+  var quoteFee = function (k, h, need, d, color) { return unitPrice(k, h, color) * (need || 1) * (d || 1); };
   /* 작가 1명 몫 = 업체 견적 ÷ 인원 × 배분 비율(기본 70%) */
   var artistPay = function (j) { return Math.round(j.fee / Math.max(1, j.need) * (db.settings.share || 70) / 100 / 1000) * 1000; };
   var artist = function (id) { for (var i = 0; i < db.artists.length; i++) if (db.artists[i].id === id) return db.artists[i]; return null; };
