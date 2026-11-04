@@ -335,8 +335,8 @@
         $('#sum_date').textContent = txt;
       }
       var ppl = +(q.querySelector('[name="people"]').value || 0);
-      /* 작가 1명이 1시간에 약 15명 · 기본 3시간 기준 */
-      $('#sumArtist').textContent = ppl ? '하루 약 ' + (ppl * 45).toLocaleString('ko-KR') + '명 (3시간 기준)' : '-';
+      /* 작가 1명이 4시간에 100명 이상 (1인 1~2분) */
+      $('#sumArtist').textContent = ppl ? '4시간 약 ' + (ppl * 100).toLocaleString('ko-KR') + '명 이상' : '-';
     };
     /* 작품 갤러리에서 '이 작가로 견적 문의' → #a-c07 */
     var am = location.hash.match(/^#a-([a-z])-?(\d+)$/i);

@@ -120,7 +120,7 @@
       open.sort(function (x, y) { return fit(y) - fit(x); });
       return open.length ? '<div class="jobs">' + open.map(function (j) {
         var p = j.apps.filter(function (x) { return x.a === a.id; })[0], ok = fit(j);
-        var per = I.skill(j.skill).rate * j.hours * I.days(j.start, j.end);
+        var per = I.artistPay(j);
         var near = a.regions.indexOf(j.region) > -1;
         var btn;
         if (a.status !== 'active') btn = '<button class="btn btn-o" disabled>승인 후 신청 가능</button>';

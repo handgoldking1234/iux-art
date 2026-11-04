@@ -184,7 +184,7 @@
       if (!j) { box.innerHTML = '<div class="card empty-s"><i data-lucide="mouse-pointer-click"></i>왼쪽에서 공고를 고르세요.</div>'; I.icons(); return; }
       var editable = j.status === 'open' || j.status === 'review';
       var apps = j.apps.slice().sort(function (a, b) { return a.at < b.at ? -1 : 1; });
-      var rate = I.skill(j.skill).rate, dd = I.days(j.start, j.end), per = rate * j.hours * dd;
+      var dd = I.days(j.start, j.end), per = I.artistPay(j);
       var rows = apps.map(function (p, i) {
         var a = I.artist(p.a); if (!a) return '';
         var sk = a.skills.filter(function (s) { return s.k === j.skill; })[0];
@@ -249,7 +249,7 @@
     function confirmModal(j, picked) {
       var others = j.apps.filter(function (p) { return picked.indexOf(p.a) < 0; }).map(function (p) { return p.a; });
       var a0 = I.artist(picked[0]);
-      var per = I.skill(j.skill).rate * j.hours * I.days(j.start, j.end);
+      var per = I.artistPay(j);
       var msg = '[IUX ART] 행사 선정 안내\n\n' + a0.name + ' 작가님, 신청하신 행사에 선정되었습니다.\n\n■ 행사: ' + j.title + '\n■ 일정: ' + I.period(j) + ' ' + j.time + '\n■ 장소: ' + j.place + '\n■ 지급 예정: ' + I.won(per) + ' (세전)\n\n행사 시작 30분 전까지 도착 부탁드립니다.';
       var over = picked.length > j.need ? '<p class="demo" style="margin-top:12px"><i data-lucide="alert-triangle"></i>모집 인원(' + j.need + '명)보다 ' + (picked.length - j.need) + '명 많이 선택했어요.</p>' : '';
       var restSel = picked.filter(function (id) { return I.isRest(id); });
@@ -315,8 +315,9 @@
             var t = I.targets({ skill: sk, region: rg }), d1 = $('#nj_d1', m).value, d2 = $('#nj_d2', m).value || d1;
             var tm = ($('#nj_tm', m).value.match(/(\d+):(\d+)\s*~\s*(\d+):(\d+)/) || []);
             var h = tm.length ? ((+tm[3] * 60 + +tm[4]) - (+tm[1] * 60 + +tm[2])) / 60 : 3;
-            var dd = d1 ? I.days(d1, d2) : 1, per = I.skill(sk).rate * h * dd;
-            $('#nj_info', m).innerHTML = '알림 대상 작가 <b>' + t.length + '명</b> (' + I.skill(sk).n + ' · ' + rg + ') · 작가 1인 지급 예상 <b>' + I.won(per) + '</b> · 총 지급 <b>' + I.won(per * n) + '</b>';
+            var dd = d1 ? I.days(d1, d2) : 1, per = Math.round(I.unitPrice(sk, h) * dd * db().settings.share / 100 / 1000) * 1000;
+            var fee = +$('#nj_f', m).value || I.quoteFee(sk, h, n, dd); $('#nj_f', m).placeholder = I.won(I.quoteFee(sk, h, n, dd)) + ' (단가표 기준)';
+            $('#nj_info', m).innerHTML = '알림 대상 작가 <b>' + t.length + '명</b> (' + I.skill(sk).n + ' · ' + rg + ') · 업체 견적 <b>' + I.won(fee) + '</b> · 작가 1인 <b>' + I.won(Math.round(fee / n * db().settings.share / 100 / 1000) * 1000) + '</b> (' + db().settings.share + '%) · 회사 몫 <b>' + I.won(fee - Math.round(fee / n * db().settings.share / 100 / 1000) * 1000 * n) + '</b>';
             return { h: h, per: per };
           };
           $$('input,select', m).forEach(function (el) { el.addEventListener('input', info); el.addEventListener('change', info); });
@@ -328,7 +329,7 @@
             if (d2 < d1) { I.toast('종료일이 시작일보다 빠릅니다.'); return; }
             var j = { id: id, title: $('#nj_t', m).value, client: $('#nj_c', m).value, skill: $('#nj_s', m).value, start: d1, end: d2, time: $('#nj_tm', m).value.replace(/\s/g, ''), hours: Math.max(1, Math.round(r.h * 10) / 10),
               place: $('#nj_p', m).value, region: $('#nj_r', m).value, need: +$('#nj_n', m).value || 1, mode: $('input[name=nj_m]:checked', m).value, status: 'open', posted: I.stamp(), deadline: $('#nj_dl', m).value + ' 18:00',
-              photoOk: $('#nj_ph', m).checked, fee: +$('#nj_f', m).value || Math.round(r.per * (+$('#nj_n', m).value || 1) * 1.7 / 10000) * 10000, apps: [] };
+              photoOk: $('#nj_ph', m).checked, fee: +$('#nj_f', m).value || I.quoteFee($('#nj_s', m).value, r.h, +$('#nj_n', m).value || 1, I.days(d1, d2)), apps: [] };
             db().jobs.push(j);
             if (q) db().quotes = db().quotes.filter(function (x) { return x.id !== q.id; });
             var n = 0;
@@ -476,7 +477,7 @@
     var d = db(), tpl = 0, chf = '';
     function sample(s) {
       var j = d.jobs.filter(function (x) { return x.status === 'open'; })[0] || d.jobs[0], a = I.artist(j.apps[0] ? j.apps[0].a : 'a1') || d.artists[0];
-      var per = I.skill(j.skill).rate * j.hours * I.days(j.start, j.end), tax = Math.floor(per * d.settings.taxRate / 1000) * 10;
+      var per = I.artistPay(j), tax = Math.floor(per * d.settings.taxRate / 1000) * 10;
       var v = { '작가명': a.name, '행사명': j.title, '기간': I.period(j), '시간': j.time, '지역': j.region, '장소': j.place, '인원': j.need, '선정방식': j.mode === 'fcfs' ? '선착순' : '운영자 선정', '지급액': I.won(per), '세액': I.won(tax), '실지급액': I.won(per - tax), '마감일': j.deadline };
       return s.replace(/#\{(.+?)\}/g, function (_, k) { return v[k] != null ? v[k] : _; });
     }
@@ -550,7 +551,7 @@
         $('#setBody').innerHTML = G.map(function (x) { return '<tr><td><div class="who">' + I.avatar(x.a) + '<b>' + E(x.a.name) + '</b></div></td><td>' + (x.a.tax === 'freelancer' ? '프리랜서 3.3%' : '사업자(세금계산서)') + '</td><td class="num">' + E(x.a.bank + ' ' + x.a.account) + '</td><td class="r">' + x.n + '</td><td class="r">' + I.won(x.gross) + '</td><td class="r">' + I.won(x.tax) + '</td><td class="r"><b>' + I.won(x.net) + '</b></td><td class="r">' + (x.due ? '<span class="warn-t">' + I.won(x.due) + '</span>' : '-') + '</td></tr>'; }).join('');
         $('#setFoot').innerHTML = '<tr><td colspan="4">합계</td><td class="r">' + I.won(sum(G, 'gross')) + '</td><td class="r">' + I.won(sum(G, 'tax')) + '</td><td class="r">' + I.won(sum(G, 'net')) + '</td><td class="r">' + I.won(sum(G, 'due')) + '</td></tr>';
       } else {
-        $('#setHead').innerHTML = '<tr><th class="c" style="width:40px"><input type="checkbox" id="chkAll" aria-label="지급 대기 전체 선택"></th><th>행사</th><th>작가</th><th class="r">근무</th><th class="r">단가</th><th class="r">작가료</th><th class="r">교통비</th><th class="r">지급 총액</th><th class="r">원천징수</th><th class="r">실지급액</th><th>상태</th></tr>';
+        $('#setHead').innerHTML = '<tr><th class="c" style="width:40px"><input type="checkbox" id="chkAll" aria-label="지급 대기 전체 선택"></th><th>행사</th><th>작가</th><th class="r">근무</th><th class="r">1인 견적</th><th class="r">작가 몫</th><th class="r">교통비</th><th class="r">지급 총액</th><th class="r">원천징수</th><th class="r">실지급액</th><th>상태</th></tr>';
         $('#setBody').innerHTML = R.length ? R.map(function (r) {
           return '<tr><td class="c">' + (r.state === 'due' ? '<input type="checkbox" class="sp" value="' + r.key + '" aria-label="지급 선택">' : r.state === 'needinfo' ? '<button class="x" data-ask="' + r.artist.id + '" title="정산 정보 등록 요청" aria-label="정산 정보 등록 요청"><i data-lucide="send"></i></button>' : '') + '</td>' +
             '<td><b>' + E(r.job.title) + '</b><br><small class="muted num">' + I.period(r.job) + ' · ' + I.skill(r.job.skill).n + '</small></td>' +
@@ -656,8 +657,11 @@
     $('#s_rc').value = s.restCount; $('#s_rw').value = s.restWindow; $('#s_tax').value = s.taxRate; $('#s_tr').value = s.transportOutside;
     $('input[name=s_mode][value=' + s.defaultMode + ']').checked = true;
     $('#s_k').checked = s.channels.kakao; $('#s_e').checked = s.channels.email; $('#s_auto').checked = s.autoNotice;
+    $('#s_sh').value = s.share || 70;
     $('#rateBody').innerHTML = db().skills.map(function (k, i) {
-      return '<tr><td><b>' + k.n + '</b></td><td class="r"><input class="inp num" style="width:120px;text-align:right" type="number" step="5000" min="0" data-rate="' + i + '" value="' + k.rate + '" aria-label="' + k.n + ' 시급"></td><td class="r muted">' + I.won(k.rate * 3) + '</td><td class="r">' + db().artists.filter(function (a) { return a.status === 'active' && a.skills.some(function (x) { return x.k === k.k; }); }).length + '명</td></tr>';
+      var cnt = db().artists.filter(function (a) { return a.status === 'active' && a.skills.some(function (x) { return x.k === k.k; }); }).length;
+      var inp = function (f) { return '<input class="inp num" style="width:110px;text-align:right" type="number" step="10000" min="0" data-p="' + i + ':' + f + '" value="' + k[f] + '" aria-label="' + k.n + ' ' + (f === 'p4' ? '4시간' : '6시간') + ' 단가">'; };
+      return '<tr><td><b>' + k.n + '</b></td><td class="r">' + inp('p4') + '</td><td class="r">' + inp('p6') + '</td><td class="r muted">' + I.won(Math.round(k.p4 * (s.share || 70) / 100)) + '</td><td class="r">' + cnt + '명</td></tr>';
     }).join('');
     var prev = function () {
       $('#restPrev').textContent = '최근 ' + ($('#s_rw').value || 30) + '일 안에 연속 ' + ($('#s_rc').value || 3) + '회 이상 확정된 작가는 다음 공고 1회에서 자동으로 빠집니다.';
@@ -668,8 +672,9 @@
       s.restCount = Math.max(1, +$('#s_rc').value || 3); s.restWindow = Math.max(1, +$('#s_rw').value || 30);
       s.taxRate = +$('#s_tax').value || 0; s.transportOutside = +$('#s_tr').value || 0;
       s.defaultMode = $('input[name=s_mode]:checked').value; s.channels = { kakao: $('#s_k').checked, email: $('#s_e').checked }; s.autoNotice = $('#s_auto').checked;
-      $$('[data-rate]').forEach(function (inp) { db().skills[+inp.dataset.rate].rate = +inp.value || 0; });
-      I.save(); sideCounts(); I.toast('운영 설정을 저장했어요.');
+      s.share = Math.min(100, Math.max(0, +$('#s_sh').value || 70));
+      $$('[data-p]').forEach(function (inp) { var q = inp.dataset.p.split(':'); db().skills[+q[0]][q[1]] = +inp.value || 0; });
+      I.save(); sideCounts(); settings(); I.toast('운영 설정을 저장했어요.');
     };
   }
 

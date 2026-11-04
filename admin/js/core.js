@@ -35,7 +35,12 @@ var IUX = (function () {
   function years(since) { return Math.max(1, now.getFullYear() - since + 1); }
 
   /* ---------- 조회 ---------- */
-  var skill = function (k) { for (var i = 0; i < db.skills.length; i++) if (db.skills[i].k === k) return db.skills[i]; return { k: k, n: k, rate: 0 }; };
+  var skill = function (k) { for (var i = 0; i < db.skills.length; i++) if (db.skills[i].k === k) return db.skills[i]; return { k: k, n: k, p4: 0, p6: 0 }; };
+  /* 업체 견적 단가(작가 1명·1일): 4시간 이하 p4, 6시간까지 p6, 그 이상은 시간당 (p6-p4)/2 추가 */
+  var unitPrice = function (k, h) { var s = skill(k); if (h <= 4) return s.p4; if (h <= 6) return s.p6; return s.p6 + Math.ceil(h - 6) * Math.round((s.p6 - s.p4) / 2); };
+  var quoteFee = function (k, h, need, d) { return unitPrice(k, h) * (need || 1) * (d || 1); };
+  /* 작가 1명 몫 = 업체 견적 ÷ 인원 × 배분 비율(기본 70%) */
+  var artistPay = function (j) { return Math.round(j.fee / Math.max(1, j.need) * (db.settings.share || 70) / 100 / 1000) * 1000; };
   var artist = function (id) { for (var i = 0; i < db.artists.length; i++) if (db.artists[i].id === id) return db.artists[i]; return null; };
   var job = function (id) { for (var i = 0; i < db.jobs.length; i++) if (db.jobs[i].id === id) return db.jobs[i]; return null; };
   var won = function (n) { return (Math.round(n) || 0).toLocaleString('ko-KR') + '원'; };
@@ -81,8 +86,8 @@ var IUX = (function () {
       j.apps.forEach(function (p) {
         if (p.s !== 'selected') return;
         var a = artist(p.a); if (!a) return;
-        var d = days(j.start, j.end), rate = skill(j.skill).rate;
-        var pay = rate * j.hours * d, tr = transport(j) * d, gross = pay + tr;
+        var d = days(j.start, j.end), rate = Math.round(j.fee / Math.max(1, j.need));
+        var pay = artistPay(j), tr = transport(j) * d, gross = pay + tr;
         var tax = a.tax === 'freelancer' ? Math.floor(gross * db.settings.taxRate / 100 / 10) * 10 : 0;
         var key = j.id + ':' + a.id, paidAt = db.paid[key];
         var st = paidAt ? 'paid' : (j.status === 'done' ? (hasTaxInfo(a) ? 'due' : 'needinfo') : 'scheduled');
@@ -189,7 +194,7 @@ var IUX = (function () {
   return {
     get db() { return db; }, save: save, reset: reset,
     today: today, stamp: stamp, toDate: toDate, days: days, md: md, period: period, age: age, years: years,
-    skill: skill, artist: artist, job: job, won: won, man: man, esc: esc,
+    skill: skill, unitPrice: unitPrice, quoteFee: quoteFee, artistPay: artistPay, artist: artist, job: job, won: won, man: man, esc: esc,
     history: history, selectedJobs: selectedJobs, streak: streak, isRest: isRest, count: count,
     settlements: settlements, send: send, targets: targets, hasTaxInfo: hasTaxInfo, needInfo: needInfo,
     JOB_STATE: JOB_STATE, ART_STATE: ART_STATE, PAY_STATE: PAY_STATE, POST_STATE: POST_STATE, REPORT_STATE: REPORT_STATE, reportOf: reportOf, reportJobs: reportJobs, newToken: newToken, src: src, postOf: postOf, postsOf: postsOf, CRIT: CRIT, REHIRE: REHIRE, reviewOf: reviewOf, reviewsOf: reviewsOf, revAvg: revAvg, rating: rating, needReview: needReview, stars: stars, badge: badge, skillChips: skillChips, avatar: avatar,

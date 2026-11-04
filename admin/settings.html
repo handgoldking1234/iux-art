@@ -65,7 +65,7 @@
         </div>
       </div>
     </header>
-    <div class="top"><div><h1>운영 설정</h1><p>휴식 규칙, 선정 방식, 알림 채널, 작가 단가와 세율을 정합니다.</p></div><div class="act"></div></div>
+    <div class="top"><div><h1>운영 설정</h1><p>휴식 규칙, 선정 방식, 알림 채널, 업체 견적 단가와 작가 배분 비율을 정합니다.</p></div><div class="act"></div></div>
 
     <form id="setForm" class="grid g2">
       <div class="card"><h2><i data-lucide="coffee"></i>연속 참여 휴식 규칙</h2>
@@ -81,12 +81,12 @@
         <div class="form" style="margin-top:12px"><label class="ck"><input type="checkbox" id="s_k">카카오 알림톡</label><label class="ck"><input type="checkbox" id="s_e">메일</label><label class="ck"><input type="checkbox" id="s_auto">공고 등록 시 기술·지역이 맞는 작가에게 자동 알림</label></div>
       </div>
       <div class="card"><h2><i data-lucide="receipt"></i>정산 기준</h2>
-        <div class="f2" style="margin-top:14px"><div class="fld"><label for="s_tax">프리랜서 원천징수율(%)</label><input class="inp" id="s_tax" type="number" step="0.1" min="0"></div>
-        <div class="fld"><label for="s_tr">수도권 밖 교통비(1인·1일)</label><input class="inp" id="s_tr" type="number" step="5000" min="0"></div></div>
+        <div class="f2" style="margin-top:14px"><div class="fld"><label for="s_sh">작가 몫 비율(%)</label><input class="inp" id="s_sh" type="number" step="5" min="0" max="100"><p class="help">기본 70% · 회사 30% (7:3)</p></div><div class="fld"><label for="s_tax">프리랜서 원천징수율(%)</label><input class="inp" id="s_tax" type="number" step="0.1" min="0"></div>
+        </div><div class="f2"><div class="fld"><label for="s_tr">수도권 밖 교통비(1인·1일)</label><input class="inp" id="s_tr" type="number" step="5000" min="0"></div></div>
         <p class="note">사업소득 원천징수 3.3% = 소득세 3% + 지방소득세 0.3%. 지급한 달의 다음 달 10일까지 신고·납부합니다.</p>
       </div>
-      <div class="card"><h2><i data-lucide="coins"></i>프로그램별 작가 시급</h2>
-        <div class="tbl-wrap" style="margin-top:12px"><table class="tbl" style="min-width:0"><thead><tr><th>프로그램</th><th class="r">시급</th><th class="r">3시간 기준</th><th class="r">활동 작가</th></tr></thead><tbody id="rateBody"></tbody></table></div>
+      <div class="card"><h2><i data-lucide="coins"></i>프로그램별 업체 견적 단가 <small class="muted" style="font-weight:500">작가 1명 기준</small></h2>
+        <div class="tbl-wrap" style="margin-top:12px"><table class="tbl" style="min-width:0"><thead><tr><th>프로그램</th><th class="r">4시간</th><th class="r">6시간</th><th class="r">작가 몫(4h)</th><th class="r">활동 작가</th></tr></thead><tbody id="rateBody"></tbody></table></div>
       </div>
       <div style="grid-column:1/-1;display:flex;justify-content:flex-end"><button class="btn btn-y" type="submit"><i data-lucide="save"></i>설정 저장</button></div>
     </form>

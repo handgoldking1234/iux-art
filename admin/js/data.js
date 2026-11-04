@@ -1,17 +1,19 @@
 /* IUX ART 관리자 — 시안용 샘플 데이터 (개발 단계에서 DB로 교체) */
 var IUX_SEED = {
-  version: 6,
+  version: 7,
 
+  /* 업체 견적 단가(작가 1명 기준): p4 = 4시간, p6 = 6시간. 작가 몫은 운영 설정의 배분 비율(기본 7:3) */
   skills: [
-    { k: 'caricature',   n: '캐리커처',          rate: 60000 },
-    { k: 'facepainting', n: '페이스페인팅',      rate: 50000 },
-    { k: 'calligraphy',  n: '캘리그라피',        rate: 50000 },
-    { k: 'tarot',        n: '타로카드',          rate: 50000 },
-    { k: 'balloon',      n: '요술풍선 삐에로',   rate: 45000 },
-    { k: 'henna',        n: '헤나',              rate: 50000 },
-    { k: 'hyukpil',      n: '혁필화',            rate: 60000 },
-    { k: 'handcare',     n: '손마사지 & 네일아트', rate: 45000 },
-    { k: 'beads',        n: '비즈공예',          rate: 40000 }
+    { k: 'caricature',   n: '캐리커처',            p4: 300000, p6: 350000 },
+    { k: 'tarot',        n: '타로카드',            p4: 300000, p6: 350000 },
+    { k: 'facepainting', n: '페이스페인팅',        p4: 300000, p6: 350000 },
+    { k: 'calligraphy',  n: '캘리그라피',          p4: 300000, p6: 350000 },
+    { k: 'handcare',     n: '손마사지 & 네일아트', p4: 300000, p6: 350000 },
+    { k: 'henna',        n: '헤나',                p4: 300000, p6: 350000 },
+    { k: 'palm',         n: '손금 & 관상',         p4: 300000, p6: 350000 },
+    { k: 'hyukpil',      n: '혁필화',              p4: 500000, p6: 650000 },
+    { k: 'balloon',      n: '요술풍선 삐에로',     p4: 500000, p6: 650000 },
+    { k: 'beads',        n: '비즈공예',            p4: 300000, p6: 350000 }
   ],
 
   regions: ['서울', '경기 북부', '경기 남부', '인천', '강원', '충청·대전', '전라·광주', '경상·대구', '부산·울산', '제주'],
@@ -20,6 +22,7 @@ var IUX_SEED = {
     restCount: 3,          // 연속 확정 N회 이상이면
     restWindow: 30,        // 최근 N일 안의 연속만 계산
     defaultMode: 'fcfs',   // fcfs 선착순 / pick 직접 선택
+    share: 70,             // 작가 몫(%) — 나머지는 회사 몫 (7:3)
     taxRate: 3.3,          // 프리랜서 원천징수율(%)
     channels: { kakao: true, email: true },
     autoNotice: true,      // 공고 등록 시 기술·지역이 맞는 작가에게 자동 알림
@@ -45,35 +48,35 @@ var IUX_SEED = {
 
   /* 공고 상태: open 모집 중 / review 선정 대기(마감) / confirmed 확정 / done 행사 완료 */
   jobs: [
-    { id: 'j1', photoOk: true,  title: 'OO전자 추석 가족 행사', client: 'OO전자 인사팀', skill: 'caricature', start: '2026-09-06', end: '2026-09-06', time: '13:00~16:00', hours: 3, place: '경기 수원 OO전자 사옥', region: '경기 남부', need: 2, mode: 'fcfs', status: 'done', posted: '2026-08-25 10:00', deadline: '2026-08-29 18:00', fee: 1300000,
+    { id: 'j1', photoOk: true,  title: 'OO전자 추석 가족 행사', client: 'OO전자 인사팀', skill: 'caricature', start: '2026-09-06', end: '2026-09-06', time: '13:00~16:00', hours: 3, place: '경기 수원 OO전자 사옥', region: '경기 남부', need: 2, mode: 'fcfs', status: 'done', posted: '2026-08-25 10:00', deadline: '2026-08-29 18:00', fee: 600000,
       apps: [{ a: 'a1', at: '2026-08-25 10:04', s: 'selected' }, { a: 'a4', at: '2026-08-25 10:09', s: 'selected' }, { a: 'a10', at: '2026-08-25 11:30', s: 'rejected' }] },
-    { id: 'j2', photoOk: true,  title: 'OO대학교 가을 축제 1일차', client: 'OO대학교 총학생회', skill: 'facepainting', start: '2026-09-13', end: '2026-09-13', time: '12:00~17:00', hours: 5, place: '서울 성북구 OO대학교', region: '서울', need: 2, mode: 'pick', status: 'done', posted: '2026-09-01 09:30', deadline: '2026-09-05 18:00', fee: 1650000,
+    { id: 'j2', photoOk: true,  title: 'OO대학교 가을 축제 1일차', client: 'OO대학교 총학생회', skill: 'facepainting', start: '2026-09-13', end: '2026-09-13', time: '12:00~17:00', hours: 5, place: '서울 성북구 OO대학교', region: '서울', need: 2, mode: 'pick', status: 'done', posted: '2026-09-01 09:30', deadline: '2026-09-05 18:00', fee: 700000,
       apps: [{ a: 'a3', at: '2026-09-01 09:41', s: 'selected' }, { a: 'a6', at: '2026-09-01 10:02', s: 'selected' }, { a: 'a9', at: '2026-09-01 12:20', s: 'rejected' }] },
-    { id: 'j3', photoOk: false,  title: '웨딩홀 하객 답례 캘리그라피', client: 'OO웨딩홀', skill: 'calligraphy', start: '2026-09-20', end: '2026-09-20', time: '11:00~14:00', hours: 3, place: '서울 강남구 OO웨딩홀', region: '서울', need: 1, mode: 'pick', status: 'done', posted: '2026-09-08 14:00', deadline: '2026-09-12 18:00', fee: 600000,
+    { id: 'j3', photoOk: false,  title: '웨딩홀 하객 답례 캘리그라피', client: 'OO웨딩홀', skill: 'calligraphy', start: '2026-09-20', end: '2026-09-20', time: '11:00~14:00', hours: 3, place: '서울 강남구 OO웨딩홀', region: '서울', need: 1, mode: 'pick', status: 'done', posted: '2026-09-08 14:00', deadline: '2026-09-12 18:00', fee: 300000,
       apps: [{ a: 'a2', at: '2026-09-08 14:10', s: 'selected' }, { a: 'a5', at: '2026-09-08 15:22', s: 'rejected' }] },
-    { id: 'j4', photoOk: true,  title: '구청 가을 문화 축제', client: 'OO구청 문화체육과', skill: 'caricature', start: '2026-09-27', end: '2026-09-28', time: '11:00~17:00', hours: 6, place: '인천 연수구 OO공원', region: '인천', need: 2, mode: 'fcfs', status: 'done', posted: '2026-09-14 10:00', deadline: '2026-09-19 18:00', fee: 4800000,
+    { id: 'j4', photoOk: true,  title: '구청 가을 문화 축제', client: 'OO구청 문화체육과', skill: 'caricature', start: '2026-09-27', end: '2026-09-28', time: '11:00~17:00', hours: 6, place: '인천 연수구 OO공원', region: '인천', need: 2, mode: 'fcfs', status: 'done', posted: '2026-09-14 10:00', deadline: '2026-09-19 18:00', fee: 1400000,
       apps: [{ a: 'a7', at: '2026-09-14 10:01', s: 'selected' }, { a: 'a10', at: '2026-09-14 10:06', s: 'selected' }, { a: 'a12', at: '2026-09-14 10:40', s: 'rejected' }] },
-    { id: 'j5', photoOk: false,  title: '쇼핑몰 주말 가족 이벤트', client: 'OO몰 마케팅팀', skill: 'balloon', start: '2026-10-04', end: '2026-10-04', time: '13:00~17:00', hours: 4, place: '경기 하남 OO몰', region: '경기 남부', need: 1, mode: 'fcfs', status: 'done', posted: '2026-09-22 11:00', deadline: '2026-09-26 18:00', fee: 750000,
+    { id: 'j5', photoOk: false,  title: '쇼핑몰 주말 가족 이벤트', client: 'OO몰 마케팅팀', skill: 'balloon', start: '2026-10-04', end: '2026-10-04', time: '13:00~17:00', hours: 4, place: '경기 하남 OO몰', region: '경기 남부', need: 1, mode: 'fcfs', status: 'done', posted: '2026-09-22 11:00', deadline: '2026-09-26 18:00', fee: 500000,
       apps: [{ a: 'a9', at: '2026-09-22 11:03', s: 'selected' }, { a: 'a12', at: '2026-09-22 11:15', s: 'rejected' }] },
-    { id: 'j6', photoOk: false,  title: 'OO은행 VIP 고객 감사 행사', client: 'OO은행 강남지점', skill: 'caricature', start: '2026-10-11', end: '2026-10-11', time: '14:00~17:00', hours: 3, place: '서울 강남구 OO은행', region: '서울', need: 1, mode: 'pick', status: 'done', posted: '2026-09-29 10:00', deadline: '2026-10-02 18:00', fee: 650000,
+    { id: 'j6', photoOk: false,  title: 'OO은행 VIP 고객 감사 행사', client: 'OO은행 강남지점', skill: 'caricature', start: '2026-10-11', end: '2026-10-11', time: '14:00~17:00', hours: 3, place: '서울 강남구 OO은행', region: '서울', need: 1, mode: 'pick', status: 'done', posted: '2026-09-29 10:00', deadline: '2026-10-02 18:00', fee: 300000,
       apps: [{ a: 'a1', at: '2026-09-29 10:20', s: 'selected' }, { a: 'a10', at: '2026-09-29 11:02', s: 'rejected' }] },
-    { id: 'j7', photoOk: true,  title: 'IT기업 창립 10주년 행사', client: 'OO테크 피플팀', skill: 'caricature', start: '2026-10-18', end: '2026-10-18', time: '15:00~18:00', hours: 3, place: '서울 성동구 OO타워', region: '서울', need: 2, mode: 'fcfs', status: 'done', posted: '2026-10-05 09:00', deadline: '2026-10-09 18:00', fee: 1300000,
+    { id: 'j7', photoOk: true,  title: 'IT기업 창립 10주년 행사', client: 'OO테크 피플팀', skill: 'caricature', start: '2026-10-18', end: '2026-10-18', time: '15:00~18:00', hours: 3, place: '서울 성동구 OO타워', region: '서울', need: 2, mode: 'fcfs', status: 'done', posted: '2026-10-05 09:00', deadline: '2026-10-09 18:00', fee: 600000,
       apps: [{ a: 'a1', at: '2026-10-05 09:02', s: 'selected' }, { a: 'a7', at: '2026-10-05 09:05', s: 'selected' }, { a: 'a4', at: '2026-10-05 09:31', s: 'rejected' }] },
-    { id: 'j8', photoOk: true,  title: '어린이집 가을 운동회', client: 'OO어린이집', skill: 'facepainting', start: '2026-10-24', end: '2026-10-24', time: '10:00~12:00', hours: 2, place: '경기 고양 OO초등학교 운동장', region: '경기 북부', need: 1, mode: 'fcfs', status: 'done', posted: '2026-10-12 10:00', deadline: '2026-10-16 18:00', fee: 350000,
+    { id: 'j8', photoOk: true,  title: '어린이집 가을 운동회', client: 'OO어린이집', skill: 'facepainting', start: '2026-10-24', end: '2026-10-24', time: '10:00~12:00', hours: 2, place: '경기 고양 OO초등학교 운동장', region: '경기 북부', need: 1, mode: 'fcfs', status: 'done', posted: '2026-10-12 10:00', deadline: '2026-10-16 18:00', fee: 300000,
       apps: [{ a: 'a3', at: '2026-10-12 10:02', s: 'selected' }, { a: 'a6', at: '2026-10-12 10:11', s: 'rejected' }] },
-    { id: 'j9', photoOk: true,  title: '호텔 웨딩 애프터파티', client: 'OO호텔 연회팀', skill: 'caricature', start: '2026-10-25', end: '2026-10-25', time: '18:00~21:00', hours: 3, place: '서울 중구 OO호텔', region: '서울', need: 1, mode: 'pick', status: 'done', posted: '2026-10-13 15:00', deadline: '2026-10-17 18:00', fee: 700000,
+    { id: 'j9', photoOk: true,  title: '호텔 웨딩 애프터파티', client: 'OO호텔 연회팀', skill: 'caricature', start: '2026-10-25', end: '2026-10-25', time: '18:00~21:00', hours: 3, place: '서울 중구 OO호텔', region: '서울', need: 1, mode: 'pick', status: 'done', posted: '2026-10-13 15:00', deadline: '2026-10-17 18:00', fee: 300000,
       apps: [{ a: 'a1', at: '2026-10-13 15:05', s: 'selected' }, { a: 'a10', at: '2026-10-13 16:40', s: 'rejected' }] },
-    { id: 'j10', photoOk: true, title: '증권사 송년회 2부', client: 'OO증권 총무팀', skill: 'tarot', start: '2026-11-07', end: '2026-11-07', time: '19:00~22:00', hours: 3, place: '서울 영등포구 OO컨벤션', region: '서울', need: 1, mode: 'pick', status: 'confirmed', posted: '2026-10-20 10:00', deadline: '2026-10-24 18:00', fee: 600000,
+    { id: 'j10', photoOk: true, title: '증권사 송년회 2부', client: 'OO증권 총무팀', skill: 'tarot', start: '2026-11-07', end: '2026-11-07', time: '19:00~22:00', hours: 3, place: '서울 영등포구 OO컨벤션', region: '서울', need: 1, mode: 'pick', status: 'confirmed', posted: '2026-10-20 10:00', deadline: '2026-10-24 18:00', fee: 300000,
       apps: [{ a: 'a10', at: '2026-10-20 10:12', s: 'selected' }] },
-    { id: 'j11', photoOk: false, title: '외국인 유학생 한국문화 체험', client: 'OO대학교 국제처', skill: 'hyukpil', start: '2026-11-14', end: '2026-11-14', time: '13:00~16:00', hours: 3, place: '서울 동대문구 OO대학교', region: '서울', need: 1, mode: 'pick', status: 'confirmed', posted: '2026-10-22 11:00', deadline: '2026-10-27 18:00', fee: 650000,
+    { id: 'j11', photoOk: false, title: '외국인 유학생 한국문화 체험', client: 'OO대학교 국제처', skill: 'hyukpil', start: '2026-11-14', end: '2026-11-14', time: '13:00~16:00', hours: 3, place: '서울 동대문구 OO대학교', region: '서울', need: 1, mode: 'pick', status: 'confirmed', posted: '2026-10-22 11:00', deadline: '2026-10-27 18:00', fee: 500000,
       apps: [{ a: 'a7', at: '2026-10-22 11:20', s: 'selected' }, { a: 'a2', at: '2026-10-22 12:02', s: 'rejected' }] },
-    { id: 'j12', photoOk: true, title: '제약회사 임직원 가족의 날', client: 'OO제약 인사팀', skill: 'caricature', start: '2026-11-08', end: '2026-11-08', time: '11:00~15:00', hours: 4, place: '경기 성남 OO제약 본사', region: '경기 남부', need: 2, mode: 'fcfs', status: 'review', posted: '2026-10-26 09:00', deadline: '2026-10-31 18:00', fee: 1750000,
+    { id: 'j12', photoOk: true, title: '제약회사 임직원 가족의 날', client: 'OO제약 인사팀', skill: 'caricature', start: '2026-11-08', end: '2026-11-08', time: '11:00~15:00', hours: 4, place: '경기 성남 OO제약 본사', region: '경기 남부', need: 2, mode: 'fcfs', status: 'review', posted: '2026-10-26 09:00', deadline: '2026-10-31 18:00', fee: 600000,
       apps: [{ a: 'a1', at: '2026-10-26 09:01', s: 'applied' }, { a: 'a4', at: '2026-10-26 09:07', s: 'applied' }, { a: 'a10', at: '2026-10-26 09:26', s: 'applied' }, { a: 'a12', at: '2026-10-26 13:40', s: 'applied' }] },
-    { id: 'j13', photoOk: true, title: '아파트 단지 연말 축제', client: 'OO아파트 입주자대표회의', skill: 'facepainting', start: '2026-11-21', end: '2026-11-22', time: '13:00~17:00', hours: 4, place: '경기 파주 OO아파트 중앙광장', region: '경기 북부', need: 2, mode: 'fcfs', status: 'open', posted: '2026-10-30 10:00', deadline: '2026-11-10 18:00', fee: 2900000,
+    { id: 'j13', photoOk: true, title: '아파트 단지 연말 축제', client: 'OO아파트 입주자대표회의', skill: 'facepainting', start: '2026-11-21', end: '2026-11-22', time: '13:00~17:00', hours: 4, place: '경기 파주 OO아파트 중앙광장', region: '경기 북부', need: 2, mode: 'fcfs', status: 'open', posted: '2026-10-30 10:00', deadline: '2026-11-10 18:00', fee: 1200000,
       apps: [{ a: 'a6', at: '2026-10-30 10:03', s: 'applied' }, { a: 'a3', at: '2026-10-30 10:15', s: 'applied' }] },
-    { id: 'j14', photoOk: false, title: '백화점 크리스마스 고객 이벤트', client: 'OO백화점 판촉팀', skill: 'balloon', start: '2026-12-19', end: '2026-12-20', time: '12:00~18:00', hours: 6, place: '서울 송파구 OO백화점', region: '서울', need: 2, mode: 'pick', status: 'open', posted: '2026-10-31 14:00', deadline: '2026-11-20 18:00', fee: 3500000,
+    { id: 'j14', photoOk: false, title: '백화점 크리스마스 고객 이벤트', client: 'OO백화점 판촉팀', skill: 'balloon', start: '2026-12-19', end: '2026-12-20', time: '12:00~18:00', hours: 6, place: '서울 송파구 OO백화점', region: '서울', need: 2, mode: 'pick', status: 'open', posted: '2026-10-31 14:00', deadline: '2026-11-20 18:00', fee: 2600000,
       apps: [{ a: 'a9', at: '2026-10-31 14:22', s: 'applied' }] },
-    { id: 'j15', photoOk: true, title: '협회 신년회 손마사지 부스', client: 'OO협회 사무국', skill: 'handcare', start: '2027-01-09', end: '2027-01-09', time: '17:00~20:00', hours: 3, place: '서울 중구 OO호텔', region: '서울', need: 2, mode: 'fcfs', status: 'open', posted: '2026-11-01 09:00', deadline: '2026-12-15 18:00', fee: 900000,
+    { id: 'j15', photoOk: true, title: '협회 신년회 손마사지 부스', client: 'OO협회 사무국', skill: 'handcare', start: '2027-01-09', end: '2027-01-09', time: '17:00~20:00', hours: 3, place: '서울 중구 OO호텔', region: '서울', need: 2, mode: 'fcfs', status: 'open', posted: '2026-11-01 09:00', deadline: '2026-12-15 18:00', fee: 600000,
       apps: [] }
   ],
 
