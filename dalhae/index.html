@@ -224,6 +224,8 @@ body.menu-open{overflow:hidden}
 .ct b{font-size:17px;overflow-wrap:anywhere;user-select:all}
 .ct button{border:2px solid var(--ink);background:var(--ink);color:#fff;font-weight:800;font-size:13px;height:34px;padding:0 12px;cursor:pointer;flex:0 0 auto}
 .ct button:hover{background:var(--red)}
+.ct .go{border:2px solid var(--ink);background:var(--yellow);font-weight:800;font-size:13px;height:34px;padding:0 12px;display:grid;place-items:center;flex:0 0 auto}
+.ct .go:hover{background:var(--ink);color:#fff}
 @media (max-width:860px){.cta-grid{grid-template-columns:1fr}}
 footer{background:var(--ink);color:rgba(255,255,255,.6);font-size:13px}
 footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding-block:26px calc(26px + env(safe-area-inset-bottom,0px))}
@@ -442,20 +444,19 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;
   <section class="cta" id="contact">
     <div class="wrap cta-grid">
       <div>
-        <span class="label" style="--c:var(--ink)"><i></i>Contact</span>
+        <span class="label" style="--c:var(--ink)"><i></i>Contact · 달해작가 정다혜</span>
         <h2 class="h2">다음 행사에<br>달해를 불러 주세요</h2>
         <p class="lead">날짜, 장소, 예상 인원만 보내 주시면 프로그램 구성과 견적을 하루 안에 드려요.</p>
       </div>
       <div class="contacts">
-        <div class="ct"><i data-lucide="phone"></i><div><small>전화 · 문자</small><b>010-0000-0000</b></div><button data-copy="010-0000-0000">복사</button></div>
-        <div class="ct"><i data-lucide="instagram"></i><div><small>인스타그램 DM</small><b>@dalhae_art</b></div><button data-copy="@dalhae_art">복사</button></div>
-        <div class="ct"><i data-lucide="mail"></i><div><small>이메일 · 견적 요청</small><b>dalhae@example.com</b></div><button data-copy="dalhae@example.com">복사</button></div>
+        <div class="ct"><i data-lucide="phone"></i><div><small>전화 · 문자 · 정다혜</small><b>010-8388-1668</b></div><button data-copy="010-8388-1668">복사</button></div>
+        <div class="ct"><i data-lucide="instagram"></i><div><small>인스타그램 DM</small><b>@moonsun.dh</b></div><a class="go" href="https://www.instagram.com/moonsun.dh/" target="_blank" rel="noopener">열기</a><button data-copy="@moonsun.dh">복사</button></div>
       </div>
     </div>
   </section>
 </main>
 
-<footer><div class="wrap"><span>© 2026 달해작가 · 축제 · 브랜드 행사 라이브아트</span><span>사진 속 작품의 저작권은 달해작가에게 있어요.</span></div></footer>
+<footer><div class="wrap"><span>© 2026 달해작가 정다혜 · 축제 · 브랜드 행사 라이브아트 · <a href="https://www.instagram.com/moonsun.dh/" target="_blank" rel="noopener" style="text-decoration:underline">@moonsun.dh</a></span><span>사진 속 작품의 저작권은 달해작가에게 있어요.</span></div></footer>
 
 <button class="to-top" id="toTop" aria-label="맨 위로"><i data-lucide="arrow-up"></i></button>
 
