@@ -1329,3 +1329,4 @@ img[width][height]{height:auto}
 @media (max-width:720px){.cb-why,.cb-grid{grid-template-columns:1fr}.cb-card{padding:20px}}
 
 .prog9{grid-template-columns:repeat(4,1fr)!important}
+.hs-tab i{display:none!important}
