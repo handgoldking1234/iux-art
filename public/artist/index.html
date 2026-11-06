@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>작가 포털 | IUX ART</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;700;800;900&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="../admin/css/admin.css">
+<link rel="stylesheet" href="css/artist.css">
+</head>
+<body data-page="portal">
+<header class="ph"><div class="ph-in"><a href="../index.html" class="brand"><i><b><span></span><span></span><span></span></b></i>IUX ART <small>ARTIST</small></a><div class="sp"><div class="um" id="um"><button class="um-btn" id="umBtn" aria-haspopup="true" aria-expanded="false"><span id="umAv"></span><b id="umName"></b><i data-lucide="chevron-down" class="um-cv"></i><span class="um-bars" aria-hidden="true"><i></i><i></i><i></i></span></button><div class="um-menu" id="umMenu" hidden><button data-go="profile"><i data-lucide="user"></i>내 프로필</button><button data-go="schedule"><i data-lucide="calendar-check"></i>내 신청·일정</button><button data-go="tax"><i data-lucide="id-card"></i>정산 정보</button><hr><a href="../index.html"><i data-lucide="home"></i>홈페이지</a><a class="out" href="../login.html"><i data-lucide="log-out"></i>로그아웃</a></div></div></div></div></header>
+<main class="wrapx">
+<section class="hero-a" id="meCard"></section>
+<p class="demo" id="pendNote" hidden style="margin-top:14px"><i data-lucide="hourglass"></i>등록 승인을 기다리고 있어요. 승인되면 공고에 참석 신청할 수 있습니다.</p>
+<p class="demo" id="infoNote" hidden style="margin-top:14px;background:var(--bad-bg);color:var(--bad)"></p>
+<p class="demo" id="photoNote" hidden style="margin-top:14px"></p>
+<p class="demo" id="restNote" hidden style="margin-top:14px;background:var(--bad-bg);color:var(--bad)"></p>
+<div class="ptabs tabs" id="ptabs" role="tablist"><button class="tab on" data-t="jobs" role="tab">모집 공고 <span class="n" id="openN"></span></button><button class="tab" data-t="schedule" role="tab">내 신청·일정</button><button class="tab" data-t="pay" role="tab">정산 내역</button><button class="tab" data-t="tax" role="tab">정산 정보</button><button class="tab" data-t="profile" role="tab">내 프로필</button></div>
+<div id="pbody"></div>
+</main>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="../admin/js/data.js"></script>
+<script src="/js/boot.js" data-mode="artist"></script>
+<script src="../admin/js/core.js"></script>
+<script src="js/artist.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>공고·섭외 | IUX ART 관리자</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;700;800;900&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body data-page="jobs">
+<div class="adm">
+  <aside class="side" id="side">
+    <a href="index.html" class="brand"><i><b><span></span><span></span><span></span></b></i>IUX ART <small>ADMIN</small></a>
+    <button type="button" class="side-btn" id="sideBtn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="side"><span></span><span></span><span></span></button>
+    <p class="lbl">운영</p>
+    <nav aria-label="관리자 메뉴">
+<a class="nv" href="index.html"><i data-lucide="layout-dashboard"></i>대시보드</a>
+<a class="nv on" href="jobs.html" aria-current="page"><i data-lucide="megaphone"></i>공고·섭외<span class="cnt" data-cnt="jobs" hidden></span></a>
+<a class="nv" href="artists.html"><i data-lucide="users"></i>작가 관리<span class="cnt" data-cnt="artists" hidden></span></a>
+<a class="nv" href="notify.html"><i data-lucide="send"></i>알림 전송</a>
+<a class="nv" href="photos.html"><i data-lucide="image"></i>현장 후기<span class="cnt" data-cnt="photos" hidden></span></a>
+<a class="nv" href="reports.html"><i data-lucide="file-text"></i>결과 리포트<span class="cnt" data-cnt="reports" hidden></span></a>
+<a class="nv" href="settlement.html"><i data-lucide="wallet"></i>정산<span class="cnt" data-cnt="settle" hidden></span></a>
+<a class="nv" href="stats.html"><i data-lucide="bar-chart-3"></i>통계</a>
+<a class="nv" href="settings.html"><i data-lucide="settings"></i>운영 설정</a>
+    </nav>
+    <div class="foot">
+      <a href="../artist/index.html" target="_blank" rel="noopener"><i data-lucide="palette"></i>작가 포털 보기<i data-lucide="external-link" class="ext"></i></a>
+      <a href="../artist/register.html" target="_blank" rel="noopener"><i data-lucide="user-plus"></i>작가 등록 페이지<i data-lucide="external-link" class="ext"></i></a>
+      <a href="../index.html" target="_blank" rel="noopener"><i data-lucide="globe"></i>홈페이지<i data-lucide="external-link" class="ext"></i></a>
+      <button type="button" id="resetDemo"><i data-lucide="rotate-ccw"></i>예시 데이터 초기화</button>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="hdr">
+      <p class="hdr-date" id="hdrDate"></p>
+      <div class="hdr-r">
+        <div class="nt" id="nt">
+          <button type="button" class="hdr-ic" id="ntBtn" aria-label="알림" aria-haspopup="true" aria-expanded="false" aria-controls="ntMenu"><i data-lucide="bell"></i><span class="nt-n" id="hdrDot" hidden></span></button>
+          <div class="nt-menu" id="ntMenu" hidden>
+            <div class="nt-h"><b>알림</b><button type="button" id="ntRead">모두 읽음</button></div>
+            <div class="nt-tabs" role="tablist"><button type="button" class="on" data-nt="todo" role="tab">처리할 일 <span id="ntTodoN"></span></button><button type="button" data-nt="act" role="tab">최근 활동</button></div>
+            <div class="nt-list" id="ntList"></div>
+            <a class="nt-f" href="index.html">대시보드에서 모두 보기</a>
+          </div>
+        </div>
+        <div class="um" id="um">
+          <button type="button" class="um-btn" id="umBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="umMenu">
+            <span class="av">운영</span><span class="um-t"><b>홍길동</b><small>운영 관리자</small></span><i data-lucide="chevron-down" class="um-cv"></i>
+          </button>
+          <div class="um-menu" id="umMenu" role="menu" hidden>
+            <div class="um-head"><span class="av lg">운영</span><div><b>홍길동</b><small>admin@iuxart.co.kr</small><span class="badge st-ok" style="margin-top:6px">최고 관리자</span></div></div>
+            <a role="menuitem" href="#" data-um="profile"><i data-lucide="user-round"></i>내 정보</a>
+            <a role="menuitem" href="#" data-um="password"><i data-lucide="key-round"></i>비밀번호 변경</a>
+            <a role="menuitem" href="#" data-um="alarm"><i data-lucide="bell-ring"></i>알림 받기 설정</a>
+            <a role="menuitem" href="settings.html"><i data-lucide="settings"></i>운영 설정</a>
+            <hr>
+            <a role="menuitem" href="../index.html" target="_blank" rel="noopener"><i data-lucide="globe"></i>홈페이지 열기<i data-lucide="external-link" class="ext"></i></a>
+            <p class="um-meta">최근 로그인 <span id="umLast"></span> · IP 211.***.**.24</p>
+            <a role="menuitem" href="#" data-um="logout" class="out"><i data-lucide="log-out"></i>로그아웃</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="top"><div><h1>공고·섭외</h1><p>견적 문의를 공고로 올리고, 신청한 작가 중 선착순 또는 직접 선택으로 확정합니다.</p></div><div class="act"><button class="btn btn-y" id="newJob"><i data-lucide="plus"></i>새 공고 등록</button></div></div>
+
+    <div class="toolbar"><div class="tabs" id="jobTabs"></div></div>
+    <div class="split">
+      <div class="jl" id="jobList" aria-label="공고 목록"></div>
+      <div id="jobDetail"></div>
+    </div>
+  </main>
+</div>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="js/data.js"></script>
+<script src="/js/boot.js" data-mode="admin"></script>
+<script src="js/core.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
