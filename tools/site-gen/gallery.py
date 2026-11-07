@@ -187,6 +187,11 @@ WORKS = [
   ("lv-tarot-01", "site tarot", "가족 타로카드 현장", "C-07"),
   ("cz-84", "caricature", "컬러 캐리커처", "C-11"),
   ("lv-cari-02", "site caricature", "숲속 부스 현장", "C-15"),
+  ("lv-cari-07", "site caricature", "행복은 늘 내 안에", "C-15"),
+  ("lv-cari-08", "site caricature", "축제 현장 캐리커처", "C-15"),
+  ("lv-cari-09", "site caricature", "어르신 캐리커처", "C-15"),
+  ("lv-cari-10", "site caricature", "이름을 넣은 캐리커처", "C-15"),
+  ("lv-cari-11", "site caricature", "모자 쓴 손님 캐리커처", "C-15"),
 ]
 
 
