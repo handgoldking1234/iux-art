@@ -1,0 +1,206 @@
+"""고객 담당자용 행사 결과 리포트 (report.html?r=토큰) — 시안용 마크업 + 간단한 스크립트"""
+import os
+OUT = '/home/claude/iux-event/site'
+
+HTML = r'''<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>행사 결과 리포트 | IUX ART</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@700;800;900&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<style>
+:root{--brand:#FFC800;--brand-ink:#A67700;--ink:#121212;--ink-2:#4D4D4D;--ink-3:#8A8A8A;--line:#ECE6E2;--soft:#F6F3F0;--bg:#EFEBE7;--card:#fff;--ok:#1F9D57;
+  --f-display:'Figtree','Noto Sans KR',sans-serif;--f-body:'Noto Sans KR',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;word-break:keep-all;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+a{color:inherit}
+.bar{position:sticky;top:0;z-index:10;background:rgba(18,18,18,.94);color:#fff;backdrop-filter:blur(8px)}
+.bar-in{max-width:880px;margin:0 auto;height:56px;display:flex;align-items:center;gap:12px;padding:0 max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left))}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-weight:900;font-size:17px;text-decoration:none}
+.logo i{width:26px;height:26px;border-radius:50%;background:var(--brand);display:grid;place-items:center}
+.logo i b{display:flex;align-items:flex-end;gap:2px;height:11px}
+.logo i b span{width:3px;background:#121212;border-radius:1px}
+.logo i b span:nth-child(1){height:5px}.logo i b span:nth-child(2){height:11px}.logo i b span:nth-child(3){height:7px}
+.bar .sp{margin-left:auto;display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 16px;border-radius:999px;font-weight:800;font-size:13px;text-decoration:none;white-space:nowrap}
+.btn-y{background:var(--brand);color:#121212}
+.btn-g{background:rgba(255,255,255,.12);color:#fff}
+.btn-k{background:var(--ink);color:#fff}
+.btn svg{width:16px;height:16px}
+.doc{max-width:880px;margin:24px auto 64px;padding:0 max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left))}
+.paper{background:var(--card);border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.06)}
+.cover{background:var(--ink);color:#fff;padding:44px 44px 36px;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:var(--brand);opacity:.9}
+.cover>*{position:relative;z-index:1}
+.eyebrow{font-family:var(--f-display);font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--brand)}
+.cover h1{font-size:clamp(26px,4.4vw,38px);font-weight:800;line-height:1.3;margin-top:10px;max-width:560px}
+.cover .meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:18px;color:#cfcfcf;font-size:14px}
+.cover .meta b{color:#fff;font-weight:700}
+.sec{padding:36px 44px;border-top:1px solid var(--line)}
+.sec:first-of-type{border-top:0}
+.sec h2{font-size:19px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.sec h2 small{font-size:13px;font-weight:500;color:var(--ink-3)}
+.letter{font-size:16px;color:var(--ink-2);white-space:pre-line}
+.letter .to{display:block;color:var(--ink);font-weight:800;margin-bottom:8px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kpi{background:var(--soft);border-radius:14px;padding:18px 16px}
+.kpi span{display:block;font-size:12px;color:var(--ink-3);font-weight:700}
+.kpi b{display:block;font-family:var(--f-display);font-size:30px;font-weight:900;line-height:1.2;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi b small{font-size:14px;font-weight:800;margin-left:2px}
+.kpi.hl{background:var(--brand)}
+.kpi.hl span{color:#5a4300}
+.info{display:grid;grid-template-columns:110px 1fr;gap:8px 16px;margin-top:20px;font-size:14px}
+.info dt{color:var(--ink-3)}
+.post{display:grid;grid-template-columns:200px 1fr;gap:20px;padding:20px 0;border-top:1px dashed var(--line)}
+.post:first-of-type{border-top:0;padding-top:0}
+.post .who b{display:block;font-size:15px}
+.post .who small{display:block;color:var(--ink-3);font-size:13px}
+.post .who .n{display:inline-flex;margin-top:10px;height:28px;padding:0 12px;border-radius:14px;background:var(--soft);font-weight:800;font-size:13px;align-items:center}
+.post h3{font-size:16px;font-weight:800}
+.post p{color:var(--ink-2);margin-top:6px}
+.post .tags{color:var(--brand-ink);font-weight:700;font-size:13px;margin-top:8px}
+.shots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.shots a{display:block;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--soft);position:relative}
+.shots img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.shots a:hover img{transform:scale(1.04)}
+.hint{font-size:12px;color:var(--ink-3);margin-top:10px}
+.next{background:var(--soft);border-radius:16px;padding:22px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.next p{flex:1;min-width:240px;color:var(--ink-2)}
+.next .perk{display:block;color:var(--ink);font-weight:800;margin-bottom:4px}
+.rate{text-align:center}
+.stars{display:inline-flex;flex-direction:row-reverse;gap:4px;margin:6px 0 14px}
+.stars input{position:absolute;opacity:0;pointer-events:none}
+.stars label{font-size:38px;line-height:1;color:#D9D3CE;cursor:pointer;transition:color .12s,transform .12s}
+.stars label:hover,.stars label:hover~label,.stars input:checked~label{color:#F5A700}
+.stars input:focus-visible+label{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}
+.rate textarea{width:100%;max-width:560px;min-height:96px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;resize:vertical;display:block;margin:0 auto 14px}
+.rate textarea:focus{outline:2px solid var(--brand);border-color:transparent}
+.done{display:none;padding:18px;border-radius:14px;background:#E8F6EE;color:var(--ok);font-weight:700}
+.foot{padding:24px 44px 32px;background:var(--soft);font-size:12px;color:var(--ink-3);line-height:1.8}
+.foot b{color:var(--ink-2)}
+.empty{max-width:520px;margin:80px auto;text-align:center;padding:0 16px}
+.empty h1{font-size:22px;margin-bottom:8px}
+.lb{position:fixed;inset:0;z-index:50;background:rgba(10,10,10,.92);display:flex;align-items:center;justify-content:center;padding:16px}
+.lb[hidden]{display:none}
+.lb img{max-height:88vh;max-width:100%;border-radius:10px}
+.lb button{position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:26px}
+@media (max-width:720px){
+  .cover{padding:32px 20px 28px}.sec{padding:28px 20px}.foot{padding:20px}
+  .kpis{grid-template-columns:1fr 1fr}.kpi b{font-size:24px}
+  .post{grid-template-columns:1fr;gap:10px}
+  .shots{grid-template-columns:1fr 1fr}
+  .info{grid-template-columns:88px 1fr}
+  .bar .btn span{display:none}.bar .btn{width:40px;padding:0}
+}
+@media print{
+  @page{size:A4;margin:12mm}
+  body{background:#fff;font-size:12px}
+  .bar,.rate,.no-print{display:none!important}
+  .doc{margin:0;max-width:none;padding:0}
+  .paper{box-shadow:none;border-radius:0}
+  .cover{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .kpi,.kpi.hl,.next{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .sec{padding:20px 0;break-inside:avoid-page}
+  .post,.shots a{break-inside:avoid}
+  .shots{grid-template-columns:repeat(4,1fr)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+  <a class="logo" href="index.html"><i><b><span></span><span></span><span></span></b></i>IUX ART</a>
+  <div class="sp">
+    <button class="btn btn-g" id="pdf" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg><span>PDF 저장·인쇄</span></button>
+    <a class="btn btn-y" href="quote.html" id="again"><span>다음 행사 문의</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+  </div>
+</div></header>
+
+<main class="doc" id="doc"></main>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="사진 크게 보기"><img id="lbImg" alt=""><button type="button" id="lbX" aria-label="닫기">×</button></div>
+
+<script src="admin/js/data.js"></script>
+<script src="admin/js/core.js"></script>
+<script>
+/* 시안: 브라우저 저장 데이터에서 리포트를 찾아 그립니다. 개발 단계에서 리포트 API로 교체 */
+(function () {
+  var I = IUX, d = I.db, E = I.esc, doc = document.getElementById('doc');
+  var tok = (location.search.match(/[?&]r=([a-z0-9]+)/) || [])[1];
+  var jid = null;
+  Object.keys(d.reports || {}).forEach(function (k) { if (d.reports[k].token === tok) jid = k; });
+  if (!jid) { doc.innerHTML = '<div class="empty"><h1>리포트를 찾을 수 없어요</h1><p style="color:#8A8A8A">주소가 정확한지, 열람 기간(발송일로부터 90일)이 지나지 않았는지 확인해 주세요. 문의 010-8388-1668</p></div>'; document.getElementById('pdf').hidden = true; return; }
+  var x = I.reportOf(jid), j = x.job, r = x.rep, sk = I.skill(j.skill);
+  /* 담당자가 처음 열면 열람 시각 기록 (운영자 미리보기는 제외) */
+  if (r.state === 'sent' && !r.openedAt && !/[?&]pv=1/.test(location.search)) { r.openedAt = I.stamp(); I.save(); }
+  var skip = r.skip || [];
+  var expire = (function () { if (!r.sentAt) return ''; var t = I.toDate(r.sentAt); t.setDate(t.getDate() + 90); return t.getFullYear() + '-' + ('0' + (t.getMonth() + 1)).slice(-2) + '-' + ('0' + t.getDate()).slice(-2); })();
+  var yrs = function (a) { var s = a.skills.filter(function (z) { return z.k === j.skill; })[0]; return s ? I.years(s.since) + '년차' : ''; };
+  var code = function (i) { return 'IUX 작가 ' + String.fromCharCode(65 + i); };
+  var shots = x.photos.filter(function (s) { return skip.indexOf(s) < 0; });
+  var src = function (s) { return s; };
+  var posts = x.posts.slice().sort(function (a, b) { return a.at < b.at ? -1 : 1; });
+  var art = function (aid) { var i = x.artists.map(function (a) { return a.id; }).indexOf(aid); return { name: code(i < 0 ? 0 : i), a: I.artist(aid) }; };
+
+  doc.innerHTML = '<article class="paper">' +
+    '<section class="cover"><p class="eyebrow">EVENT REPORT</p><h1>' + E(j.title) + '<br>행사 결과 리포트</h1>' +
+    '<p class="meta"><span>고객사 <b>' + E(j.client) + '</b></span><span>일정 <b>' + I.period(j) + ' · ' + E(j.time) + '</b></span><span>장소 <b>' + E(j.place) + '</b></span></p></section>' +
+
+    '<section class="sec"><p class="letter"><span class="to">' + E(r.to || (j.client + ' 담당자님')) + ' 안녕하세요.</span>' + E(r.intro || '') + '</p></section>' +
+
+    '<section class="sec"><h2>한눈에 보기</h2><div class="kpis">' +
+      '<div class="kpi hl"><span>참여 인원</span><b>' + x.total.toLocaleString() + '<small>명</small></b></div>' +
+      '<div class="kpi"><span>운영 시간</span><b>' + x.hours + '<small>시간</small></b></div>' +
+      '<div class="kpi"><span>투입 작가</span><b>' + x.artists.length + '<small>명</small></b></div>' +
+      '<div class="kpi"><span>작가 1명·1시간</span><b>' + x.perHour + '<small>명</small></b></div></div>' +
+      '<dl class="info"><dt>프로그램</dt><dd>' + E(sk.n) + '</dd><dt>운영 방식</dt><dd>작가 ' + x.artists.length + '명 · 하루 ' + j.hours + '시간' + (I.days(j.start, j.end) > 1 ? ' · ' + I.days(j.start, j.end) + '일' : '') + '</dd><dt>현장 사진</dt><dd>' + shots.length + '장 (아래에서 크게 보고 저장할 수 있어요)</dd></dl></section>' +
+
+    '<section class="sec"><h2>작가 현장 기록 <small>작가들이 행사 직후 남긴 기록이에요</small></h2>' +
+      posts.map(function (p) { var w = art(p.a); return '<div class="post"><div class="who"><b>' + w.name + '</b><small>' + E(sk.n) + ' ' + (w.a ? yrs(w.a) : '') + '</small><span class="n">그린 인원 ' + (+p.count || 0).toLocaleString() + '명</span></div><div><h3>' + E(p.title) + '</h3><p>' + E(p.mood) + '</p>' + (p.tags && p.tags.length ? '<p class="tags">' + p.tags.map(function (t) { return '#' + E(t); }).join(' ') + '</p>' : '') + '</div></div>'; }).join('') +
+      (x.missing.length ? '<p class="hint">작가 ' + x.missing.length + '명의 기록은 정리 중이에요.</p>' : '') + '</section>' +
+
+    (shots.length ? '<section class="sec"><h2>현장 사진 <small>' + shots.length + '장</small></h2><div class="shots">' + shots.map(function (s, i) { return '<a href="' + src(s) + '" data-i="' + i + '" target="_blank" rel="noopener"><img src="' + src(s) + '" alt="현장 사진 ' + (i + 1) + '" loading="lazy"></a>'; }).join('') + '</div>' +
+      '<p class="hint">사진 속 참여자의 초상권 보호를 위해 사내 보고·공유 외 외부 게시(홈페이지·SNS 등)는 참여자 동의를 받아 주세요.</p></section>' : '') +
+
+    (r.next ? '<section class="sec"><h2>다음 행사 제안</h2><div class="next"><p><span class="perk">리포트를 받은 날부터 90일 안에 다시 예약하시면 5% 할인해 드려요.</span>' + E(r.next) + '</p><a class="btn btn-k no-print" href="quote.html#p-' + j.skill + '">견적 문의하기</a></div></section>' : '') +
+
+    '<section class="sec rate" id="rate"><h2 style="justify-content:center">이번 행사는 어떠셨나요?</h2>' +
+      (r.rating ? '<p class="done" style="display:block">' + '★★★★★'.slice(0, r.rating) + ' 소중한 의견 감사합니다. 남겨 주신 후기는 작가들에게도 전달할게요.</p>'
+        : '<form id="rf"><div class="stars" role="radiogroup" aria-label="만족도">' + [5, 4, 3, 2, 1].map(function (v) { return '<input type="radio" name="st" id="st' + v + '" value="' + v + '"><label for="st' + v + '" title="' + v + '점">★</label>'; }).join('') + '</div>' +
+          '<textarea id="rv" maxlength="300" placeholder="좋았던 점, 아쉬운 점을 남겨 주시면 다음 행사에 꼭 반영할게요. (선택)"></textarea>' +
+          '<label style="display:flex;gap:8px;justify-content:center;font-size:13px;color:#4D4D4D;margin-bottom:14px"><input type="checkbox" id="pub">후기를 IUX ART 홈페이지에 소개해도 좋아요 (회사명은 가려서 표시)</label>' +
+          '<button class="btn btn-y" type="submit" style="height:48px;padding:0 28px">의견 보내기</button></form><p class="done" id="thx">소중한 의견 감사합니다. 남겨 주신 후기는 작가들에게도 전달할게요.</p>') + '</section>' +
+
+    '<footer class="foot"><b>IUX ART</b> · 캐리커처 · 캘리그라피 · 페이스페인팅 출장 이벤트<br>문의 010-8388-1668 · art@iux.kr' + (expire ? '<br>이 리포트는 ' + expire + '까지 열람할 수 있어요. 필요하면 PDF로 저장해 두세요.' : '') + '</footer></article>';
+
+  document.getElementById('pdf').onclick = function () { window.print(); };
+  document.getElementById('again').href = 'quote.html#p-' + j.skill;
+  var rf = document.getElementById('rf');
+  if (rf) rf.onsubmit = function (e) {
+    e.preventDefault();
+    var c = rf.querySelector('input[name=st]:checked');
+    if (!c) { rf.querySelector('.stars').scrollIntoView({ block: 'center' }); alertStar(); return; }
+    r.rating = +c.value; r.review = document.getElementById('rv').value.trim(); r.publish = document.getElementById('pub').checked; r.ratedAt = I.stamp(); I.save();
+    rf.style.display = 'none'; document.getElementById('thx').style.display = 'block';
+  };
+  function alertStar() { var s = rf.querySelector('.stars'); s.style.outline = '2px solid #F5A700'; s.style.borderRadius = '8px'; setTimeout(function () { s.style.outline = ''; }, 1200); }
+  /* 사진 크게 보기 */
+  var lb = document.getElementById('lb');
+  doc.addEventListener('click', function (e) { var a = e.target.closest('.shots a'); if (!a) return; e.preventDefault(); document.getElementById('lbImg').src = a.getAttribute('href'); lb.hidden = false; });
+  document.getElementById('lbX').onclick = function () { lb.hidden = true; };
+  lb.addEventListener('click', function (e) { if (e.target === lb) lb.hidden = true; });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') lb.hidden = true; });
+})();
+</script>
+</body>
+</html>
+'''
+
+open(os.path.join(OUT, 'report.html'), 'w', encoding='utf-8').write(HTML)
+print('report ok')

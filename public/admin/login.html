@@ -34,10 +34,12 @@
   <input id="pw" type="password" required autocomplete="current-password">
   <button type="submit">로그인</button>
   <p class="lg-err" id="err" role="alert"></p>
-  <p class="lg-foot"><a href="https://studio.iux.kr/admin/#/site/iux-art/app">studio.iux.kr 계정으로 들어가기</a> · <a href="/reset.html">비밀번호 찾기</a> · <a href="/">홈페이지</a></p>
+  <p class="lg-foot"><a id="studioLink" href="https://studio.iux.kr/admin/#/site/iux-art/app">studio 계정으로 들어가기</a> · <a href="/reset.html">비밀번호 찾기</a> · <a href="/">홈페이지</a></p>
 </form>
+<script src="/js/iux-config.js"></script>
 <script>
 (function () {
+  var C = (window.IUX_CONFIG || {}).studio; if (C) document.getElementById('studioLink').href = C.admin + '#/site/' + C.siteId + '/app';
   var f = document.getElementById('f'), err = document.getElementById('err');
   var next = (location.search.match(/[?&]next=([^&]+)/) || [])[1];
   next = next ? decodeURIComponent(next) : '';

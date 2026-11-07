@@ -135,6 +135,12 @@ studio 운영자(`public.admins`)만 운영 앱으로 들어올 수 있습니다
 | 정산 완료 | #{작가명} 작가님, 정산금이 입금됐어요.\n■ 내용: #{내용}\n자세한 내역은 작가 포털에서 확인해 주세요. |
 | 현장 후기 요청 | #{작가명} 작가님, #{행사명} 현장 후기를 올려 주세요.\n사진과 분위기를 간단히 남겨 주시면 고객 리포트와 홈페이지 후기에 쓰여요. |
 
+## 계정·DB가 바뀔 때
+
+- [docs/ACCOUNTS.md](docs/ACCOUNTS.md): 모든 외부 계정과, 바뀌면 고칠 곳(공개 값은 `public/js/iux-config.js` 한 곳, 비밀 값은 Vercel 환경 변수)
+- [docs/MOVE-DB.md](docs/MOVE-DB.md): IUX ART 데이터만 다른 Supabase로 옮기기 (`npm run move-db`)
+- `tools/site-gen/`: 홈페이지 생성 원본
+
 ## 로컬에서 돌려 보기
 
 ```bash

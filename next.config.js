@@ -13,6 +13,6 @@ module.exports = {
   },
   experimental: {
     // 단가표·지역 기본값을 public/admin/js/data.js 에서 읽음
-    outputFileTracingIncludes: { '/api/**/*': ['./public/admin/js/data.js'] },
+    outputFileTracingIncludes: { '/api/**/*': ['./public/admin/js/data.js', './public/js/iux-config.js'] },
     serverComponentsExternalPackages: ['@electric-sql/pglite', 'postgres', 'bcryptjs'] },
 };
