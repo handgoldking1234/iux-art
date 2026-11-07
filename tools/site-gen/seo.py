@@ -77,7 +77,8 @@ def org_ld():
     return {
         '@context': 'https://schema.org', '@type': 'LocalBusiness', '@id': SITE + '/#org',
         'name': NAME, 'alternateName': '아이유엑스 아트', 'url': SITE + '/', 'image': SITE + '/images/og.jpg',
-        'telephone': PHONE, 'email': EMAIL, 'priceRange': '₩300,000~',
+        'telephone': PHONE, 'email': EMAIL, 'priceRange': '₩300,000~', 'legalName': '다마유', 'taxID': '424-41-01509',
+        'address': {'@type': 'PostalAddress', 'addressCountry': 'KR', 'addressRegion': '경기도', 'addressLocality': '과천시', 'streetAddress': '과천대로8길 65, 604-504'},
         'areaServed': {'@type': 'Country', 'name': '대한민국'},
         'description': META['index.html'][1],
         'makesOffer': [{'@type': 'Offer', 'itemOffered': {'@type': 'Service', 'name': n + ' 출장 이벤트'}} for n in

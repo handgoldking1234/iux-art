@@ -86,7 +86,7 @@ def footer(promo=False, full=True):
       <address>
         <b>고객센터 {PHONE}</b> (연중무휴 08:00~22:00)<br>
         이메일 art@iux.kr · 세금계산서 발행 가능<br>
-        상호 IUX EVENT(아이유엑스 아트) · 대표 홍길동 · 사업자등록번호 000-00-00000 · 서울특별시 OO구 OO로 00<br>
+        상호 다마유(IUX ART) · 대표 손금왕 · 사업자등록번호 424-41-01509 · 경기도 과천시 과천대로8길 65, 604-504<br>
         © 2026 IUX EVENT. All rights reserved.
       </address>
       <div class="sns"><a href="#" aria-label="인스타그램"><i data-lucide="instagram"></i></a><a href="#" aria-label="유튜브"><i data-lucide="youtube"></i></a><a href="#" aria-label="블로그"><i data-lucide="book-open"></i></a><a href="#" aria-label="카카오톡 채널"><i data-lucide="message-square"></i></a></div>

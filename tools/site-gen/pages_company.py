@@ -53,7 +53,7 @@ def about():
   <div class="sec-head rv"><div><h2 class="sec-title">오시는 길</h2><p>교육센터와 사무실이 같은 건물에 있습니다.</p></div></div>
   <div class="mapbox rv d1" role="img" aria-label="지도 자리표시"><div class="road" style="left:0;right:0;top:58%;height:14px"></div><div class="road" style="top:0;bottom:0;left:36%;width:14px"></div><div class="pin"><i data-lucide="map-pin"></i></div></div>
   <div class="loc">
-    <div><b><i data-lucide="map-pin"></i>주소</b><span class="sel">서울특별시 OO구 OO로 00, 3층</span></div>
+    <div><b><i data-lucide="map-pin"></i>주소</b><span class="sel">경기도 과천시 과천대로8길 65, 604-504</span></div>
     <div><b><i data-lucide="phone"></i>전화</b><span class="sel">''' + PHONE + '''</span></div>
     <div><b><i data-lucide="clock"></i>상담 시간</b>연중무휴 08:00 ~ 22:00</div>
   </div>
