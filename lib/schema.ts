@@ -50,4 +50,15 @@ alter table users enable row level security;
 alter table artist_secrets enable row level security;
 alter table inquiries enable row level security;
 alter table mail_outbox enable row level security;
+
+-- 카카오 로그인 연결 (작가가 포털에서 연결한 카카오 회원번호)
+alter table users add column if not exists kakao_id text unique;
+
+create table if not exists pw_resets (  -- 비밀번호 재설정 링크 (1시간, 한 번만)
+  token       text primary key,
+  user_id     bigint not null references users(id) on delete cascade,
+  expires_at  timestamptz not null,
+  used_at     timestamptz
+);
+alter table pw_resets enable row level security;
 `;

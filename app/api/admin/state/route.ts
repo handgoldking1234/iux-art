@@ -2,6 +2,7 @@
 import { handler, json, body } from '@/lib/http';
 import { saveAdmin } from '@/lib/state';
 import { mailForLogs } from '@/lib/notify';
+import { alimtalkForLogs } from '@/lib/alimtalk';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -13,5 +14,6 @@ export const PUT = handler('admin', async (req) => {
   const r = await saveAdmin(b.state, b.rev);
   const moved = JSON.stringify([r.state.posts?.map((p: any) => p.photos), r.state.artists?.map((a: any) => a.portfolio)]) !== before;
   const mails = r.added.length ? await mailForLogs(r.added, r.state) : [];
+  if (r.added.length) await alimtalkForLogs(r.added, r.state).catch((e) => console.error('alimtalk', e));
   return json({ rev: r.rev, mails: mails.length, state: moved ? { posts: r.state.posts, artists: r.state.artists } : null });
 });

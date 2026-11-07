@@ -31,6 +31,7 @@ export async function sendMail(to: string, subject: string, html: string) {
       if (!r.ok) error = (await r.text()).slice(0, 500);
     } catch (e: any) { status = 'failed'; error = String(e?.message || e).slice(0, 500); }
   }
+  if (status === 'logged') console.log('[mail:logged]', to, subject, (html.match(/href="([^"]+)"/) || [])[1] || '');
   await q('insert into mail_outbox (to_addr, subject, body, status, error) values ($1,$2,$3,$4,$5)', [to, subject, html, status, error]);
   return { ok: status !== 'failed', status, error };
 }

@@ -12,6 +12,10 @@ const g = globalThis as any;
 async function init(): Promise<Impl> {
   if (impl) return impl;
   if (g.__iuxdb) return (impl = g.__iuxdb);
+  /* Vercel 등 서버리스에서는 내장 DB를 쓸 수 없음 → DATABASE_URL 이 없으면 '준비 중' 응답 */
+  if (!process.env.DATABASE_URL && process.env.DB_DRIVER !== 'pglite' && (process.env.VERCEL || process.env.NODE_ENV === 'production' && !process.env.ALLOW_PGLITE)) {
+    throw Object.assign(new Error('서버 DB가 아직 연결되지 않았어요. 관리자에게 문의해 주세요.'), { status: 503 });
+  }
   if (process.env.DB_DRIVER === 'pglite' || !process.env.DATABASE_URL) {
     const { PGlite } = await import('@electric-sql/pglite');
     const dir = process.env.PGLITE_DIR || path.join(process.cwd(), '.data', 'pg');

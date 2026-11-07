@@ -46,7 +46,7 @@
   <form class="form" data-pane="login" id="artistLogin" novalidate>
     <div class="field"><label for="lg_id">휴대폰 번호 또는 이메일</label><input id="lg_id" required autocomplete="username" placeholder="010-0000-0000"></div>
     <div class="field"><label for="lg_pw">비밀번호</label><input id="lg_pw" type="password" required autocomplete="current-password"></div>
-    <div class="auth-links"><label class="check"><input type="checkbox" id="lg_keep">로그인 유지</label><a href="#" data-toast="비밀번호 찾기는 휴대폰 인증으로 개발 단계에서 연결됩니다.">비밀번호 찾기</a></div>
+    <div class="auth-links"><label class="check"><input type="checkbox" id="lg_keep">로그인 유지</label><a href="reset.html">비밀번호 찾기</a></div>
     <button type="submit" class="btn btn-brand btn-block">로그인하고 작가 포털로</button>
     <p class="or">간편 로그인</p>
     <div class="social">
@@ -72,6 +72,8 @@
   next = next ? decodeURIComponent(next) : '';
   if (!/^\/artist\//.test(next)) next = 'artist/index.html';
   var go = function () { location.href = next; };
+  var kk = (location.search.match(/[?&]kakao=(\w+)/) || [])[1];
+  if (kk) setTimeout(function () { say(kk === 'none' ? '연결된 작가 계정이 없어요. 이메일로 로그인한 뒤 내 프로필에서 카카오 계정을 연결해 주세요. 처음이라면 작가 등록부터 해 주세요.' : kk === 'off' ? '카카오 로그인은 준비 중이에요.' : '카카오 로그인에 실패했어요. 다시 시도해 주세요.'); }, 300);
   var say = function (m) { var t = document.getElementById('toast'); if (!t) return alert(m); t.textContent = m; t.classList.add('show'); setTimeout(function () { t.classList.remove('show'); }, 2600); };
   var f = document.getElementById('artistLogin');
   f.addEventListener('submit', function (e) {
@@ -86,7 +88,13 @@
       .then(function () { btn.disabled = false; });
   });
   [].forEach.call(document.querySelectorAll('[data-go-portal]'), function (b) { b.addEventListener('click', function () {
-    fetch('/api/auth/me').then(function (r) { if (r.status === 404) go(); else say('카카오 로그인은 카카오 개발자 앱 등록 후 연결돼요. 지금은 이메일·휴대폰 번호로 로그인해 주세요.'); }).catch(go);
+    fetch('/api/auth/me').then(function (r) {
+      if (r.status === 404) return go(); // 정적 시안
+      return r.json().then(function (o) {
+        if (!o.kakaoReady) return say('카카오 로그인은 준비 중이에요. 지금은 이메일·휴대폰 번호로 로그인해 주세요.');
+        location.href = '/api/auth/kakao?mode=login' + (next && next !== 'artist/index.html' ? '&next=' + encodeURIComponent(next) : '');
+      });
+    }).catch(go);
   }); });
   var openJoin = function () { if (location.hash === '#join') { var t = document.querySelector('[data-tab="join"]'); if (t) t.click(); } };
   window.addEventListener('DOMContentLoaded', openJoin); window.addEventListener('hashchange', openJoin);

@@ -95,6 +95,8 @@
     var me = null, tab = 'jobs';
     try { me = localStorage.getItem('iuxart-me'); } catch (e) {}
     // 시안 확인용: artist/index.html?a=a3 처럼 주소로 작가 전환 (실서비스는 로그인한 본인)
+    var kk = (location.search.match(/[?&]kakao=(\w+)/) || [])[1];
+    if (kk) setTimeout(function () { I.toast(kk === 'linked' ? '카카오 계정을 연결했어요. 다음부터 카카오로 로그인할 수 있어요.' : kk === 'taken' ? '이미 다른 작가 계정에 연결된 카카오 계정이에요.' : '카카오 연결에 실패했어요. 다시 시도해 주세요.'); }, 300);
     var qa = (location.search.match(/[?&]a=([\w-]+)/) || [])[1];
     if (window.__IUX_ME) { me = window.__IUX_ME; qa = null; }
     if (qa) { me = qa; try { localStorage.setItem('iuxart-me', me); } catch (e) {} }
@@ -266,7 +268,8 @@
       if (!editing) return '<div class="card"><div class="pf-top"><p class="muted">다른 작가·업체에게는 실명과 연락처가 보이지 않아요. 공고 선정과 정산에만 쓰여요.</p><button class="btn btn-y btn-s" id="pfEdit"><i data-lucide="pencil"></i>프로필 수정</button></div><div class="grid g2"><div><p class="sec-t" style="margin-top:0">기본 정보</p><p>' + E(a.name) + ' · 만 ' + I.age(a.birth) + '세 (' + a.birth + ')</p><p class="num">' + E(a.phone) + ' · ' + E(a.email) + '</p>' +
         '<p class="sec-t">기술·경력 <small class="muted" style="font-weight:500">해가 바뀌면 연차가 자동으로 올라가요</small></p><div class="chips">' + a.skills.map(function (s) { return '<span class="chip">' + I.skill(s.k).n + ' <b>' + I.years(s.since) + '년차</b> <span class="muted">(' + s.since + '~)</span></span>'; }).join('') + '</div>' +
         '<p class="sec-t">활동 지역</p><div class="chips">' + a.regions.map(function (r) { return '<span class="chip">' + r + '</span>'; }).join('') + '</div>' +
-        '<p class="sec-t">알림 수신</p><label class="ck"><input type="checkbox" id="pk" ' + (a.kakao ? 'checked' : '') + '>카카오 알림톡</label><label class="ck" style="margin-top:6px"><input type="checkbox" id="pm" ' + (a.mail ? 'checked' : '') + '>메일</label></div>' +
+        '<p class="sec-t">알림 수신</p><label class="ck"><input type="checkbox" id="pk" ' + (a.kakao ? 'checked' : '') + '>카카오 알림톡</label><label class="ck" style="margin-top:6px"><input type="checkbox" id="pm" ' + (a.mail ? 'checked' : '') + '>메일</label>' +
+        (window.__IUX_MODE ? '<p class="sec-t">간편 로그인</p><div id="kkLink" class="muted">확인 중…</div>' : '') + '</div>' +
         '<div><p class="sec-t" style="margin-top:0">포트폴리오</p><div class="port">' + (a.portfolio.length ? a.portfolio.map(function (p) { return '<img src="' + pfSrc(p) + '" alt="포트폴리오">'; }).join('') : '<p class="empty">등록된 포트폴리오가 없어요.</p>') + '</div>' +
         '<p class="sec-t">소개</p><p>' + E(a.bio) + '</p></div></div></div>';
       var d = db(), Y = new Date().getFullYear();
@@ -289,7 +292,20 @@
         '</div></div>' +
         '<div class="mf"><button type="button" class="btn btn-o" id="pfCancel">취소</button><button class="btn btn-y" type="submit"><i data-lucide="check"></i>저장</button></div></form>';
     }
+    /* 카카오 계정 연결 상태 (서버 모드에서만) */
+    function fillKakao() {
+      var el = $('#kkLink'); if (!el) return;
+      fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (o) {
+        if (!o.kakaoReady) { el.textContent = '카카오 로그인은 준비 중이에요.'; return; }
+        el.innerHTML = o.kakao
+          ? '<span class="chip">카카오 연결됨</span> <button type="button" class="btn btn-o btn-s" id="kkOff">연결 해제</button>'
+          : '<a class="btn btn-o btn-s" href="/api/auth/kakao?mode=link">카카오 계정 연결</a> <small>연결하면 다음부터 카카오로 바로 로그인돼요.</small>';
+        var off = $('#kkOff');
+        if (off) off.onclick = function () { fetch('/api/auth/kakao/unlink', { method: 'POST' }).then(function () { I.toast('카카오 연결을 해제했어요.'); fillKakao(); }); };
+      }).catch(function () { el.textContent = ''; });
+    }
     function bindProfile() {
+      fillKakao();
       var ed = $('#pfEdit'); if (ed) ed.onclick = function () { editing = true; pfDraft = null; render(); };
       var f = $('#pfF'); if (!f) return;
       var MAX = 8;
