@@ -85,7 +85,7 @@ def footer(promo=False, full=True):
     <div class="ft-bot">
       <address>
         <b>고객센터 {PHONE}</b> (연중무휴 08:00~22:00)<br>
-        이메일 art@iux.kr · 세금계산서 발행 가능<br>
+        이메일 art@iux.kr<br>
         상호 다마유(IUX ART) · 대표 손금왕 · 사업자등록번호 424-41-01509 · 경기도 과천시 과천대로8길 65, 604-504<br>
         © 2026 IUX EVENT. All rights reserved.
       </address>
