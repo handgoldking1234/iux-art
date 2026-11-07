@@ -188,6 +188,23 @@
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       if (!f.checkValidity()) { f.reportValidity(); return; }
+      /* 문의 내용 보내기: studio 문의함(IUX Cloud) + IUX ART 서버(있을 때) */
+      try {
+        var data = {};
+        [].forEach.call(f.elements, function (el) {
+          var k = el.name || el.id;
+          if (!k || el.disabled || el.type === 'file' || el.type === 'submit' || el.type === 'button') return;
+          if ((el.type === 'checkbox' || el.type === 'radio') && !el.checked) return;
+          var v = el.type === 'checkbox' && el.value === 'on' ? true : el.value;
+          if (data[k] === undefined) data[k] = v; else data[k] = [].concat(data[k], v);
+        });
+        var page = location.pathname.split('/').pop() || 'index.html';
+        /* studio.iux.kr 문의함으로 (방문 통계와 연결) → 결과와 함께 IUX ART 서버에도 기록 */
+        var cloud = window.IUXArtSend ? window.IUXArtSend(page, data).then(function () { return true; }, function () { return false; }) : Promise.resolve(false);
+        cloud.then(function (ok) {
+          if (window.fetch) fetch('/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page: page, form: f.id || '', data: data, cloud: ok }) }).catch(function () {});
+        });
+      } catch (err) {}
       var ok = f.dataset.success && $(f.dataset.success);
       if (ok) {
         f.hidden = true;
