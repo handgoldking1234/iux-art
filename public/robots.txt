@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /artist/
+Disallow: /api/
+Disallow: /login.html
+Disallow: /report.html
+Disallow: /mail/
+
+Sitemap: https://art.iux.kr/sitemap.xml
