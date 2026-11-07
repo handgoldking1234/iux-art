@@ -1,52 +1,155 @@
-# IUX ART
+# IUX ART — 홈페이지 · 관리자 · 작가 포털
 
-캐리커처·페이스페인팅·캘리그라피·타로카드·요술풍선 삐에로·헤나·혁필화·손마사지&네일아트·비즈공예 출장 행사회사 **IUX ART(아이유엑스 아트)** 홈페이지 퍼블리싱 파일입니다.
+캐리커처·페이스페인팅·캘리그라피 등 출장 행사회사 **IUX ART** 운영 시스템입니다.
 
-순수 HTML·CSS와 간단한 스크립트로만 구성된 정적 사이트라 빌드 과정 없이 바로 배포할 수 있습니다.
+- **화면:** 퍼블리싱한 HTML을 그대로 씁니다 (`public/`).
+- **서버:** Next.js API가 로그인, DB, 사진 저장, 메일을 맡습니다.
+- **배포:** Vercel(호스팅)과 Supabase(DB·사진)를 씁니다. 메일은 Resend로 보냅니다.
 
-## 구성
+## 무엇이 실제로 동작하나요
 
-| 구분 | 파일 |
+| 화면 | 동작 |
 | --- | --- |
-| 메인 | `index.html` |
-| 회사소개 | `about.html`, `artists.html`, `news.html`, `news-view.html` |
-| 출장 이벤트 | `event.html`(전체 프로그램), `event-caricature.html`, `event-facepainting.html`, `event-calligraphy.html`, `event-tarot.html`, `event-balloon.html`, `event-henna.html`, `event-hyukpil.html`, `event-handcare.html`, `event-beads.html` |
-| 주문제작 | `custom.html`, `product.html` |
-| 교육센터 | `edu.html`, `edu-apply.html`, `edu-qna.html` |
-| 기타 | `review.html`, `donation.html`, `quote.html`, `faq.html`, `login.html` |
-| 공통 | `css/common.css`, `js/common.js`, `images/` |
+| 행사 견적 문의 (`quote.html`) | DB에 저장됩니다. 관리자 공고 화면의 **견적 문의**에 바로 뜨고, 운영자에게 메일이 갑니다. |
+| 교육 신청·문의, 상품 주문 | 문의 원문이 DB(`inquiries`)에 저장되고 운영자에게 메일이 갑니다. |
+| 작가 등록 (`artist/register.html`) | 계정(이메일·비밀번호)이 만들어지고 포트폴리오 사진이 업로드됩니다. 작가는 승인 대기 상태로 저장되고, 운영자에게 메일이 갑니다. |
+| 작가 로그인 (`login.html`) | 이메일 또는 휴대폰 번호와 비밀번호로 로그인합니다. 작가가 내 프로필에서 카카오 계정을 연결해 두면 **카카오로 시작하기**로 로그인됩니다. |
+| 비밀번호 찾기 (`reset.html`) | 가입 이메일로 재설정 링크(1시간, 1회용)를 보내고, 새 비밀번호를 정하면 바로 로그인됩니다. 관리자도 같은 화면을 씁니다. |
+| 작가 포털 (`artist/`) | 본인 정보만 받습니다. 다른 작가의 연락처·계좌는 내려가지 않습니다. 참석 신청·취소, 프로필 수정, 현장 후기와 사진 업로드가 됩니다. 정산 정보는 암호화해 저장합니다. |
+| 관리자 (`admin/`) | 로그인한 관리자만 들어옵니다. 모든 저장은 DB에 기록되고, 동시에 두 곳에서 고치면 나중 저장이 막힌 뒤 새로고침됩니다. |
+| 관리자 알림 | **메일**은 작가 메일과 결과 리포트 담당자 메일로 발송됩니다. **카카오 알림톡**은 솔라피 키와 심사 통과 템플릿 ID를 넣으면 작가 휴대폰으로 발송되고, 없으면 기록만 남깁니다. 발송 결과는 `mail_outbox` 표에 남습니다. |
+| 결과 리포트 (`report.html?r=…`) | 발송된 리포트만 열립니다(발송 후 90일). 열람 시각과 고객 만족도가 저장되고, 만족도가 들어오면 운영자에게 메일이 갑니다. |
+| 행사 후기 · 현장 스케치 | 게시된 후기 중 사진 홍보에 동의한 행사만 보입니다. 업체명과 작가 실명은 나오지 않습니다. |
 
-## 관리자·작가 (시안)
+### 서버가 정하는 것
 
-| 구분 | 경로 | 내용 |
-| --- | --- | --- |
-| 관리자 | `admin/index.html` | 대시보드 · 처리할 일 · 월별 매출/지급 |
-| | `admin/jobs.html` | 견적 문의 → 공고 등록, 신청 작가 선착순/직접 선정, 확정 시 알림톡·메일 |
-| | `admin/artists.html` | 작가 승인·중지, 기술 연차(자동), 나이(자동), 참여·연속 횟수, 휴식 대상 |
-| | `admin/notify.html` | 알림 템플릿 미리보기, 전송 기록, 직접 보내기 |
-| | `admin/settlement.html` | 작가료·교통비·3.3% 원천징수 계산, 지급 완료 처리 |
-| | `admin/stats.html` | 프로그램·지역별 행사, 작가 참여 순위, 월별 마진 |
-| | `admin/settings.html` | 연속 참여 휴식 규칙, 선정 방식, 채널, 단가·세율 |
-| 작가 | `artist/register.html` | 작가 등록 (기술·시작 연도·지역·생년월일·포트폴리오·정산 정보) |
-| | `artist/index.html` | 모집 공고 참석 신청, 내 일정, 정산 내역, 프로필 |
+작가 화면에서 값을 바꿔 보내도 서버는 아래 규칙대로만 반영합니다.
 
-예시 데이터는 `admin/js/data.js`에 있고, 화면에서 바꾼 내용은 브라우저 localStorage에만 저장됩니다. 개발 단계에서 DB·인증·카카오 알림톡·메일·이체 API로 교체합니다.
+- 참석 신청은 모집 중인 공고에만 됩니다. 활동 중이면서 해당 기술이 있는 작가만 신청할 수 있습니다.
+- 작가는 선정 여부, 등급, 다른 작가 정보를 바꿀 수 없습니다.
+- 현장 후기는 선정된 행사에 행사 당일부터 쓸 수 있습니다. 상태는 서버가 정합니다(검수 대기, 또는 홍보 미동의 행사는 내부 보관).
 
-## 외부 리소스
+### 정산 정보
 
-- 글꼴: Google Fonts (Figtree, Noto Sans KR, Nanum Pen Script)
-- 아이콘: Lucide (`unpkg.com/lucide@0.460.0`)
+- 주민등록번호, 사업자등록번호, 계좌번호 원문은 `artist_secrets` 표에 AES-256-GCM으로 암호화해 저장합니다.
+- 화면 데이터에는 가린 값만 들어갑니다.
+- 관리자 작가 상세의 **전체 번호 보기**로 열람할 수 있고, 열람할 때마다 기록이 남습니다.
 
-## 개발 단계에서 연결할 부분
+## 구조
 
-- 견적 문의·출장 강의 신청·재능기부·교육 문의 폼 전송 (현재는 화면 안내 메시지만 표시)
-- 로그인·회원가입, 장바구니·주문
-- 게시판(새소식·교육 문의) 목록·검색·페이지 이동
-- 요금, 작가 정보, 후기, 사업자 정보는 시안용 예시 값입니다.
+```
+public/            퍼블리싱 HTML·CSS·JS·이미지 (그대로 서비스)
+  js/boot.js       페이지가 열릴 때 DB 상태를 받아 오고, 저장을 API로 보냄
+app/api/           서버 API
+  state            화면 데이터 (mode=admin | artist | public | report)
+  admin/state      관리자 저장 (+ 메일 발송)
+  admin/secret     정산 정보 원문 열람
+  artist/sync      작가 저장 (신청·프로필·현장 후기)
+  artist/tax       정산 정보 암호화 저장
+  auth/*           로그인 · 로그아웃 · 작가 등록 · 비밀번호 찾기 · 카카오 로그인
+  inquiry          홈페이지 문의 접수
+  report/[token]   리포트 열람·만족도
+lib/               DB · 인증 · 암호화 · 메일 · 알림톡 · 카카오 · 사진 저장
+middleware.ts      /admin, /artist 는 로그인해야 열림
+db/schema.sql      테이블 정의 (첫 실행 때 자동 생성)
+```
 
-## 배포
+정적 미리보기(서버 없이 HTML만 열기)에서는 `boot.js`가 아무것도 하지 않습니다. 이때는 예전처럼 브라우저 저장소로 동작합니다.
 
-Vercel에서 이 저장소를 Import 하면 설정 없이 정적 사이트로 배포됩니다. 서브도메인(예: `art.iux.kr`)은 가비아 DNS에 CNAME 레코드로 연결합니다.
+## 처음 배포하기
 
-## 이어서 작업하기
-결정사항·코드 지도·수정 방법은 [CLAUDE.md](CLAUDE.md), 전체 프로젝트 목록은 [IUX 프로젝트 목록](https://github.com/handgoldking1234/iux-app/blob/main/docs/PROJECTS.md)에 있습니다.
+### 1) Supabase — studio.iux.kr과 같은 프로젝트 사용
+
+IUX ART는 새 Supabase 프로젝트를 만들지 않고, studio.iux.kr(IUX Cloud)이 쓰는 프로젝트를 같이 씁니다.
+
+- **데이터 분리:** IUX ART 운영 데이터는 `iuxart` 스키마에 따로 저장됩니다. studio의 `public` 표와 섞이지 않고, 공개 API에도 노출되지 않아요. 첫 접속 때 자동으로 만들어집니다.
+- **사진:** `iuxart` 버킷에 저장되고, 처음 업로드할 때 자동으로 만들어집니다.
+
+필요한 값은 세 가지예요.
+1. **Connect**(또는 Project Settings → Database)의 **Transaction pooler** 주소 → `DATABASE_URL`. 주소 안 `[YOUR-PASSWORD]`에는 DB 비밀번호를 넣습니다.
+2. **Project Settings → API Keys**의 `service_role` 키 → `SUPABASE_SERVICE_ROLE_KEY`
+3. `SUPABASE_URL`은 `https://flrdiplgoeyuvffwxvhq.supabase.co`
+
+studio 쪽에서는 SQL Editor에서 iux-studio 저장소의 `supabase/migrations/20261107010000_iux_art.sql`을 한 번 실행합니다.
+그러면 IUX ART가 studio 사이트로 등록돼요. 방문 통계·문의함·새소식 게시판과 **운영 앱** 메뉴가 생깁니다.
+
+### studio.iux.kr에서 관리하기
+
+| studio 관리자 메뉴 | IUX ART에서 하는 일 |
+| --- | --- |
+| 대시보드 · 통계 분석 | art.iux.kr 방문자, 유입 경로(네이버·구글), 검색어, 기기 |
+| 문의 관리 | 행사 견적·교육 신청·주문 문의 (art@iux.kr로 알림 메일) |
+| 게시판 | 새소식 |
+| **운영 앱** | **IUX ART 관리자 열기** — studio 계정 그대로 로그인돼 공고·작가 선정·정산·현장 후기·결과 리포트를 처리 |
+
+studio 운영자(`public.admins`)만 운영 앱으로 들어올 수 있습니다. `ADMIN_EMAIL`/`ADMIN_PASSWORD` 계정은 studio가 멈췄을 때를 위한 예비 로그인입니다.
+
+### 2) Resend (메일)
+
+1. [resend.com](https://resend.com)에 가입하고 API 키를 만듭니다. 이 값이 `RESEND_API_KEY`입니다.
+2. **Domains → Add Domain**에 `iux.kr`을 넣으면 DNS 레코드 3~4줄이 나옵니다. 가비아 DNS 관리에 그대로 추가합니다.
+   - `send` 호스트의 MX·TXT, `resend._domainkey` 호스트의 TXT입니다.
+   - 받는 메일(ImprovMX)용 `@` MX와 겹치지 않으니 그대로 둡니다.
+3. 인증이 끝나면 `MAIL_FROM=IUX ART <noreply@iux.kr>`로 발송됩니다. 인증 전에는 가입한 본인 메일로만 보낼 수 있습니다.
+
+### 3) Vercel
+
+1. 프로젝트 **Settings → Environment Variables**에 `.env.example`의 값을 넣습니다.
+2. 키 두 개는 터미널에서 `openssl rand -hex 32`로 만듭니다.
+   - `SESSION_SECRET`
+   - `DATA_KEY` — 한 번 정하면 바꾸지 마세요. 바꾸면 저장된 주민등록번호를 풀 수 없습니다.
+3. **Settings → Build & Deployment → Framework Preset**을 **Next.js**로 바꿉니다. 지금 운영 중인 `main`은 정적 사이트로 잡혀 있습니다.
+4. 이 브랜치의 미리보기 주소에서 `/admin`에 접속해 `ADMIN_EMAIL`과 `ADMIN_PASSWORD`로 로그인해 봅니다. 문제없으면 `main`에 합쳐 art.iux.kr에 반영합니다.
+
+`DATABASE_URL`이 없으면 서버 기능은 "준비 중"으로 응답하고, 홈페이지 화면은 그대로 열립니다.
+
+> 체험용으로 시안 데이터가 필요하면 첫 배포 전에 `SEED_DEMO=1`을 넣으세요.
+> - 데모 작가 로그인: 각 작가 이메일(예: `haneul@example.com`) / `artist1234`
+> - 실제 운영 전에는 DB를 비우고 이 값을 빼 주세요.
+
+### 4) 카카오 로그인 (선택)
+
+1. [developers.kakao.com](https://developers.kakao.com)에서 애플리케이션을 추가합니다.
+2. **앱 키**의 REST API 키를 `KAKAO_REST_KEY`에 넣습니다.
+3. **플랫폼 → Web**에 `https://art.iux.kr`을 등록합니다.
+4. **카카오 로그인**을 활성화하고, Redirect URI에 `https://art.iux.kr/api/auth/kakao/callback`을 등록합니다.
+5. 동의 항목은 따로 켤 필요가 없습니다. 회원번호만 씁니다.
+
+작가는 이메일로 한 번 로그인한 뒤 **내 프로필 → 카카오 계정 연결**을 누르면, 다음부터 카카오로 로그인할 수 있습니다.
+
+### 5) 카카오 알림톡 (선택, 솔라피)
+
+1. 카카오톡 채널(비즈니스 인증)을 만들고 [솔라피](https://solapi.com)에 연동합니다. 채널의 pfId가 `SOLAPI_PFID`입니다.
+2. 솔라피에 발신번호를 등록하고(`SOLAPI_SENDER`), API 키와 시크릿을 만듭니다.
+3. 아래 문안으로 템플릿을 등록해 심사를 받습니다. 변수 이름은 그대로 써야 합니다.
+   - 각 템플릿에 웹링크 버튼 하나를 넣고 링크는 `#{링크}`로 둡니다.
+   - 통과한 템플릿 ID를 `SOLAPI_TEMPLATES`에 종류 이름과 함께 넣습니다.
+
+| 종류 | 템플릿 문안 |
+| --- | --- |
+| 공고 알림 | #{작가명} 작가님, 새 행사 공고가 올라왔어요.\n■ 행사: #{행사명}\n■ 일정: #{일정}\n■ 장소: #{장소}\n작가 포털에서 확인하고 신청해 주세요. |
+| 선정 안내 | #{작가명} 작가님, 행사에 선정되셨어요.\n■ 행사: #{행사명}\n■ 일정: #{일정}\n■ 장소: #{장소}\n준비물과 집합 시간은 작가 포털에서 확인해 주세요. |
+| 미선정 안내 | #{작가명} 작가님, 신청해 주셔서 감사합니다.\n이번 행사(#{행사명})는 함께하지 못하게 됐어요. 다음 공고도 바로 알려드릴게요. |
+| 작가 승인 | #{작가명} 작가님, IUX ART 작가 등록이 승인됐어요.\n이제 기술·지역에 맞는 행사 공고를 받아 보실 수 있어요. |
+| 정산 정보 요청 | #{작가명} 작가님, 행사비 지급을 위해 정산 정보 등록이 필요해요.\n작가 포털 > 정산 정보에서 등록해 주세요. |
+| 정산 완료 | #{작가명} 작가님, 정산금이 입금됐어요.\n■ 내용: #{내용}\n자세한 내역은 작가 포털에서 확인해 주세요. |
+| 현장 후기 요청 | #{작가명} 작가님, #{행사명} 현장 후기를 올려 주세요.\n사진과 분위기를 간단히 남겨 주시면 고객 리포트와 홈페이지 후기에 쓰여요. |
+
+## 계정·DB가 바뀔 때
+
+- [docs/ACCOUNTS.md](docs/ACCOUNTS.md): 모든 외부 계정과, 바뀌면 고칠 곳(공개 값은 `public/js/iux-config.js` 한 곳, 비밀 값은 Vercel 환경 변수)
+- [docs/MOVE-DB.md](docs/MOVE-DB.md): IUX ART 데이터만 다른 Supabase로 옮기기 (`npm run move-db`)
+- `tools/site-gen/`: 홈페이지 생성 원본
+
+## 로컬에서 돌려 보기
+
+```bash
+npm install
+cp .env.example .env.local   # DATABASE_URL 을 비워 두면 내장 Postgres(.data/)로 동작
+npm run dev                  # http://localhost:3000
+```
+
+## 다음 단계
+
+- **정산 자동 이체:** 은행 펌뱅킹 계약이 필요합니다. 지금은 관리자가 지급 완료를 처리합니다.
+- **고객 알림톡:** 결과 리포트를 담당자 휴대폰으로도 보내려면 견적 문의의 연락처로 별도 템플릿을 추가합니다.
