@@ -26,7 +26,7 @@ export const POST = handler(null, async (req) => {
   const page = s1(b.page, 60), d = b.data && typeof b.data === 'object' ? b.data : {};
   if (d.website || d.hp_check) return json({ ok: true }); // 스팸 방지용 숨은 칸
   const kind = PAGES[page] || '홈페이지 문의';
-  await q('insert into inquiries (kind, data) values ($1, $2::jsonb)', [kind, JSON.stringify({ page, form: s1(b.form, 40), data: d, ua: s1(req.headers.get('user-agent'), 200) })]);
+  await q('insert into iuxart.inquiries (kind, data) values ($1, $2::jsonb)', [kind, JSON.stringify({ page, form: s1(b.form, 40), data: d, ua: s1(req.headers.get('user-agent'), 200) })]);
 
   let quoteId = '';
   if (page === 'quote.html') {
@@ -44,7 +44,8 @@ export const POST = handler(null, async (req) => {
     await tx(async (t) => { const s = await loadState(t); s.quotes.unshift(quote); await writeState(t, s); });
   }
 
-  if (process.env.ADMIN_EMAIL) {
+  // studio 문의함(IUX Cloud)에 들어갔으면 알림 메일은 IUX Cloud가 이미 보냄 → 중복 발송 안 함
+  if (process.env.ADMIN_EMAIL && b.cloud !== true) {
     const site = (process.env.SITE_URL || '').replace(/\/$/, '');
     const lines = Object.entries(d).filter(([k]) => !/agree/.test(k)).map(([k, v]) => `${k}: ${s1(v, 500)}`);
     await sendMail(process.env.ADMIN_EMAIL, `[IUX ART] ${kind} · ${s1(d.org || d.name || d.qw_title || '', 40)}`, layout(`새 ${kind}`, lines, quoteId ? { href: `${site}/admin/jobs.html#new-${quoteId}`, label: '공고로 전환하기' } : undefined)).catch(() => {});

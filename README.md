@@ -58,14 +58,31 @@ db/schema.sql      테이블 정의 (첫 실행 때 자동 생성)
 
 ## 처음 배포하기
 
-### 1) Supabase (DB · 사진)
+### 1) Supabase — studio.iux.kr과 같은 프로젝트 사용
 
-1. [supabase.com](https://supabase.com)에서 새 프로젝트를 만듭니다. 지역은 Northeast Asia (Seoul)를 고릅니다.
-2. **Project Settings → Database → Connection string**에서 **Transaction pooler**(포트 6543) 주소를 복사합니다. 이 값이 `DATABASE_URL`입니다.
-3. **Storage**에서 `uploads` 버킷을 만들고 **Public**으로 둡니다.
-4. **Project Settings → API**에서 `Project URL`과 `service_role` 키를 복사합니다. 각각 `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`입니다.
+IUX ART는 새 Supabase 프로젝트를 만들지 않고, studio.iux.kr(IUX Cloud)이 쓰는 프로젝트를 같이 씁니다.
 
-테이블은 첫 접속 때 자동으로 만들어집니다. SQL Editor에 `db/schema.sql`을 붙여 넣어 미리 만들어도 됩니다.
+- **데이터 분리:** IUX ART 운영 데이터는 `iuxart` 스키마에 따로 저장됩니다. studio의 `public` 표와 섞이지 않고, 공개 API에도 노출되지 않아요. 첫 접속 때 자동으로 만들어집니다.
+- **사진:** `iuxart` 버킷에 저장되고, 처음 업로드할 때 자동으로 만들어집니다.
+
+필요한 값은 세 가지예요.
+1. **Connect**(또는 Project Settings → Database)의 **Transaction pooler** 주소 → `DATABASE_URL`. 주소 안 `[YOUR-PASSWORD]`에는 DB 비밀번호를 넣습니다.
+2. **Project Settings → API Keys**의 `service_role` 키 → `SUPABASE_SERVICE_ROLE_KEY`
+3. `SUPABASE_URL`은 `https://flrdiplgoeyuvffwxvhq.supabase.co`
+
+studio 쪽에서는 SQL Editor에서 iux-studio 저장소의 `supabase/migrations/20261107010000_iux_art.sql`을 한 번 실행합니다.
+그러면 IUX ART가 studio 사이트로 등록돼요. 방문 통계·문의함·새소식 게시판과 **운영 앱** 메뉴가 생깁니다.
+
+### studio.iux.kr에서 관리하기
+
+| studio 관리자 메뉴 | IUX ART에서 하는 일 |
+| --- | --- |
+| 대시보드 · 통계 분석 | art.iux.kr 방문자, 유입 경로(네이버·구글), 검색어, 기기 |
+| 문의 관리 | 행사 견적·교육 신청·주문 문의 (art@iux.kr로 알림 메일) |
+| 게시판 | 새소식 |
+| **운영 앱** | **IUX ART 관리자 열기** — studio 계정 그대로 로그인돼 공고·작가 선정·정산·현장 후기·결과 리포트를 처리 |
+
+studio 운영자(`public.admins`)만 운영 앱으로 들어올 수 있습니다. `ADMIN_EMAIL`/`ADMIN_PASSWORD` 계정은 studio가 멈췄을 때를 위한 예비 로그인입니다.
 
 ### 2) Resend (메일)
 

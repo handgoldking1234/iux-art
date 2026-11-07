@@ -16,10 +16,10 @@ export const POST = handler(null, async (req) => {
   if (!id) return ok;
   if (Date.now() - (recent.get(id) || 0) < 60_000) return ok; // 1분에 한 번
   recent.set(id, Date.now());
-  const u = (await q<any>(`select id, login, role from users where login = $1 or ($2 <> '' and phone = $2) limit 1`, [id, /^01\d{8,9}$/.test(digits) ? digits : '']))[0];
+  const u = (await q<any>(`select id, login, role from iuxart.users where login = $1 or ($2 <> '' and phone = $2) limit 1`, [id, /^01\d{8,9}$/.test(digits) ? digits : '']))[0];
   if (!u) return ok;
   const t = token(24);
-  await q(`insert into pw_resets (token, user_id, expires_at) values ($1, $2, now() + interval '1 hour')`, [t, u.id]);
+  await q(`insert into iuxart.pw_resets (token, user_id, expires_at) values ($1, $2, now() + interval '1 hour')`, [t, u.id]);
   const site = (process.env.SITE_URL || new URL(req.url).origin).replace(/\/$/, '');
   await sendMail(u.login, '[IUX ART] 비밀번호 재설정 안내', layout('비밀번호를 다시 정해 주세요', [
     '아래 버튼을 눌러 새 비밀번호를 정하면 바로 로그인할 수 있어요.',

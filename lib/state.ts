@@ -15,7 +15,7 @@ const idOf = (coll: string, x: any) => (coll === 'reviews' ? reviewId(x) : Strin
 
 export async function loadState(t?: Tx): Promise<State> {
   const run: Tx['q'] = t ? (s, p) => t.q(s, p) : q;
-  const rows = await run<{ coll: string; id: string; data: any }>('select coll, id, data from docs');
+  const rows = await run<{ coll: string; id: string; data: any }>('select coll, id, data from iuxart.docs');
   const s: State = { version: VERSION, skills: [], regions: [], settings: {}, artists: [], jobs: [], quotes: [], posts: [], reviews: [], logs: [], paid: {}, reports: {}, rev: 0 };
   const ord: Record<string, Map<any, number>> = {};
   for (const r of rows) {
@@ -36,7 +36,7 @@ export async function loadState(t?: Tx): Promise<State> {
 
 async function put(t: Tx, coll: string, id: string, data: any) {
   await t.q(
-    `insert into docs (coll, id, data, updated_at) values ($1,$2,$3::jsonb, now())
+    `insert into iuxart.docs (coll, id, data, updated_at) values ($1,$2,$3::jsonb, now())
      on conflict (coll, id) do update set data = excluded.data, updated_at = now() where docs.data is distinct from excluded.data`,
     [coll, id, JSON.stringify(data)]
   );
@@ -50,14 +50,14 @@ export async function writeState(t: Tx, s: State, opts: { keepArtists?: boolean 
     const items: any[] = s[c] || [];
     const ids = items.map((x) => idOf(c, x));
     for (let i = 0; i < items.length; i++) await put(t, c, ids[i], { ...items[i], _o: i });
-    if (!(c === 'artists' && opts.keepArtists)) await t.q('delete from docs where coll = $1 and not (id = any($2::text[]))', [c, ids]);
+    if (!(c === 'artists' && opts.keepArtists)) await t.q('delete from iuxart.docs where coll = $1 and not (id = any($2::text[]))', [c, ids]);
   }
   const paidIds = Object.keys(s.paid || {});
   for (const k of paidIds) await put(t, 'paid', k, { d: s.paid[k] });
-  await t.q(`delete from docs where coll = 'paid' and not (id = any($1::text[]))`, [paidIds]);
+  await t.q(`delete from iuxart.docs where coll = 'paid' and not (id = any($1::text[]))`, [paidIds]);
   const repIds = Object.keys(s.reports || {});
   for (const k of repIds) await put(t, 'reports', k, s.reports[k]);
-  await t.q(`delete from docs where coll = 'reports' and not (id = any($1::text[]))`, [repIds]);
+  await t.q(`delete from iuxart.docs where coll = 'reports' and not (id = any($1::text[]))`, [repIds]);
   const rev = (Number(s.rev) || 0) + 1;
   await put(t, 'meta', 'rev', rev);
   return rev;

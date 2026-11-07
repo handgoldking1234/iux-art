@@ -17,7 +17,7 @@ export const POST = handler(null, async (req) => {
   const t = tries.get(key);
   if (t && t.n >= 8 && Date.now() - t.t < 10 * 60e3) return fail('로그인 시도가 너무 많아요. 10분 뒤 다시 해 주세요.', 429);
   const rows = await q<any>(
-    `select id, login, pw_hash, role, artist_id from users where login = $1 or ($2 <> '' and phone = $2) limit 1`,
+    `select id, login, pw_hash, role, artist_id from iuxart.users where login = $1 or ($2 <> '' and phone = $2) limit 1`,
     [id, /^01\d{8,9}$/.test(digits) ? digits : '']
   );
   const u = rows[0];

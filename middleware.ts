@@ -9,7 +9,7 @@ export async function middleware(req: NextRequest) {
   const admin = (p === '/admin' || p.startsWith('/admin/')) && p.endsWith('.html') || p === '/admin' || p === '/admin/';
   const artist = p === '/artist' || p === '/artist/' || p === '/artist/index.html';
   if (!admin && !artist) return NextResponse.next();
-  if (p === '/admin/login.html') return NextResponse.next();
+  if (p === '/admin/login.html' || p === '/admin/sso.html') return NextResponse.next();
   let role = '';
   const t = req.cookies.get('iux_session')?.value;
   if (t) try { role = String((await jwtVerify(t, key())).payload.role || ''); } catch {}

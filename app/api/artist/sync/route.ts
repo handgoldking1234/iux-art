@@ -11,6 +11,6 @@ export const POST = handler('artist', async (req, { session }) => {
   const b = await body(req);
   const view = await syncArtist(session!.artistId!, b.state || {});
   const me = view.artists.find((a: any) => a.id === session!.artistId);
-  if (me?.phone) await q('update users set phone = $1 where artist_id = $2', [String(me.phone).replace(/\D/g, ''), me.id]);
+  if (me?.phone) await q('update iuxart.users set phone = $1 where artist_id = $2', [String(me.phone).replace(/\D/g, ''), me.id]);
   return json(view);
 });

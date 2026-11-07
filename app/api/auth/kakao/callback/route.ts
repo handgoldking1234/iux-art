@@ -17,12 +17,12 @@ export async function GET(req: Request) {
     await ensureReady();
     const kid = await kakaoUserId(req, code);
     if (st.mode === 'link' && st.uid) {
-      const other = await q<any>('select id from users where kakao_id = $1 and id <> $2', [kid, st.uid]);
+      const other = await q<any>('select id from iuxart.users where kakao_id = $1 and id <> $2', [kid, st.uid]);
       if (other.length) return NextResponse.redirect(`${base}/artist/index.html?kakao=taken`);
-      await q('update users set kakao_id = $1 where id = $2', [kid, st.uid]);
+      await q('update iuxart.users set kakao_id = $1 where id = $2', [kid, st.uid]);
       return NextResponse.redirect(`${base}/artist/index.html?kakao=linked`);
     }
-    const user = (await q<any>(`select id, login, role, artist_id from users where kakao_id = $1 and role = 'artist'`, [kid]))[0];
+    const user = (await q<any>(`select id, login, role, artist_id from iuxart.users where kakao_id = $1 and role = 'artist'`, [kid]))[0];
     if (!user) return NextResponse.redirect(`${base}/login.html?kakao=none`);
     const res = NextResponse.redirect(base + (st.next || '/artist/index.html'));
     res.cookies.set(COOKIE, await signSession({ uid: String(user.id), role: 'artist', artistId: user.artist_id, email: user.login }, 30), cookieOpts(30));

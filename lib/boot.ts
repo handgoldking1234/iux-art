@@ -20,7 +20,7 @@ export function seedData(): State {
 export async function initData(opts: { demo?: boolean; log?: (m: string) => void } = {}) {
   const log = opts.log || (() => {});
   await ensureSchema();
-  const has = await q<{ n: number }>(`select count(*)::int as n from docs where coll = 'meta' and id = 'settings'`);
+  const has = await q<{ n: number }>(`select count(*)::int as n from iuxart.docs where coll = 'meta' and id = 'settings'`);
   /* 처음 실행이면 기본값을 넣고, SEED_DEMO=1 이면 시안 데모 데이터로 시작 */
   if (!has[0]?.n && process.env.SEED_DEMO === '1') opts = { ...opts, demo: true };
   if (!has[0]?.n || opts.demo) {
@@ -29,8 +29,8 @@ export async function initData(opts: { demo?: boolean; log?: (m: string) => void
     await tx(async (t) => {
       const cur = await loadState(t);
       if (opts.demo) {
-        await t.q(`delete from docs where coll <> 'meta'`);
-        await t.q(`delete from users where role = 'artist'`);
+        await t.q(`delete from iuxart.docs where coll <> 'meta'`);
+        await t.q(`delete from iuxart.users where role = 'artist'`);
       }
       base.rev = cur.rev;
       await writeState(t, base);
@@ -39,7 +39,7 @@ export async function initData(opts: { demo?: boolean; log?: (m: string) => void
     if (opts.demo) {
       const hash = await bcrypt.hash(process.env.DEMO_ARTIST_PASSWORD || 'artist1234', 10);
       for (const a of seed.artists) {
-        await q(`insert into users (login, phone, pw_hash, role, artist_id) values ($1,$2,$3,'artist',$4) on conflict (login) do nothing`, [String(a.email).toLowerCase(), String(a.phone || '').replace(/\D/g, ''), hash, a.id]);
+        await q(`insert into iuxart.users (login, phone, pw_hash, role, artist_id) values ($1,$2,$3,'artist',$4) on conflict (login) do nothing`, [String(a.email).toLowerCase(), String(a.phone || '').replace(/\D/g, ''), hash, a.id]);
       }
       log(`데모 작가 ${seed.artists.length}명 로그인: 각 작가 이메일 / ${process.env.DEMO_ARTIST_PASSWORD ? '(DEMO_ARTIST_PASSWORD)' : 'artist1234'}`);
     }
@@ -47,9 +47,9 @@ export async function initData(opts: { demo?: boolean; log?: (m: string) => void
   const email = (process.env.ADMIN_EMAIL || '').toLowerCase().trim();
   const pw = process.env.ADMIN_PASSWORD || '';
   if (email && pw) {
-    const ex = await q(`select id from users where login = $1`, [email]);
+    const ex = await q(`select id from iuxart.users where login = $1`, [email]);
     if (!ex.length) {
-      await q(`insert into users (login, pw_hash, role) values ($1,$2,'admin')`, [email, await bcrypt.hash(pw, 10)]);
+      await q(`insert into iuxart.users (login, pw_hash, role) values ($1,$2,'admin')`, [email, await bcrypt.hash(pw, 10)]);
       log(`관리자 계정을 만들었어요: ${email}`);
     }
   }

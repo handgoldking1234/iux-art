@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IUX ART 관리자 연결 중</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="css/admin.css">
+<style>body{min-height:100vh;display:grid;place-items:center;background:var(--bg);padding:24px 16px;text-align:center}.b{max-width:380px}.b h1{font-size:18px;margin:0 0 8px}.b p{color:var(--ink-3);font-size:14px;line-height:1.6;margin:0 0 16px}.b a{color:var(--ink);font-weight:700}</style>
+</head>
+<body>
+<div class="b"><h1 id="t">studio 계정으로 연결하는 중…</h1><p id="m">잠시만 기다려 주세요.</p></div>
+<script>
+(function () {
+  var tok = (location.hash.match(/[#&]t=([^&]+)/) || [])[1];
+  history.replaceState(null, '', location.pathname); // 주소창에서 토큰 지우기
+  var t = document.getElementById('t'), m = document.getElementById('m');
+  var fail = function (msg) { t.textContent = '연결하지 못했어요'; m.innerHTML = msg + '<br><br><a href="/admin/login.html">IUX ART 관리자 로그인으로</a>'; };
+  if (!tok) return fail('studio.iux.kr 관리자에서 <b>운영 앱 → IUX ART 관리자 열기</b>로 들어와 주세요.');
+  fetch('/api/auth/studio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: decodeURIComponent(tok) }) })
+    .then(function (r) { return r.json().then(function (o) { if (!r.ok) throw new Error(o.error || '연결하지 못했어요.'); location.replace('/admin/index.html'); }); })
+    .catch(function (e) { fail(e.message); });
+})();
+</script>
+</body>
+</html>

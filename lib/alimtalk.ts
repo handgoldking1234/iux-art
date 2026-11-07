@@ -56,7 +56,7 @@ export async function alimtalkForLogs(logs: any[], s: State) {
   }
   for (const m of msgs) {
     const st = sendable.includes(m) ? status : alimtalkReady() ? 'no-template' : 'logged';
-    await q('insert into mail_outbox (to_addr, subject, body, status, error) values ($1,$2,$3,$4,$5)', [m.to, `[알림톡] ${m.type}`, JSON.stringify(m.variables), st, st === 'failed' ? error : null]);
+    await q('insert into iuxart.mail_outbox (to_addr, subject, body, status, error) values ($1,$2,$3,$4,$5)', [m.to, `[알림톡] ${m.type}`, JSON.stringify(m.variables), st, st === 'failed' ? error : null]);
   }
   return msgs;
 }

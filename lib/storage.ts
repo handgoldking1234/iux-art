@@ -12,11 +12,17 @@ export async function saveDataUrl(dataUrl: string, folder: string): Promise<stri
   if (buf.length > MAX) throw new Error('이미지가 너무 커요.');
   const ext = m[2] === 'jpeg' ? 'jpg' : m[2];
   const name = `${folder.replace(/[^a-z0-9/_-]/gi, '')}/${Date.now()}-${crypto.randomBytes(6).toString('hex')}.${ext}`;
-  const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY, bucket = process.env.SUPABASE_BUCKET || 'uploads';
+  const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY, bucket = process.env.SUPABASE_BUCKET || 'iuxart';
   if (url && key) {
-    const r = await fetch(`${url}/storage/v1/object/${bucket}/${name}`, {
-      method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': m[1], 'x-upsert': 'false' }, body: buf,
+    const put = () => fetch(`${url}/storage/v1/object/${bucket}/${name}`, {
+      method: 'POST', headers: { Authorization: `Bearer ${key}`, apikey: key, 'Content-Type': m[1], 'x-upsert': 'false' }, body: buf,
     });
+    let r = await put();
+    if (!r.ok && /bucket not found/i.test(await r.clone().text())) {
+      // 처음 한 번: 공개 버킷 만들기 (studio의 media 버킷과 분리)
+      await fetch(`${url}/storage/v1/bucket`, { method: 'POST', headers: { Authorization: `Bearer ${key}`, apikey: key, 'Content-Type': 'application/json' }, body: JSON.stringify({ id: bucket, name: bucket, public: true, file_size_limit: MAX, allowed_mime_types: ['image/jpeg', 'image/png', 'image/webp'] }) });
+      r = await put();
+    }
     if (!r.ok) throw new Error('사진 업로드에 실패했어요: ' + (await r.text()).slice(0, 200));
     return `${url}/storage/v1/object/public/${bucket}/${name}`;
   }

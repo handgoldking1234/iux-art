@@ -23,7 +23,7 @@ export const POST = handler(null, async (req) => {
   if (!/^01\d{8,9}$/.test(phone)) return fail('휴대폰 번호를 확인해 주세요.');
   if (pw.length < 8) return fail('비밀번호는 8자 이상으로 정해 주세요.');
   if (!String(a.name || '').trim()) return fail('이름을 적어 주세요.');
-  const dup = await q('select 1 from users where login = $1 or phone = $2', [email, phone]);
+  const dup = await q('select 1 from iuxart.users where login = $1 or phone = $2', [email, phone]);
   if (dup.length) return fail('이미 등록된 이메일 또는 휴대폰 번호예요. 로그인해 주세요.', 409);
 
   const id = 'a' + token(8);
@@ -41,7 +41,7 @@ export const POST = handler(null, async (req) => {
     const s = await loadState(t);
     s.artists.push(artist);
     await writeState(t, s);
-    const r = await t.q<{ id: string }>(`insert into users (login, phone, pw_hash, role, artist_id) values ($1,$2,$3,'artist',$4) returning id`, [email, phone, hash, id]);
+    const r = await t.q<{ id: string }>(`insert into iuxart.users (login, phone, pw_hash, role, artist_id) values ($1,$2,$3,'artist',$4) returning id`, [email, phone, hash, id]);
     return String(r[0].id);
   });
   if (process.env.ADMIN_EMAIL) {
