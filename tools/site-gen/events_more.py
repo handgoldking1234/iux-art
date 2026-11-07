@@ -169,7 +169,7 @@ PROGRAMS = [
   # key, name, file, short, icon, g, cat, img
   ("caricature", "캐리커처", "event-caricature.html", "1~2분 완성 현장 캐리커처", "smile", "g1", "draw", "work-single-02"),
   ("facepainting", "페이스페인팅", "event-facepainting.html", "1~2분 완성 볼·손등 도안", "sparkles", "g5", "kids", "fp-jellyfish"),
-  ("calligraphy", "캘리그라피", "event-calligraphy.html", "이름·문구 손글씨 선물", "pen-line", "g3", "draw", "work-single-01"),
+  ("calligraphy", "캘리그라피", "event-calligraphy.html", "이름·문구 손글씨 선물", "pen-line", "g3", "draw", "lv-calli-01"),
   ("tarot", "타로카드", "event-tarot.html", "1~2분 운세 상담 부스", "moon-star", "g4", "fun", "lv-tarot-01"),
   ("balloon", "요술풍선 삐에로", "event-balloon.html", "즉석 풍선 아트·마술", "wand-sparkles", "g5", "kids", "bl-live-hat"),
   ("henna", "헤나", "event-henna.html", "2주 유지 천연 헤나", "hand", "g6", "beauty", None),
