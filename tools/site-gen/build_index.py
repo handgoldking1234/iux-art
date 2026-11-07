@@ -211,3 +211,22 @@ open(os.path.join(OUT, '_index_full.html'), 'w', encoding='utf-8').write(index_h
 main = main.replace('4분 완성', '1~2분 완성')
 open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8').write(index_html(True))
 open(os.path.join(OUT, '_index_full.html'), 'w', encoding='utf-8').write(index_html(False))
+
+# 작품 벽: 한 작가 작품이 겹쳐 보여서 다른 작가(은서·달해) 작품으로 3장 교체
+for a, b in [('images/cc-anniv.jpg" alt="공주 문구가 들어간 캐리커처" loading="lazy" style="object-position:center 30%"><span>캐리커처 엽서</span>',
+              'images/ar-eunseo-family.jpg" alt="은서 작가의 파스텔 가족 캐리커처" loading="lazy" style="object-position:center 30%"><span>파스텔 캐리커처</span>'),
+             ('images/fp-live-bee.jpg" alt="작가가 어린이 볼에 꿀벌을 그리는 모습" loading="lazy" style="object-position:center 30%"><span>현장 페이스페인팅</span>',
+              'images/ar-eunseo-calli.jpg" alt="토닥토닥 오늘도 수고했어요 캘리그라피 카드" loading="lazy" style="object-position:center 30%"><span>캘리그라피</span>'),
+             ('images/cc-team-4.jpg" alt="4인 팀 단체 캐리커처 작품" loading="lazy" style="object-position:center 30%"><span>가족 캐리커처</span>',
+              'images/ar-dalhae-live.jpg" alt="현장에서 그린 흑백 캐리커처를 든 손님" loading="lazy" style="object-position:center 30%"><span>흑백 라이브 캐리커처</span>')]:
+    assert a in main, a[:40]
+    main = main.replace(a, b)
+open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8').write(index_html(True))
+open(os.path.join(OUT, '_index_full.html'), 'w', encoding='utf-8').write(index_html(False))
+
+# 작품 벽 이름표를 사진에 맞게 (커플 캐리커처·현장 캐리커처 사진에 페이스페인팅 이름표가 붙어 있었음)
+import re as _re
+main = _re.sub(r'(src="images/cz-25\.jpg"[^>]*><span>)손등 도안(</span>)', r'\1커플 캐리커처\2', main)
+main = _re.sub(r'(src="images/lv-cari-01\.jpg"[^>]*><span>)볼 도안(</span>)', r'\1현장 캐리커처\2', main)
+open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8').write(index_html(True))
+open(os.path.join(OUT, '_index_full.html'), 'w', encoding='utf-8').write(index_html(False))
