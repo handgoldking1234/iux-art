@@ -69,7 +69,7 @@ db/schema.sql      테이블 정의 (첫 실행 때 자동 생성)
 ### 2) Resend (메일)
 
 1. [resend.com](https://resend.com)에 가입하고 API 키를 만듭니다. 이 값이 `RESEND_API_KEY`입니다.
-2. **Domains**에서 `iuxart.co.kr`처럼 보낼 도메인을 인증합니다. DNS에 레코드 몇 줄을 추가하면 됩니다.
+2. **Domains**에서 `iux.kr`처럼 보낼 도메인을 인증합니다. DNS에 레코드 몇 줄을 추가하면 됩니다.
    - 인증 전에는 가입한 본인 메일로만 보낼 수 있습니다.
 
 ### 3) Vercel
