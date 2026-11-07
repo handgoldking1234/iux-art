@@ -30,6 +30,7 @@ def shell(page, title, desc, body, actions=''):
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<script>if(/^\\/(admin|artist)$/.test(location.pathname))location.replace(location.pathname+"/index.html"+location.search+location.hash)</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{title} | IUX ART 관리자</title>
 <meta name="robots" content="noindex">
@@ -211,6 +212,7 @@ def ashell(page, title, body, right):
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<script>if(/^\\/(admin|artist)$/.test(location.pathname))location.replace(location.pathname+"/index.html"+location.search+location.hash)</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{title} | IUX ART</title>
 {FONTS}
