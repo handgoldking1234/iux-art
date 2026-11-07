@@ -47,3 +47,6 @@
 ## 배포
 
 Vercel에서 이 저장소를 Import 하면 설정 없이 정적 사이트로 배포됩니다. 서브도메인(예: `art.iux.kr`)은 가비아 DNS에 CNAME 레코드로 연결합니다.
+
+## 이어서 작업하기
+결정사항·코드 지도·수정 방법은 [CLAUDE.md](CLAUDE.md), 전체 프로젝트 목록은 [IUX 프로젝트 목록](https://github.com/handgoldking1234/iux-app/blob/main/docs/PROJECTS.md)에 있습니다.
