@@ -134,7 +134,7 @@ a{color:inherit}
   var tok = (location.search.match(/[?&]r=([a-z0-9]+)/) || [])[1];
   var jid = null;
   Object.keys(d.reports || {}).forEach(function (k) { if (d.reports[k].token === tok) jid = k; });
-  if (!jid) { doc.innerHTML = '<div class="empty"><h1>리포트를 찾을 수 없어요</h1><p style="color:#8A8A8A">주소가 정확한지, 열람 기간(발송일로부터 90일)이 지나지 않았는지 확인해 주세요. 문의 010-9033-1491</p></div>'; document.getElementById('pdf').hidden = true; return; }
+  if (!jid) { doc.innerHTML = '<div class="empty"><h1>리포트를 찾을 수 없어요</h1><p style="color:#8A8A8A">주소가 정확한지, 열람 기간(발송일로부터 90일)이 지나지 않았는지 확인해 주세요. 문의 010-8388-1668</p></div>'; document.getElementById('pdf').hidden = true; return; }
   var x = I.reportOf(jid), j = x.job, r = x.rep, sk = I.skill(j.skill);
   /* 담당자가 처음 열면 열람 시각 기록 (운영자 미리보기는 제외) */
   if (r.state === 'sent' && !r.openedAt && !/[?&]pv=1/.test(location.search)) { r.openedAt = I.stamp(); I.save(); }
@@ -176,7 +176,7 @@ a{color:inherit}
           '<label style="display:flex;gap:8px;justify-content:center;font-size:13px;color:#4D4D4D;margin-bottom:14px"><input type="checkbox" id="pub">후기를 IUX ART 홈페이지에 소개해도 좋아요 (회사명은 가려서 표시)</label>' +
           '<button class="btn btn-y" type="submit" style="height:48px;padding:0 28px">의견 보내기</button></form><p class="done" id="thx">소중한 의견 감사합니다. 남겨 주신 후기는 작가들에게도 전달할게요.</p>') + '</section>' +
 
-    '<footer class="foot"><b>IUX ART</b> · 캐리커처 · 캘리그라피 · 페이스페인팅 출장 이벤트<br>문의 010-9033-1491 · hello@iuxart.co.kr' + (expire ? '<br>이 리포트는 ' + expire + '까지 열람할 수 있어요. 필요하면 PDF로 저장해 두세요.' : '') + '</footer></article>';
+    '<footer class="foot"><b>IUX ART</b> · 캐리커처 · 캘리그라피 · 페이스페인팅 출장 이벤트<br>문의 010-8388-1668 · hello@iuxart.co.kr' + (expire ? '<br>이 리포트는 ' + expire + '까지 열람할 수 있어요. 필요하면 PDF로 저장해 두세요.' : '') + '</footer></article>';
 
   document.getElementById('pdf').onclick = function () { window.print(); };
   document.getElementById('again').href = 'quote.html#p-' + j.skill;
