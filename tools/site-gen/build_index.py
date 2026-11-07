@@ -91,7 +91,7 @@ assert k == 1
 
 # --- 디지털 캐리커처·대형 스크린 제외 ---
 _R3 = [
-  ('<b>대형 스크린 중계</b><small>작가 손끝을 실시간으로</small>', '<b>11가지 프로그램</b><small>한 팀이 함께 운영해요</small>'),
+  ('<b>대형 스크린 중계</b><small>작가 손끝을 실시간으로</small>', '<b>12가지 프로그램</b><small>한 팀이 함께 운영해요</small>'),
   ('<span class="lbl">디지털 캐리커처</span><h3>작가의 펜 끝을<br>대형 스크린으로 생중계</h3><p>태블릿 드로잉을 무대 화면에 띄워 모두가 함께 보는 퍼포먼스</p>',
    '<span class="lbl">타로카드</span><h3>행사장 한쪽,<br>가장 오래 머무는 부스</h3><p>송년회·축제에서 대기 줄이 끊이지 않는 5분 운세 상담</p>'),
   ('<figure class="art-card"><img src="images/digital-sisters.jpg" alt="태블릿으로 그린 자매 디지털 캐리커처" loading="lazy"><figcaption>고화질 파일로 전달</figcaption></figure>',
@@ -107,9 +107,9 @@ main, _n = re.subn(r'<a href="event-caricature\.html#digital" class="bc rv d1">.
   '<a href="event-facepainting.html" class="bc rv d1">\n        <span class="k">페이스페인팅</span>\n        <h3>아이들이 먼저 찾는<br><u>4분 완성</u> 볼 도안</h3>\n        <div class="art"><figure class="art-card bento-art"><img src="images/fp-rainbow.jpg" alt="볼에 무지개를 그린 페이스페인팅" loading="lazy"><figcaption>무지개 볼 도안</figcaption></figure></div>\n        <span class="play"><i data-lucide="arrow-up-right"></i></span>\n      </a>', main, count=1, flags=re.S)
 assert _n == 1
 
-# --- 11가지 프로그램 섹션 + 문구 ---
+# --- 12가지 프로그램 섹션 + 문구 ---
 from events_more import PROGRAMS
-main = main.replace('캐리커처·캘리그라피·페이스페인팅까지 전국 어디든 전문 작가가 찾아갑니다.', '캐리커처·페이스페인팅·타로카드·요술풍선까지 11가지 프로그램을 전국 어디든 전문 작가가 찾아가 진행합니다.')
+main = main.replace('캐리커처·캘리그라피·페이스페인팅까지 전국 어디든 전문 작가가 찾아갑니다.', '캐리커처·페이스페인팅·타로카드·요술풍선까지 12가지 프로그램을 전국 어디든 전문 작가가 찾아가 진행합니다.')
 cards = ''
 for k, name, file, short, icon, g, cat, im in PROGRAMS:
     if im:
@@ -120,7 +120,7 @@ for k, name, file, short, icon, g, cat, im in PROGRAMS:
 prog_sec = f'''
 <section class="sec" style="padding-top:0">
   <div class="wrap">
-    <div class="sec-head rv"><div><span class="eyebrow">11 live programs</span><h2 class="sec-title" style="margin-top:8px">행사에 맞춰 고르는<br>9가지 라이브 프로그램</h2></div><a href="event.html" class="more">전체 프로그램 보기 <i data-lucide="arrow-right"></i></a></div>
+    <div class="sec-head rv"><div><span class="eyebrow">12 live programs</span><h2 class="sec-title" style="margin-top:8px">행사에 맞춰 고르는<br>12가지 라이브 프로그램</h2></div><a href="event.html" class="more">전체 프로그램 보기 <i data-lucide="arrow-right"></i></a></div>
     <div class="prog9 rv d1">{cards}</div>
   </div>
 </section>
@@ -132,7 +132,7 @@ main = main[:j] + prog_sec + main[j:]
 SLIDES = [
   # key, 탭 이름, 배경, 배경 위치, 작품, 작품 방향(p/l), 손글씨, 칩3개[(아이콘|eq, 제목, 설명)], 링크
   ("caricature", "캐리커처", "site-family-01", "center 35%", "cc-sisters-flower", "p", "1~2분이면 완성!",
-   [("users", "대기 12명", "현장 줄서기 진행 중"), ("eq", "11가지 프로그램", "한 팀이 함께 운영해요"), ("gift", "키링·액자 제작", "그린 그림 그대로 굿즈로")], "event-caricature.html"),
+   [("users", "대기 12명", "현장 줄서기 진행 중"), ("eq", "12가지 프로그램", "한 팀이 함께 운영해요"), ("gift", "키링·액자 제작", "그린 그림 그대로 굿즈로")], "event-caricature.html"),
   ("facepainting", "페이스페인팅", "lv-face-01", "center 40%", "fp-live-tiara", "p", "아이들 줄 1순위!",
    [("sparkles", "1~2분 완성", "볼·손등 도안 50종"), ("shield-check", "피부 안전 물감", "수성 전용 · 바로 지워져요"), ("smile", "어린이 행사 인기", "운동회·축제·가족의 날")], "event-facepainting.html"),
   ("hyukpil", "혁필화", "hp-booth", "center 50%", "hp-work-05", "l", "이름이 그림이 되는 순간",

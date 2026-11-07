@@ -7,7 +7,7 @@ BRAND = 'IUX ART'
 
 NAV = [
   ("about", "회사소개", "about.html", [("IUX EVENT 소개", "about.html"), ("새소식", "news.html"), ("재능기부", "donation.html")]),
-  ("event", "출장 이벤트", "event.html", [("전체 프로그램", "event.html"), ("캐리커처", "event-caricature.html"), ("페이스페인팅", "event-facepainting.html"), ("캘리그라피", "event-calligraphy.html"), ("타로카드", "event-tarot.html"), ("요술풍선 삐에로", "event-balloon.html"), ("헤나", "event-henna.html"), ("혁필화", "event-hyukpil.html"), ("손마사지 & 네일아트", "event-handcare.html"), ("손금 & 관상", "event-palm.html"), ("커스텀 페인팅", "event-custompaint.html"), ("비즈공예", "event-beads.html")]),
+  ("event", "출장 이벤트", "event.html", [("전체 프로그램", "event.html"), ("캐리커처", "event-caricature.html"), ("페이스페인팅", "event-facepainting.html"), ("캘리그라피", "event-calligraphy.html"), ("타로카드", "event-tarot.html"), ("요술풍선 삐에로", "event-balloon.html"), ("헤나", "event-henna.html"), ("혁필화", "event-hyukpil.html"), ("손마사지 & 네일아트", "event-handcare.html"), ("손금 & 관상", "event-palm.html"), ("커스텀 페인팅", "event-custompaint.html"), ("비즈공예", "event-beads.html"), ("빼빼로 만들기", "event-pepero.html")]),
   ("gallery", "작품 갤러리", "artists.html", []),
   ("custom", "주문제작", "custom.html", [("가족·커플 기념 선물", "custom.html#family"), ("어린이집·유치원 단체", "custom.html#kids"), ("기업·병원 기념품", "custom.html#biz"), ("캐릭터 로고", "custom.html#logo"), ("반려동물", "custom.html#pet")]),
   ("edu", "교육센터", "edu.html", [("교육과정", "edu.html"), ("출장 강의 신청", "edu-apply.html"), ("교육 문의", "edu-qna.html")]),

@@ -260,7 +260,7 @@ def price_block():
 
 def overview():
     tabs = ''.join(f'<button class="tab{" on" if f=="all" else ""}" data-f="{f}">{t}</button>' for f, t in [("all","전체"),("draw","드로잉"),("kids","키즈·체험"),("beauty","뷰티·힐링"),("fun","운세·이벤트")])
-    big = {"caricature": "cc-couple-sunset", "facepainting": "fp-cherry", "calligraphy": "work-parents", "hyukpil": "hp-work-03", "balloon": "bl-live-hat", "custompaint": "cp-plate-swan", "tarot": "lv-tarot-01"}
+    big = {"caricature": "cc-couple-sunset", "facepainting": "fp-cherry", "calligraphy": "work-parents", "hyukpil": "hp-work-03", "balloon": "bl-live-hat", "custompaint": "cp-plate-swan", "tarot": "lv-tarot-01", "pepero": "pp-hero"}
     cards = ''
     for k, name, file, short, icon, g, cat, img in PROGRAMS:
         e = EVENTS[k]
@@ -268,7 +268,7 @@ def overview():
         if k in TIER: k1, k2 = ('1인 소요', '1~2', '분'), ('4시간 수용', '100', '명+')
         cards += f'''<a href="{file}" class="pcard2" data-cat="{cat}">{prog_visual(name, icon, g, big.get(k))}
   <div class="pb"><h3>{name}</h3><p>{short}</p><dl><dt>{k1[0]}</dt><dd>{k1[1]}{k1[2]}</dd><dt>{k2[0]}</dt><dd>{k2[1]}{k2[2]}</dd></dl><span class="go">자세히 보기 <i data-lucide="arrow-right"></i></span></div></a>\n'''
-    body = subhero(crumbs(('출장 이벤트', None)), 'Programs', '행사에 맞춰 고르는<br><em>11가지 라이브 프로그램</em>',
+    body = subhero(crumbs(('출장 이벤트', None)), 'Programs', '행사에 맞춰 고르는<br><em>12가지 라이브 프로그램</em>',
                    '그리고, 꾸미고, 만들고, 즐기는 프로그램을 한 팀이 함께 운영합니다. 여러 프로그램을 묶으면 부스 구성과 견적을 한 번에 맞춰 드려요.',
                    '<div class="btns"><a href="quote.html" class="btn btn-brand">여러 프로그램 함께 견적 받기</a></div>')
     body += f'''<section class="sec-sm"><div class="wrap">
@@ -278,7 +278,7 @@ def overview():
 
 {price_block()}
 ''' + cta('프로그램 조합이 고민된다면', '행사 성격과 인원을 알려주시면 어울리는 조합과 부스 배치를 함께 제안해 드립니다.', '조합 추천 받기')
-    page('event.html', '출장 이벤트 프로그램 | IUX EVENT', '캐리커처·페이스페인팅·캘리그라피·타로카드·요술풍선·헤나·혁필화·손마사지·손금·관상 출장 이벤트 요금과 패키지', 'event', body)
+    page('event.html', '출장 이벤트 프로그램 | IUX EVENT', '캐리커처·페이스페인팅·캘리그라피·타로카드·요술풍선·헤나·혁필화·손마사지·손금·관상·빼빼로 만들기 출장 이벤트 요금과 패키지', 'event', body)
 
 for k in EVENTS:
     build_event(k)
