@@ -184,6 +184,30 @@ MORE = {
         ("무엇을 준비하면 되나요?", "테이블과 의자만 있으면 됩니다. 식탁보·유산지·접시·장갑·포장 봉투는 모두 준비해 가요."),
         ("만든 빼빼로는 바로 가져갈 수 있나요?", "초콜릿이 굳으면 봉투에 담아 바로 가져가실 수 있어요. 실내가 따뜻하면 굳는 시간이 조금 더 걸려요.")],
    extra=None),
+ 'show': dict(
+   file='event-show.html',
+   occ_sub='행사 성격에 맞춰 곡과 무대 구성을 바꿔 진행합니다.',
+   plans_sub='곡 수와 무대 시간은 행사 순서에 맞춰 정합니다. 다른 프로그램과 함께 운영할 수도 있어요.',
+   plans_note='가수 1인 무대 기준 · 수도권 기준 · VAT 별도 · 지방 출장은 교통비가 추가됩니다. 음향 장비·동반 출연은 별도 협의해요.',
+   steps=[("message-square-text", "문의 접수", "행사 날짜·장소·예상 인원을 남겨 주세요."), ("calculator", "상담·견적", "24시간 안에 무대 구성과 견적을 보내드려요."), ("music", "무대 구성", "행사 순서에 맞춰 곡과 등장 시점을 정해요."), ("mic-vocal", "현장 공연", "리허설로 음향을 확인하고 무대에 올라요."), ("clipboard-check", "결과 리포트", "현장 사진을 담아 정리해 드려요.")], name='모창 가수 공연', g='g3', icon='mic-vocal',
+   photo=('show-live', '무대에서 이문세 대표곡을 부르는 김정훈'),
+   h1='이문세 도플갱어<br><em>김정훈 라이브 공연</em>',
+   lead='「히든싱어」 이문세편 출연자, 이문세 도플갱어 김정훈이 행사장에서 직접 노래합니다. 15년 동안 매달 행사 무대에 서 온 경험으로, 이문세 대표곡을 객석과 함께 부르는 무대를 만들어요.',
+   mock='<div class="mock"><div class="row"><b>오늘의 무대</b><span class="tag">LIVE</span></div><div class="row"><span>이문세 대표곡 라이브</span><b>MUSIC</b></div><div class="row"><span>객석과 함께 부르기</span><b>SING</b></div><div class="row"><span>방송 비하인드 토크</span><b>TALK</b></div></div>',
+   kpis=[("행사 무대", "15", "년", "매달 행사 무대에 서 왔어요"), ("정기 공연", "매주", "", "강남구청역 라이브 무대"), ("방송 출연", "18", "편+", "히든싱어·아침마당 등")],
+   occ=[("party-popper", "송년회·신년회"), ("building-2", "창립 기념식·사내 행사"), ("tent", "지역 축제·문화제"), ("shopping-bag", "백화점·쇼핑몰 이벤트"), ("trophy", "체육대회·워크숍"), ("cake", "칠순·회갑 잔치"), ("graduation-cap", "동문회·총회"), ("landmark", "공공기관 행사")],
+   plans=[
+     dict(name='축하 공연', desc='이문세 대표곡 라이브 무대', price='맞춤 견적', items=['이문세 대표곡 라이브', '객석과 함께 부르는 무대', '행사 진행 순서에 맞춘 등장', '곡 수·시간은 행사에 맞춰 협의'], best=True),
+     dict(name='토크 콘서트', desc='노래 + 방송 비하인드 이야기', price='맞춤 견적', items=['히든싱어 출연 비하인드 토크', '관객 참여 코너', '신청곡 무대', '사회자와 진행 큐 맞춤']),
+     dict(name='함께 운영', desc='다른 프로그램과 한 행사에서', price='맞춤 견적', items=['공연 전후 캐리커처·캘리그라피 부스', '포토존·체험 부스와 동선 맞춤', '진행 매니저 동행']),
+   ],
+   opts=[("users", "동반 출연 무대", "동료 가수와 함께하는 무대 (일정에 따라 협의)", "협의"), ("music", "행사 맞춤 곡 구성", "행사 분위기에 맞춰 선곡", "협의"), ("speaker", "음향 장비 준비", "무대 음향이 없는 장소는 장비 준비", "협의"), ("camera", "포토타임", "공연 후 관객과 기념 촬영", "협의")],
+   gal=[("", "", "경력 포스터", "show-poster", "이문세 도플갱어 김정훈의 방송·공연·콘서트 경력")],
+   faq=[("이문세 씨 본인이 오나요?", "아니요. 이문세 모창 가수 김정훈 씨가 공연합니다. 히든싱어 이문세편에 출연할 만큼 목소리와 무대 매너가 닮아 반응이 좋아요."),
+        ("공연 시간과 곡 수는 어떻게 되나요?", "행사 순서와 예산에 맞춰 정합니다. 견적 문의 때 행사 시간표를 알려 주시면 맞춰 구성해 드려요."),
+        ("음향 장비가 없어도 되나요?", "무대 음향이 없는 장소라면 장비 준비를 함께 상담해 드려요. 장소 크기와 인원을 알려 주세요."),
+        ("다른 가수와 함께 무대를 꾸밀 수 있나요?", "동료 가수와의 동반 출연 무대도 상담할 수 있어요. 가능 여부와 비용은 일정에 따라 달라집니다.")],
+   extra='<section class="sec-sm soft"><div class="wrap">\n  <div class="sec-head rv"><div><span class="eyebrow">Profile</span><h2 class="sec-title" style="margin-top:8px">이문세 도플갱어 김정훈</h2><p>15년 동안 매달 행사 무대에 서 왔고, 지금도 강남구청역의 라이브 무대(개그맨 김현철 운영)에서 매주 공연합니다. 방송·공연을 함께하며 쿨 김성수, 심신, 파란, 유엔 등 동료 가수들과 꾸준히 교류하고 있어요.</p></div></div>\n  <div class="plans"><div class="plan rv"><div><h3>방송</h3><p class="desc">히든싱어 이문세편으로 알려졌어요</p></div><ul><li><i data-lucide="check"></i>JTBC 히든싱어 12회 이문세편</li><li><i data-lucide="check"></i>JTBC 히든싱어 15회 완전정복</li><li><i data-lucide="check"></i>JTBC 연예특종 63회</li><li><i data-lucide="check"></i>MBC 결투의 베란다쇼 「닮은꼴 스타」</li><li><i data-lucide="check"></i>SBS 좋은아침 「나도 가수다」</li><li><i data-lucide="check"></i>KBS1 아침마당 「가족이 부른다」 · 「우리는 닮은꼴 스타」</li><li><i data-lucide="check"></i>KBS2 1대 100 · 굿모닝 대한민국 · 생생 정보통</li><li><i data-lucide="check"></i>KBS2 여유만만 「닮은꼴 4인」 · 「스타 닮은꼴 4인방」</li><li><i data-lucide="check"></i>MBC 코미디의 길 「구라구라쇼」</li><li><i data-lucide="check"></i>채널A 도플갱어쇼 「별을 닮은 그대」 우승 외 다수</li></ul></div><div class="plan rv"><div><h3>행사 공연</h3><p class="desc">기업·백화점·지역 축제 무대</p></div><ul><li><i data-lucide="check"></i>롯데월드 메인 특설 공연</li><li><i data-lucide="check"></i>신세계·현대·롯데백화점 공연 다수</li><li><i data-lucide="check"></i>삼성반도체 성기발랄 행사 공연</li><li><i data-lucide="check"></i>삼성생명 휴먼센터 행사 공연</li><li><i data-lucide="check"></i>한국농어촌공사 공연</li><li><i data-lucide="check"></i>대가야 문화예술제 공연</li><li><i data-lucide="check"></i>수원 여성주간 기념행사 공연</li><li><i data-lucide="check"></i>영동 낭만캠핑 & 포도페스티벌</li><li><i data-lucide="check"></i>코엑스 아쿠아리움 행사 공연 외 다수</li></ul></div><div class="plan rv"><div><h3>콘서트</h3><p class="desc">대형 콘서트 오프닝과 동반 무대</p></div><ul><li><i data-lucide="check"></i>「대한민국 이문세」 콘서트 오프닝 공연</li><li><i data-lucide="check"></i>부산 국제 코미디 페스티벌 공연</li><li><i data-lucide="check"></i>제41회 LA 한인축제 공연</li><li><i data-lucide="check"></i>잡코리아 토크콘서트 「나꿈쇼」 출연</li><li><i data-lucide="check"></i>「슈퍼콘서트」 · 히든싱어 스페셜7 (박상민 동반 출연)</li><li><i data-lucide="check"></i>히든싱어 크리스마스·발렌타인데이·스페셜9 콘서트</li><li><i data-lucide="check"></i>히든싱어 중국 콘서트 (심신 동반 출연) 외 다수</li></ul></div></div>\n</div></section>\n'),
 }
 
 # 프로그램 목록 (메뉴·개요·견적 공통)
@@ -201,4 +225,5 @@ PROGRAMS = [
   ("custompaint", "커스텀 페인팅", "event-custompaint.html", "접시·에코백 브랜드 페인팅", "paintbrush", "g3", "draw", "cp-plate-swan"),
   ("beads", "비즈공예", "event-beads.html", "팔찌·키링 만들기 체험", "gem", "g2", "kids", None),
   ("pepero", "빼빼로 만들기", "event-pepero.html", "초콜릿·토핑 꾸미기 체험", "cookie", "g1", "kids", "pp-hero"),
+  ("show", "모창 가수 공연", "event-show.html", "이문세 도플갱어 김정훈 라이브", "mic-vocal", "g3", "fun", "show-live"),
 ]

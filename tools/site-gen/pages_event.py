@@ -144,21 +144,22 @@ def build_event(key):
 
     occ = ''.join(f'<div><span class="ic"><i data-lucide="{ic}"></i></span>{t}</div>' for ic, t in e['occ'])
     body += f'''<section class="sec-sm" style="padding-top:0"><div class="wrap">
-  <div class="sec-head rv"><div><h2 class="sec-title">이런 행사에 잘 맞아요</h2><p>행사 성격에 맞춰 도안과 소재를 바꿔 진행합니다.</p></div></div>
+  <div class="sec-head rv"><div><h2 class="sec-title">이런 행사에 잘 맞아요</h2><p>{e.get('occ_sub', '행사 성격에 맞춰 도안과 소재를 바꿔 진행합니다.')}</p></div></div>
   <div class="occ rv d1">{occ}</div>
 </div></section>
 '''
+    if e.get('extra'): body += e['extra']
 
-    steps = ''.join(f'<li class="step rv d{min(i,3)}"><span class="n">STEP {i+1}</span><span class="ic"><i data-lucide="{ic}"></i></span><h3>{t}</h3><p>{d}</p></li>' for i, (ic, t, d) in enumerate(STEPS))
+    steps = ''.join(f'<li class="step rv d{min(i,3)}"><span class="n">STEP {i+1}</span><span class="ic"><i data-lucide="{ic}"></i></span><h3>{t}</h3><p>{d}</p></li>' for i, (ic, t, d) in enumerate(e.get('steps') or STEPS))
     body += f'''<section class="sec-sm"><div class="wrap">
   <div class="sec-head rv"><div><h2 class="sec-title">진행 순서</h2><p>문의부터 행사 후 리포트까지 담당 매니저 한 명이 챙깁니다.</p></div></div>
   <ol class="steps">{steps}</ol>
 </div></section>
 '''
     body += f'''<section class="sec-sm soft" id="plans"><div class="wrap">
-  <div class="sec-head rv"><div><h2 class="sec-title">{e['name']} 구성·요금</h2><p>4시간·6시간 기준이며, 두 프로그램을 묶으면 부스 하나로 더 풍성하게 운영할 수 있어요.</p></div><a href="quote.html" class="more">맞춤 견적 받기 <i data-lucide="arrow-right"></i></a></div>
+  <div class="sec-head rv"><div><h2 class="sec-title">{e['name']} 구성·요금</h2><p>{e.get('plans_sub', '4시간·6시간 기준이며, 두 프로그램을 묶으면 부스 하나로 더 풍성하게 운영할 수 있어요.')}</p></div><a href="quote.html" class="more">맞춤 견적 받기 <i data-lucide="arrow-right"></i></a></div>
   <div class="plans">{plans_html(e['plans'])}</div>
-  <p class="note">작가 1명 기준 시작가 · 수도권 기준 · 재료비 포함 · VAT 별도 · 지방 출장은 교통비가 추가됩니다. 인원·장소·옵션에 따라 달라질 수 있어요.</p>
+  <p class="note">{e.get('plans_note', '작가 1명 기준 시작가 · 수도권 기준 · 재료비 포함 · VAT 별도 · 지방 출장은 교통비가 추가됩니다. 인원·장소·옵션에 따라 달라질 수 있어요.')}</p>
 </div></section>
 '''
     if key in COLLAB:
@@ -260,7 +261,7 @@ def price_block():
 
 def overview():
     tabs = ''.join(f'<button class="tab{" on" if f=="all" else ""}" data-f="{f}">{t}</button>' for f, t in [("all","전체"),("draw","드로잉"),("kids","키즈·체험"),("beauty","뷰티·힐링"),("fun","운세·이벤트")])
-    big = {"caricature": "cc-couple-sunset", "facepainting": "fp-cherry", "calligraphy": "work-parents", "hyukpil": "hp-work-03", "balloon": "bl-live-hat", "custompaint": "cp-plate-swan", "tarot": "lv-tarot-01", "pepero": "pp-hero"}
+    big = {"caricature": "cc-couple-sunset", "facepainting": "fp-cherry", "calligraphy": "work-parents", "hyukpil": "hp-work-03", "balloon": "bl-live-hat", "custompaint": "cp-plate-swan", "tarot": "lv-tarot-01", "pepero": "pp-hero", "show": "show-live"}
     cards = ''
     for k, name, file, short, icon, g, cat, img in PROGRAMS:
         e = EVENTS[k]
@@ -268,7 +269,7 @@ def overview():
         if k in TIER: k1, k2 = ('1인 소요', '1~2', '분'), ('4시간 수용', '100', '명+')
         cards += f'''<a href="{file}" class="pcard2" data-cat="{cat}">{prog_visual(name, icon, g, big.get(k))}
   <div class="pb"><h3>{name}</h3><p>{short}</p><dl><dt>{k1[0]}</dt><dd>{k1[1]}{k1[2]}</dd><dt>{k2[0]}</dt><dd>{k2[1]}{k2[2]}</dd></dl><span class="go">자세히 보기 <i data-lucide="arrow-right"></i></span></div></a>\n'''
-    body = subhero(crumbs(('출장 이벤트', None)), 'Programs', '행사에 맞춰 고르는<br><em>12가지 라이브 프로그램</em>',
+    body = subhero(crumbs(('출장 이벤트', None)), 'Programs', '행사에 맞춰 고르는<br><em>13가지 라이브 프로그램</em>',
                    '그리고, 꾸미고, 만들고, 즐기는 프로그램을 한 팀이 함께 운영합니다. 여러 프로그램을 묶으면 부스 구성과 견적을 한 번에 맞춰 드려요.',
                    '<div class="btns"><a href="quote.html" class="btn btn-brand">여러 프로그램 함께 견적 받기</a></div>')
     body += f'''<section class="sec-sm"><div class="wrap">
@@ -278,7 +279,7 @@ def overview():
 
 {price_block()}
 ''' + cta('프로그램 조합이 고민된다면', '행사 성격과 인원을 알려주시면 어울리는 조합과 부스 배치를 함께 제안해 드립니다.', '조합 추천 받기')
-    page('event.html', '출장 이벤트 프로그램 | IUX EVENT', '캐리커처·페이스페인팅·캘리그라피·타로카드·요술풍선·헤나·혁필화·손마사지·손금·관상·빼빼로 만들기 출장 이벤트 요금과 패키지', 'event', body)
+    page('event.html', '출장 이벤트 프로그램 | IUX EVENT', '캐리커처·페이스페인팅·캘리그라피·타로카드·요술풍선·헤나·혁필화·손마사지·손금·관상·빼빼로 만들기·모창 가수 공연 출장 이벤트 요금과 패키지', 'event', body)
 
 for k in EVENTS:
     build_event(k)

@@ -226,7 +226,7 @@ def quote():
   </aside>
 </div></section>
 '''
-    page('quote.html', '행사 견적 문의 | IUX EVENT', '캐리커처·페이스페인팅·타로·요술풍선 등 12가지 출장 이벤트 견적 문의', None, body)
+    page('quote.html', '행사 견적 문의 | IUX EVENT', '캐리커처·페이스페인팅·타로·요술풍선 등 13가지 출장 이벤트 견적 문의', None, body)
 
 
 FAQ = [
