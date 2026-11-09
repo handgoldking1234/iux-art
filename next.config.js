@@ -7,6 +7,8 @@ module.exports = {
     return [
       { source: '/admin', destination: '/admin/index.html', permanent: false },
       { source: '/artist', destination: '/artist/index.html', permanent: false },
+      // 작가 개별 사이트(public/opal, eunseo, dalhae): 폴더 주소를 index.html로 보내 사진 경로(img/…)가 맞게
+      { source: '/:site(opal|eunseo|dalhae)', destination: '/:site/index.html', permanent: false },
     ];
   },
   async rewrites() {
