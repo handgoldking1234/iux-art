@@ -9,7 +9,7 @@ from PIL import Image
 
 SITE = 'https://art.iux.kr'
 NAME = 'IUX ART'
-PHONE = '010-8388-1668'
+PHONE = '010-9033-1491'
 EMAIL = 'art@iux.kr'
 VERIFY = {  # 서치어드바이저·서치콘솔에서 받은 코드 (content 값만)
     'naver-site-verification': '93b6fab707a96f821a35705610b26b8b7d1ace32',

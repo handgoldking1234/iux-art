@@ -97,4 +97,4 @@ IUX ART와 studio.iux.kr이 쓰는 외부 계정을 모두 적어 둔 표입니�
 - `tools/site-gen/seo.py`: `PHONE`, `EMAIL`
 - 메일 전단지: `mail/2026-winter.html`
 
-지금 값은 010-8388-1668, art@iux.kr입니다.
+지금 값은 010-9033-1491, art@iux.kr입니다.

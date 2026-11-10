@@ -12,7 +12,7 @@ export function layout(title: string, lines: string[], link?: { href: string; la
 ${lines.map((l) => `<p style="font-size:15px;line-height:1.7;margin:0 0 8px;color:#333">${esc(l)}</p>`).join('')}
 ${link ? `<p style="margin:22px 0 0"><a href="${link.href}" style="display:inline-block;background:#FFC800;color:#121212;font-weight:800;text-decoration:none;padding:12px 22px;border-radius:999px">${esc(link.label)}</a></p>` : ''}
 </div>
-<p style="font-size:12px;color:#8A8A8A;margin:18px 0 0">IUX ART · 문의 010-8388-1668</p>
+<p style="font-size:12px;color:#8A8A8A;margin:18px 0 0">IUX ART · 문의 010-9033-1491</p>
 </div></body></html>`;
 }
 

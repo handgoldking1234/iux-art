@@ -2,7 +2,7 @@ import os, re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'site')
-PHONE = '010-8388-1668'
+PHONE = '010-9033-1491'
 BRAND = 'IUX ART'
 
 NAV = [
