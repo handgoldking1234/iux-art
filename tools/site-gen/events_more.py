@@ -189,7 +189,7 @@ MORE = {
    occ_sub='행사 성격에 맞춰 곡과 무대 구성을 바꿔 진행합니다.',
    plans_sub='곡 수와 무대 시간은 행사 순서에 맞춰 정합니다. 다른 프로그램과 함께 운영할 수도 있어요.',
    plans_note='가수 1인 무대 기준 · 수도권 기준 · VAT 별도 · 지방 출장은 교통비가 추가됩니다. 음향 장비·동반 출연은 별도 협의해요.',
-   steps=[("message-square-text", "문의 접수", "행사 날짜·장소·예상 인원을 남겨 주세요."), ("calculator", "상담·견적", "24시간 안에 무대 구성과 견적을 보내드려요."), ("music", "무대 구성", "행사 순서에 맞춰 곡과 등장 시점을 정해요."), ("mic-vocal", "현장 공연", "리허설로 음향을 확인하고 무대에 올라요."), ("clipboard-check", "결과 리포트", "현장 사진을 담아 정리해 드려요.")], name='모창 가수 공연', g='g3', icon='mic-vocal',
+   steps=[("message-square-text", "문의 접수", "행사 날짜·장소·예상 인원을 남겨 주세요."), ("calculator", "상담·견적", "24시간 안에 무대 구성과 견적을 보내드려요."), ("music", "무대 구성", "행사 순서에 맞춰 곡과 등장 시점을 정해요."), ("mic-vocal", "현장 공연", "리허설로 음향을 확인하고 무대에 올라요."), ("clipboard-check", "결과 리포트", "현장 사진을 담아 정리해 드려요.")], name='히든싱어 이문세편 가수 김정훈', g='g3', icon='mic-vocal',
    photo=('show-live', '무대에서 이문세 대표곡을 부르는 김정훈'),
    h1='히든싱어 이문세편<br><em>가수 김정훈</em>',
    lead='「히든싱어」 이문세편 가수 김정훈이 행사장에서 직접 노래합니다. 15년 동안 매달 행사 무대에 서 온 경험으로, 이문세 대표곡을 객석과 함께 부르는 무대를 만들어요.',
@@ -225,5 +225,5 @@ PROGRAMS = [
   ("custompaint", "커스텀 페인팅", "event-custompaint.html", "접시·에코백 브랜드 페인팅", "paintbrush", "g3", "draw", "cp-plate-swan"),
   ("beads", "비즈공예", "event-beads.html", "팔찌·키링 만들기 체험", "gem", "g2", "kids", None),
   ("pepero", "빼빼로 만들기", "event-pepero.html", "초콜릿·토핑 꾸미기 체험", "cookie", "g1", "kids", "pp-hero"),
-  ("show", "모창 가수 공연", "event-show.html", "히든싱어 이문세편 가수 김정훈", "mic-vocal", "g3", "fun", "show-live"),
+  ("show", "히든싱어 이문세편 가수 김정훈", "event-show.html", "이문세 대표곡 라이브 공연", "mic-vocal", "g3", "fun", "show-live"),
 ]
