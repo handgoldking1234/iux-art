@@ -261,7 +261,7 @@ def price_block():
 
 def overview():
     tabs = ''.join(f'<button class="tab{" on" if f=="all" else ""}" data-f="{f}">{t}</button>' for f, t in [("all","전체"),("draw","드로잉"),("kids","키즈·체험"),("beauty","뷰티·힐링"),("fun","운세·이벤트")])
-    big = {"caricature": "cc-couple-sunset", "facepainting": "fp-cherry", "calligraphy": "work-parents", "hyukpil": "hp-work-03", "balloon": "bl-live-hat", "custompaint": "cp-plate-swan", "tarot": "lv-tarot-01", "pepero": "pp-hero", "show": "show-live"}
+    big = {"caricature": "cc-couple-sunset", "facepainting": "fp-cherry", "calligraphy": "work-parents", "hyukpil": "hp-work-03", "balloon": "bl-live-hat", "custompaint": "cp-plate-swan", "tarot": "lv-tarot-01", "pepero": "pp-hero", "show": "show-live", "handcare": "hc-live-01", "beads": "bd-booth"}
     cards = ''
     for k, name, file, short, icon, g, cat, img in PROGRAMS:
         e = EVENTS[k]
