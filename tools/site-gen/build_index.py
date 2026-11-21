@@ -143,7 +143,7 @@ SLIDES = [
    [("wand-sparkles", "풍선 아트 20종", "강아지·칼·꽃·왕관"), ("party-popper", "삐에로 분장", "무지개 가발로 분위기 업"), ("baby", "어린이 행사 인기", "축제·어린이날·매장 오픈")], "event-balloon.html"),
   ("custompaint", "커스텀 페인팅", "cp-showroom-01", "center 45%", "cp-plate-sunflower", "l", "브랜드가 작품이 되는 순간",
    [("paintbrush", "접시·에코백 페인팅", "로고와 취향을 담아 현장 제작"), ("car", "신차 발표·VIP 행사", "전시장 분위기를 살려요"), ("gift", "오래 간직하는 기념품", "개별 박스 포장")], "event-custompaint.html"),
-  ("festival", "축제 부스", "fp-live-booth", "center 40%", "hp-tiger", "l", "부스 하나로 축제 완성",
+  ("festival", "축제 부스", "bd-table", "center 55%", "hp-tiger", "l", "부스 하나로 축제 완성",
    [("layout-grid", "프로그램 묶음 운영", "캐리커처+페인팅+혁필화"), ("map-pin", "전국 출장", "야외·실내 어디든"), ("file-text", "결과 리포트", "사진·참여 인원 정리")], "event.html"),
 ]
 def _chip(i, c):
