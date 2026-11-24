@@ -16,13 +16,14 @@ VERIFY = {  # 서치어드바이저·서치콘솔에서 받은 코드 (content �
     'google-site-verification': 'xOE0msXJM8k3Zo0Afg0GoNvfp9X1dh8eZr6Lwclo4qg',
 }
 NOINDEX = {'login.html', 'report.html', 'reset.html'}
+SUBSITES = ['eunseo/', 'dalhae/', 'opal/']  # 소속 작가 개인 사이트 (사이트맵에 함께 올림)
 
 # 검색 결과에 보일 제목·설명 (없으면 페이지의 기존 값 사용)
 META = {
     'index.html': ('IUX ART | 캐리커처·페이스페인팅·캘리그라피 출장 이벤트',
                    '기업 송년회·축제·박람회에 캐리커처, 페이스페인팅, 캘리그라피, 타로, 풍선 삐에로, 헤나, 혁필화 체험 부스를 출장 운영합니다. 4시간 100명 이상, 1인 1~2분 완성. 전국 출장.'),
-    'event.html': ('출장 이벤트 체험 부스 11종 | IUX ART',
-                   '캐리커처·페이스페인팅·캘리그라피·타로카드·요술풍선 삐에로·헤나·혁필화·손마사지&네일아트·손금&관상·커스텀 페인팅·비즈공예. 행사에 맞게 골라 묶는 출장 체험 프로그램.'),
+    'event.html': ('출장 이벤트 체험 부스 13종 | IUX ART',
+                   '캐리커처·페이스페인팅·캘리그라피·타로카드·요술풍선 삐에로·헤나·혁필화·손마사지&네일아트·손금&관상·커스텀 페인팅·비즈공예·빼빼로 만들기·가수 공연. 행사에 맞게 골라 묶는 출장 체험 프로그램.'),
     'about.html': ('회사소개 | IUX ART 라이브 아트 출장 이벤트',
                    'IUX ART는 현장에서 그리고 만들어 손님이 결과물을 가져가는 라이브 아트 체험 부스를 기업·학교·지자체 행사에 출장 운영하는 회사입니다.'),
     'artists.html': ('작품 갤러리 — 캐리커처·캘리그라피·페이스페인팅 | IUX ART',
@@ -107,6 +108,7 @@ def service_ld(title, desc, url):
 def run(root):
     img = og_image(root)
     listed = []
+    info = {}  # 파일 → (검색 제목, 설명) — RSS용
     for f in pages(root):
         p = os.path.join(root, f)
         s = open(p, encoding='utf-8').read()
@@ -131,6 +133,7 @@ def run(root):
                 b.append('<meta name="robots" content="noindex,nofollow">')
         else:
             listed.append(f)
+            info[f] = (title, desc)
             for k, v in VERIFY.items():
                 if v:
                     b.append(f'<meta name="{k}" content="{esc(v)}">')
@@ -172,9 +175,10 @@ def run(root):
         f'Sitemap: {SITE}/sitemap.xml\n')
     prio = lambda f: '1.0' if f == 'index.html' else '0.9' if f.startswith('event') or f == 'quote.html' else '0.6'
     urls = ''.join(f'  <url><loc>{SITE}/{"" if f == "index.html" else f}</loc><lastmod>{TODAY}</lastmod><priority>{prio(f)}</priority></url>\n' for f in listed)
+    urls += ''.join(f'  <url><loc>{SITE}/{d}</loc><lastmod>{TODAY}</lastmod><priority>0.7</priority></url>\n' for d in SUBSITES if os.path.exists(os.path.join(root, d, 'index.html')))
     open(os.path.join(root, 'sitemap.xml'), 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '</urlset>\n')
     # 네이버용 RSS (새소식·주요 페이지) — 서치어드바이저 RSS 제출용
-    items = ''.join(f'<item><title>{esc(META.get(f, (f,))[0])}</title><link>{SITE}/{"" if f == "index.html" else f}</link><description>{esc(META.get(f, ("", ""))[1] or "")}</description></item>' for f in listed if f in META)
+    items = ''.join(f'<item><title>{esc(info[f][0])}</title><link>{SITE}/{"" if f == "index.html" else f}</link><description>{esc(info[f][1])}</description></item>' for f in listed if f != 'news-view.html')
     open(os.path.join(root, 'rss.xml'), 'w').write(f'<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>{NAME}</title><link>{SITE}/</link><description>{esc(META["index.html"][1])}</description><language>ko</language>{items}</channel></rss>\n')
     # 파비콘 (검색 결과 옆 아이콘)
     fav = os.path.join(root, 'favicon.svg')
