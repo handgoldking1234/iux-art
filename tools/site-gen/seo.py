@@ -172,7 +172,7 @@ def run(root):
     open(os.path.join(root, 'robots.txt'), 'w').write(
         'User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /artist/\nDisallow: /api/\n'
         'Disallow: /login.html\nDisallow: /reset.html\nDisallow: /report.html\nDisallow: /mail/\n\n'
-        f'Sitemap: {SITE}/sitemap.xml\n')
+        f'Sitemap: {SITE}/sitemap.xml\nSitemap: {SITE}/story/sitemap.xml\n')
     prio = lambda f: '1.0' if f == 'index.html' else '0.9' if f.startswith('event') or f == 'quote.html' else '0.6'
     urls = ''.join(f'  <url><loc>{SITE}/{"" if f == "index.html" else f}</loc><lastmod>{TODAY}</lastmod><priority>{prio(f)}</priority></url>\n' for f in listed)
     urls += ''.join(f'  <url><loc>{SITE}/{d}</loc><lastmod>{TODAY}</lastmod><priority>0.7</priority></url>\n' for d in SUBSITES if os.path.exists(os.path.join(root, d, 'index.html')))

@@ -9,3 +9,4 @@ Disallow: /report.html
 Disallow: /mail/
 
 Sitemap: https://art.iux.kr/sitemap.xml
+Sitemap: https://art.iux.kr/story/sitemap.xml

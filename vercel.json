@@ -1,5 +1,37 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "regions": ["sin1"]
+  "regions": [
+    "sin1"
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/story/0",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/story/2",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/story/4",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/story/6",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/story/8",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/story/10",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/story/12",
+      "schedule": "0 12 * * *"
+    }
+  ]
 }
